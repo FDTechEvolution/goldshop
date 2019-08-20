@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-12">
+
+        <div class="card-box table-responsive">
+            <div class="col-12 bt-tool">
+                <?= $this->Html->link(BT_BACK, ['controller' => 'designs', 'action' => 'index', $design->product_category_id], ['escape' => false]) ?> 
+            </div>
+            <h3 class="m-t-0 gold-title">แก้ไขลาย</h3>
+
+            <?= $this->Form->create($design, ['class' => '', 'novalidate' => true, 'id' => 'frm','type' => 'file']) ?>
+            <div class="row">
+               
+                <div class="form-group col-md-2">
+                    <label class="col-form-label">ชื่อลาย <?= REQUIRE_FIELD ?></label>
+                    <?= $this->Form->control('name', ['class' => 'form-control', 'label' => false]) ?>
+                </div>
+                <div class="form-group col-md-2">
+                    <label class="col-form-label">ภาพลาย <?= REQUIRE_FIELD ?></label>
+                    <?= $this->Form->control('img', ['id'=>'imgInp','type' => 'file', 'class' => 'form-control', 'label' => false]) ?>
+                </div>
+                <div id="showimg"  class="form-group col-md-2">
+                   
+                   <img id="blah" src="<?=SITE_URL.$design->image->path?>" alt="your image" class="thumb-image" height="100" width="100" />
+                </div>
+                <div class="form-group col-md-2">
+                    <label class="col-form-label">เปิดให้ใช้งาน</label>
+                    <div class="checkbox">
+                        <?= $this->Form->checkbox('isactive', ['hiddenField' => 'N', 'id' => 'isactive', 'value' => 'Y']) ?>
+                        <label for="isactive">
+
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="col-form-label">รายละเอียด</label>
+                    <?= $this->Form->textarea('description', ['class' => 'form-control', 'label' => false]) ?>
+                </div>
+
+            </div>
+            <div class="form-group row">
+               
+                <div class="col-md-12 text-center">
+                    <?= BT_SAVE ?>
+                </div>
+            </div>
+           
+            <?= $this->Form->end() ?>
+        </div>
+    </div>
+</div>
+<script>
+
+    function readURL(input) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#imgInp").change(function () {
+       
+        readURL(this);
+    });
+</script>

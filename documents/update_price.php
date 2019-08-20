@@ -1,0 +1,1 @@
+<?php file_get_contents('https://demo.ywrshop.com/gold-prices/ajax-update-day-price/'); ?>
