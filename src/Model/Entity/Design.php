@@ -16,10 +16,11 @@ use Cake\ORM\Entity;
  * @property string $modifiedby
  * @property string $product_category_id
  * @property string $image_id
+ * @property string $label
  *
  * @property \App\Model\Entity\ProductCategory $product_category
- * @property \App\Model\Entity\User $UserCreated
- * @property \App\Model\Entity\User $UserModified
+ * @property \App\Model\Entity\Image $image
+ * @property \App\Model\Entity\Product[] $products
  */
 class Design extends Entity
 {
@@ -43,8 +44,9 @@ class Design extends Entity
         'modifiedby' => true,
         'product_category_id' => true,
         'image_id' => true,
+        'label' => true,
         'product_category' => true,
-        'UserCreated' => true,
-        'UserModified' => true
+        'image' => true,
+        'products' => true
     ];
 }

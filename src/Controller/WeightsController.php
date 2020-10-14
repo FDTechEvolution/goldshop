@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+use Cake\I18n\Time;
 /**
  * Weights Controller
  *
@@ -64,6 +65,8 @@ class WeightsController extends AppController {
                 if ($this->Weights->save($weight)) {
                     $this->Flash->success(__('เพิ่มน้ำหนักทอง "' . $weight->name . '" สำเร็จ'));
 
+                     $this->createJsonData();
+                     
                     return $this->redirect(['action' => 'add', $productCatId]);
                 }
                 $this->Flash->error(__('The weight could not be saved. Please, try again.'));
@@ -88,6 +91,7 @@ class WeightsController extends AppController {
             'contain' => []
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
+            $oldName = $weight->name;
             $weight = $this->Weights->patchEntity($weight, $this->request->getData());
             $weight->modifiedby = $this->Authen->getAuthenUserId();
             //$weight->name = $weight->value;
@@ -95,6 +99,11 @@ class WeightsController extends AppController {
                 if ($this->Weights->save($weight)) {
                     $this->Flash->success(__('The weight has been saved.'));
 
+                    if($oldName !==$weight->name){
+                        $this->updateProductName($weight->id,$oldName);
+                    }
+                     $this->createJsonData();
+                     
                     return $this->redirect(['action' => 'index', $weight->product_category_id]);
                 }
                 $this->Flash->error(__('The weight could not be saved. Please, try again.'));
@@ -105,6 +114,19 @@ class WeightsController extends AppController {
         $sdWeights = $this->SdWeights->find('list',['order'=>['seq'=>'ASC']]);
         $productCategories = $this->Weights->ProductCategories->find('list', ['limit' => 200]);
         $this->set(compact('weight', 'productCategories','sdWeights'));
+    }
+    
+    private function updateProductName($id,$oldName){
+        $weight = $this->Weights->get($id, [
+            'contain' => ['Products']
+        ]);
+        
+        $products = $weight['products'];
+        foreach ($products as $product){
+            $newName = str_replace($oldName,$weight['name'],$product['name']);
+            $product->name = $newName;
+            $this->Weights->Products->save($product);
+        }
     }
 
     /**
@@ -118,6 +140,7 @@ class WeightsController extends AppController {
         $this->request->allowMethod(['post', 'delete']);
 
         $q = $this->Weights->find()
+                ->contain(['Products'])
                 ->where(['Weights.id' => $id]);
         if (sizeof($q->toArray()) == 0) {
             $this->Flash->error(__(MSG_DELETE_NOTFOUND));
@@ -125,12 +148,18 @@ class WeightsController extends AppController {
         }
 
         $weight = $q->first();
+        if(sizeof($weight->products)>0){
+            $this->Flash->error('น้ำหนักนี้เชื่อมต่อกับสินค้าในระบบ ไม่สามารถลบได้');
+            return $this->redirect(['action' => 'index', $productCatId]);
+        }
+        
         if ($this->Weights->delete($weight)) {
             $this->Flash->success(__(MSG_DELETE_SUCCESS));
         } else {
             $this->Flash->error(__(MSG_DELETE_ERROR));
         }
 
+         $this->createJsonData();
         return $this->redirect(['action' => 'index', $productCatId]);
     }
 
@@ -159,6 +188,18 @@ class WeightsController extends AppController {
         }
         
         return false;
+    }
+    
+    private function createJsonData(){
+         $this->loadComponent('Json');
+         $modelName = 'weights';
+         $this->Json->deleteFilesByModel($modelName);
+         
+         $time = Time::now();
+         $timeStr = $time->i18nFormat('yyyyMMdd_HHmm');
+         $designs = $this->Weights->find()->contain(['SdWeights'])->order(['Weights.name'=>'ASC'])->toArray();
+         $this->Json->write('weight_'.$timeStr.'.json',$modelName,$designs);
+         
     }
 
 }

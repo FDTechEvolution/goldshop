@@ -37,7 +37,8 @@ $(document).ready(function () {
         } else {
             var audio = document.getElementById("error_sound");
             audio.play();
-            $.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุหมวดหมู่', '');
+            //$.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุหมวดหมู่', '');
+            notisErr('จำเป็นต้องระบุหมวดหมู่');
             return false;
         }
 
@@ -55,9 +56,10 @@ $(document).ready(function () {
             weight_element = '<input type="hidden" name="exchange_product[' + totalLine + '][weight]" value="' + weight + '"/>';
         } else {
             $('#weight').focus();
-            var audio = document.getElementById("error_sound");
-            audio.play();
-            $.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุน้ำหนัก', '');
+            //var audio = document.getElementById("error_sound");
+            //audio.play();
+            //$.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุน้ำหนัก', '');
+            notisErr('จำเป็นต้องระบุน้ำหนัก');
             return false;
         }
 
@@ -67,31 +69,37 @@ $(document).ready(function () {
 
         isexchange_element = '<input type="hidden" name="exchange_product[' + totalLine + '][isexchange]" value="Y"/>';
         product_element = '<input type="hidden" name="exchange_product[' + totalLine + '][product_name]" value="' + product + '"/>';
-        price_element = '<input type="text" style="width:100px;" value="' +price + '" name="exchange_product[' + totalLine + '][price]" id="' + data.idPrice + '" data-id="product_price" onkeyup="reCalculateAllLine();">';
+        price_element = '<input type="tel" class="form-control" style="width:100px;" value="' +price + '" name="exchange_product[' + totalLine + '][price]" id="' + data.idPrice + '" data-id="product_price" onkeyup="reCalculateAllLine();">';
 
         $('#start_row').remove();
         $("#list_exchange > tbody").append(
                 '<tr id="' + data.idLineIndex + '" class="product_line">' +
-                    '<td width="40px">'+
-                    '   <button class="btn btn-icon waves-effect waves-light btn-danger m-b-5" type="button" onclick="removeLine(' + "'" + _name + "'" + ');"> <i class="fa fa-remove"></i> </button>'+
+                    '<td width="40px" class="align-middle">'+
+                    '   <button class="btn btn-icon waves-effect waves-light btn-danger m-b-5" type="button" onclick="removeLine(' + "'" + _name + "'" + ');"> <i class="fas fa-times"></i> </button>'+
                     '</td>' +
                     '<td>' +product+'<br/><span class="badge badge-danger">ใช้แลกเปลี่ยน</span></td>' +
-                    '<td class="text-danger" width="120px">' +
+                    '<td class="text-danger" width="120px" class="align-middle">' +
                        price_element+
                     '</td>' +
-                    '<td  width="100px">' +
+                    '<td  width="100px" class="align-middle text-right">' +
                         '<span id="' + data.idQtyLabel + '">' + 1 + '</span>' +
                     '</td>'+
-                     '<td width="120px"><span id="' + data.idAmtLabel + '">' + 0 + '</span></td>' +
+                    '<td width="200px" class="text-right align-middle">'+weight+'</td>'+
+                     '<td width="120px" class="align-middle text-right"><span id="' + data.idAmtLabel + '">' + 0 + '</span></td>' +
                      product_element+percent_element+weight_element+design_element+product_cat_element+isexchange_element+
                 '</tr>'
                 );
         
         $('#list_exchange').show();
+       
+        
      
 
         reCalculateAllLine();
-        $('#exchange_product_form').modal('hide');
+        
+        $('#price').val('');
+        $('#weight').val('');
+        //$('#exchange_product_form').modal('hide');
 
     });
 });

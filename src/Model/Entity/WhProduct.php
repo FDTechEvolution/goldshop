@@ -16,9 +16,11 @@ use Cake\ORM\Entity;
  * @property string $description
  * @property string $storage_bin_id
  * @property string $warehouse_id
+ * @property int $inorderqty
  *
  * @property \App\Model\Entity\Product $product
  * @property \App\Model\Entity\StorageBin $storage_bin
+ * @property \App\Model\Entity\Warehouse $warehouse
  * @property \App\Model\Entity\SerialNumber[] $serial_numbers
  */
 class WhProduct extends Entity
@@ -43,8 +45,10 @@ class WhProduct extends Entity
         'description' => true,
         'storage_bin_id' => true,
         'warehouse_id' => true,
+        'inorderqty' => true,
         'product' => true,
         'storage_bin' => true,
+        'warehouse' => true,
         'serial_numbers' => true
     ];
 }

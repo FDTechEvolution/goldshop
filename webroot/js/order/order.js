@@ -8,6 +8,11 @@ $(function () {
         autoclose: true,
         todayHighlight: true
     });
+    jQuery('#docdate').datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true,
+        todayHighlight: true
+    });
 
     $.fn.digits = function () {
         return this.each(function () {
@@ -44,7 +49,8 @@ $(function () {
             } else {
                 //console.log(_data);
                 dataJson = JSON.parse(_data);
-                data = setDefaultDataId(dataJson['code']);
+                var productCodeEle = dataJson['code'].replace(' ', '_');
+                data = setDefaultDataId(productCodeEle);
                 if ($('#' + data.idLineIndex).length > 0) {
                     //Update qty
                     var amtUnit = $('#' + data.idQty).val();
@@ -67,18 +73,17 @@ $(function () {
             var totalLine = getTotalLine();
             $("#list_product > tbody").append(
                     '<tr id="' + data.idLineIndex + '" class="product_line">' +
-                    '<td><button class="btn btn-icon waves-effect waves-light btn-danger m-b-5" type="button" onclick="removeLine(' + "'" + dataJson["code"] + "'" + ');"> <i class="fa fa-remove"></i> </button></td>' +
-                    '<td><span id="' + data.idLineNo + '">' + totalLine + '</span><input type="hidden" name="product_code" value="' + dataJson["code"] + '"/></td>' +
-                    '<td>' + dataJson["name"] + '<input type="hidden" name="product[' + totalLine + '][product_id]" value="' + dataJson["id"] + '" id="' + data.idProduct + '"/></td>' +
-                      '<td ><img id="showimg' + data.idLineIndex + '" class="thumb-image" height="40" width="40"/></td> <td><input style="width:100px;" type="file" onchange="showpic(this);"    id="img" name="product[' + totalLine + '][img]"    /></td>' +
-                    '<td>' +
-                 
+                    '<td class="align-middle"><button class="btn btn-icon waves-effect waves-light btn-danger" type="button" onclick="removeLine(' + "'" + dataJson["code"] + "'" + ');"> <i class="fas fa-times"></i> </button></td>' +
+                    '<td class="align-middle"><span id="' + data.idLineNo + '">' + totalLine + '</span><input type="hidden" name="product_code" value="' + dataJson["code"] + '"/></td>' +
+                    '<td class="align-middle">' + dataJson["name"] + '<input type="hidden" name="product[' + totalLine + '][product_id]" value="' + dataJson["id"] + '" id="' + data.idProduct + '"/></td>' +
+                    '<td class="align-middle"><img id="showimg' + data.idLineIndex + '" class="thumb-image" height="60" width="60"/></td> <td class="align-middle"><input style="width:100px;" type="file" accept="image/x-png,image/gif,image/jpeg" onchange="showpic(this);"    id="img" name="product[' + totalLine + '][img]"    /></td>' +
+                    '<td class="align-middle">' +
                     '<input type="text" style="width:100px;" value="' + dataJson["actual_price"] + '" name="product[' + totalLine + '][price]" id="' + data.idPrice + '" data-id="product_price" onkeyup="reCalculateAllLine();">' +
                     '</td>' +
-                    '<td>' +
+                    '<td class="align-middle">' +
                     '<span id="' + data.idQtyLabel + '">' + 1 + '</span>' +
                     '<input type="hidden" name="product[' + totalLine + '][qty]" value="' + 1 + '" id="' + data.idQty + '"/></td>' +
-                    '<td><span id="' + data.idAmtLabel + '">' + 0 + '</span></td>' +
+                    '<td class="align-middle"><span id="' + data.idAmtLabel + '">' + 0 + '</span></td>' +
                     '</tr>'
                     );
             $("#" + data.idPriceLabel).html(Number(dataJson["actual_price"]).toLocaleString('en'));
@@ -104,7 +109,7 @@ function  showpic(event) {
 
     var position = $(event).parent().parent().attr('id');
 
-    
+
 
 
 
@@ -129,10 +134,15 @@ function reCalculateAllLine() {
         if ($(this).attr('id') !== 'start_row') {
             var inputProductCode = $(this).find('input[name="product_code"]');
             var productCode = (inputProductCode.val());
-            var data = setDefaultDataId(productCode);
+            var productCodeEle = productCode.replace(' ', '_');
+            var data = setDefaultDataId(productCodeEle);
 
             var price = parseInt($('#' + data.idPrice).val());
+            price = isNaN(price) ? 0 : price;
+
+            console.log(price);
             var qty = parseInt($('#' + data.idQty).val());
+            console.log(qty);
             var amount = price * qty;
             totalAmt = totalAmt + amount;
 
@@ -155,7 +165,8 @@ function reCalculateAllLine() {
 
 function removeLine(_code) {
     console.log('remove line:' + _code);
-    var data = setDefaultDataId(_code);
+    var productCodeEle = _code.replace(' ', '_');
+    var data = setDefaultDataId(productCodeEle);
 
     $('#' + data.idLineIndex).remove();
     reCalculateAllLine();
@@ -178,8 +189,8 @@ function setDefaultDataId(code) {
 }
 
 
-function productProcess() {
-    var product_id = $('#product_id').val();
+function productProcess(product_id) {
+    //var product_id = $('#product_id').val();
     //alert(code);
     $('#product_name').val('');
     $('#product_id').val('');
@@ -198,7 +209,7 @@ $(document).ready(function () {
 
     //on click search
     $('#search_product').on('click', function () {
-        productProcess();
+        //productProcess();
     });
 
     //on press enter key
@@ -214,7 +225,7 @@ $(document).ready(function () {
 
     Validation.initValidation();
 
-    
+
 
 
 });

@@ -18,7 +18,7 @@ class BankAccountsFixture extends TestFixture
     // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'total_balance' => ['type' => 'decimal', 'length' => 10, 'precision' => 4, 'unsigned' => false, 'null' => false, 'default' => '0.0000', 'comment' => ''],
+        'total_balance' => ['type' => 'decimal', 'length' => 16, 'precision' => 2, 'unsigned' => false, 'null' => false, 'default' => '0.00', 'comment' => ''],
         'account_name' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'bank_id' => ['type' => 'uuid', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'account_type' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -49,20 +49,20 @@ class BankAccountsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '311ff830-9cc2-49e5-aa57-0e0e40517b51',
+            'id' => '16dd2e41-5c15-4591-84b0-099e6192e57e',
             'total_balance' => 1.5,
             'account_name' => 'Lorem ipsum dolor sit amet',
-            'bank_id' => '9edf32e2-fbb0-4941-bd1c-fc5d059c5d83',
+            'bank_id' => 'faeb9bf6-bcf4-4ab8-83ff-c69b4bf4bb56',
             'account_type' => 'Lorem ipsum dolor sit amet',
             'accountno' => 'Lorem ip',
             'bank_office' => 'Lorem ipsum dolor sit amet',
-            'org_id' => '3501b913-9205-4f67-b2f5-80ed1823c157',
-            'branch_id' => '8308816e-362b-45ac-bb42-0fc056a2b1a8',
+            'org_id' => 'f85c0c27-f6f7-4284-a5a3-f21022b4475c',
+            'branch_id' => '081947f7-d051-4643-bfbe-4dd75e4f5f0c',
             'description' => 'Lorem ipsum dolor sit amet',
-            'created' => '2018-03-22 16:26:48',
-            'createdby' => '4603a9d6-ea12-4192-9e59-25f77029ca5b',
-            'modified' => '2018-03-22 16:26:48',
-            'modifiedby' => 'bcc89fcc-e58e-428e-b5c4-086d42890e15',
+            'created' => '2020-02-18 11:15:14',
+            'createdby' => '0b83165e-5245-4ea3-b586-0ddcc0436cb9',
+            'modified' => '2020-02-18 11:15:14',
+            'modifiedby' => 'e67607fd-58de-485e-8d1e-325aa755d017',
             'type' => 'Lorem ipsum dolor sit amet'
         ],
     ];

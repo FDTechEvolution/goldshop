@@ -18,6 +18,6 @@ class PosController extends AppController {
     }
 
     public function index() {
-        
+       //debug($this->Cookie->read('rolePermissions'));
     }
 }

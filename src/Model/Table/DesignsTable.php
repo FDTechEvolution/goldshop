@@ -10,8 +10,8 @@ use Cake\Validation\Validator;
  * Designs Model
  *
  * @property \App\Model\Table\ProductCategoriesTable|\Cake\ORM\Association\BelongsTo $ProductCategories
- * @property |\Cake\ORM\Association\BelongsTo $Images
- * @property |\Cake\ORM\Association\HasMany $Products
+ * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
+ * @property \App\Model\Table\ProductsTable|\Cake\ORM\Association\HasMany $Products
  *
  * @method \App\Model\Entity\Design get($primaryKey, $options = [])
  * @method \App\Model\Entity\Design newEntity($data = null, array $options = [])
@@ -100,6 +100,11 @@ class DesignsTable extends Table
         $validator
             ->uuid('modifiedby')
             ->allowEmpty('modifiedby');
+
+        $validator
+            ->scalar('label')
+            ->maxLength('label', 45)
+            ->allowEmpty('label');
 
         return $validator;
     }

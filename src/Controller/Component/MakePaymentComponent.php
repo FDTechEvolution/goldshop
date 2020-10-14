@@ -9,7 +9,8 @@ namespace App\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\ORM\TableRegistry;
-
+use Cake\I18n\Date;
+use Cake\I18n\Time;
 /**
  * Description of Utils
  *
@@ -17,7 +18,7 @@ use Cake\ORM\TableRegistry;
  */
 class MakePaymentComponent extends Component {
 
-    public $components = ['Core', 'Util', 'Authen', 'DocSequent'];
+    public $components = ['Core', 'Util', 'Authen', 'DocSequent','Financial'];
     public $Invoices = null;
     public $InvoiceLines = null;
     public $PaymentLines = null;
@@ -26,11 +27,16 @@ class MakePaymentComponent extends Component {
     public $ARDocumentCode = 'AR';
     public $PaymentMethodLines = null;
 
-    public function getSaveDraft($paymentDate = null, $paymentMethod = null, $bankAccountId = null, $bpartnerId = null, $isReceipt = 'Y', $warehouseId = null, $type = null, $seller = null) {
+    public function getSaveDraft($paymentDate = null, $paymentMethod = null, $bankAccountId = null, $bpartnerId = null, $isReceipt = 'Y', $warehouseId = null, $type = null, $seller = null,$time = null) {
         $this->Payments = TableRegistry::get('Payments');
 
         $payment = $this->Payments->newEntity();
-        $payment->paymentdate = $this->Util->convertDate($paymentDate);
+        if(is_null($paymentDate) || $paymentDate ==''){
+            $payment->paymentdate = new Date();
+        }else{
+            $payment->paymentdate = $this->Util->convertDate($paymentDate);
+        }
+        
         $docNo = '_temp';
         $payment->docno = $docNo;
 
@@ -48,6 +54,8 @@ class MakePaymentComponent extends Component {
         $payment->docstatus = 'DR';
         $payment->createdby = $this->Authen->getAuthenUserId();
         $payment->seller = $seller;
+        
+        
 
         if (is_array($paymentMethod)) {
             $payment->payment_method = 'MULTIPLE';
@@ -57,7 +65,7 @@ class MakePaymentComponent extends Component {
             if ($paymentMethod == 'CASH') {
                 $bankAccountId = $this->getDefaultCashBankAccount($payment->branch_id);
             }
-            
+
             $payment->bank_account_id = $bankAccountId;
         }
 
@@ -79,11 +87,18 @@ class MakePaymentComponent extends Component {
                 $this->getSavePaymentMethodLine($payment->id, $paymentMethod, $bankAccountId, 0);
             }
         }
+        
+        if($time != null){
+            $strTime = sprintf('%s %s',$payment->paymentdate,$time);
+            $now = new Time($strTime);
+            $payment->created = $now;
+            $payment = $this->Payments->save($payment);
+        }
 
         return $payment;
     }
 
-    public function getSavePaymentLine($payment_id = null, $seq = 1, $description = null, $order_id = null, $pawn_id = null, $saving_account_id = null, $productId = null, $amount = 0, $qty = 1, $isExchange = 'N', $incomeTypeId = null,$isOverPrice = 'N') {
+    public function getSavePaymentLine($payment_id = null, $seq = 1, $description = null, $order_id = null, $pawn_id = null, $saving_account_id = null, $productId = null, $amount = 0, $qty = 1, $isExchange = 'N', $incomeTypeId = null, $isOverPrice = 'N',$exchangeamt = 0) {
         $this->PaymentLines = TableRegistry::get('PaymentLines');
         $line = $this->PaymentLines->newEntity();
 
@@ -101,6 +116,7 @@ class MakePaymentComponent extends Component {
         $line->totalamount = ($amount * $qty);
         $line->isexchange = $isExchange;
         $line->isoverprice = $isOverPrice;
+        $line->exchangamt = $exchangeamt;
 
         if ($this->PaymentLines->save($line)) {
             return $line;
@@ -111,7 +127,7 @@ class MakePaymentComponent extends Component {
         }
     }
 
-    public function completedPayment($payment = null, $documentCode = null, $amount = 0, $discount = 0, $usesavingamt = 0, $totalAmount = 0,$refPayment = null,$isExchange = 'N') {
+    public function completedPayment($payment = null, $documentCode = null, $amount = 0, $discount = 0, $usesavingamt = 0, $totalAmount = 0, $refPayment = null, $isExchange = 'N') {
         $this->PaymentLines = TableRegistry::get('PaymentLines');
         //$payment = $this->Payments->get($payment_id);
 
@@ -127,7 +143,7 @@ class MakePaymentComponent extends Component {
         $payment->docstatus = 'CO';
         $payment->payment_ref = $refPayment;
         $payment->isexchange = $isExchange;
-                
+
         if ($payment->isreceipt == 'N') {
             $totalAmount = $totalAmount * (-1);
         }
@@ -138,21 +154,25 @@ class MakePaymentComponent extends Component {
                     ->contain(['PaymentMethodLines'])
                     ->where(['Payments.id' => $payment->id]);
             $payment = $q->first();
+            /*
             foreach ($payment->payment_method_lines as $item) {
                 $this->updateBankAccountBalance($item->bank_account_id, $item->amount);
             }
+             * 
+             */
         } else {
             $q = $this->PaymentMethodLines->find()
                     ->where(['payment_id' => $payment->id]);
             $paymentMethodLine = $q->first();
-            $paymentMethodLine->amount = ($amount-$usesavingamt);
+            $paymentMethodLine->amount = ($amount - $usesavingamt-$discount);
             $this->PaymentMethodLines->save($paymentMethodLine);
-            $this->updateBankAccountBalance($payment->bank_account_id, $totalAmount);
+            //$this->updateBankAccountBalance($payment->bank_account_id, $totalAmount);
         }
-
+        $this->Financial->complete($payment->id);
         return $payment;
     }
 
+    /*
     private function updateBankAccountBalance($bankAccountId = null, $amount = 0) {
         $this->BankAccounts = TableRegistry::get('BankAccounts');
         $bankAccount = $this->BankAccounts->get($bankAccountId);
@@ -163,6 +183,8 @@ class MakePaymentComponent extends Component {
         //$this->log($totalBalance, 'debug');
         $this->BankAccounts->save($bankAccount);
     }
+     * 
+     */
 
     public function getDefaultCashBankAccount($branchId = null) {
         if ($branchId == null || $branchId == '') {
@@ -222,14 +244,34 @@ class MakePaymentComponent extends Component {
                 $payment->modifiedby = $this->Authen->getAuthenUserId();
                 $this->Payments->save($payment);
                 
-                foreach ($payment->payment_method_lines as $item){
+                $this->Financial->void($payment->id);
+                
+                /*
+                foreach ($payment->payment_method_lines as $item) {
                     $amount = $item->amount;
-                    if($isReceipt == 'Y'){
-                        $amount = $amount*-1;
+                    if ($isReceipt == 'Y') {
+                        $amount = $amount * -1;
                     }
                     $this->updateBankAccountBalance($item->bank_account_id, $amount);
                 }
+                 * 
+                 */
             }
+        }
+    }
+
+    public function unvoid($paymentId = null) {
+        if (!is_null($paymentId)) {
+            $this->Payments = TableRegistry::get('Payments');
+            $payment = $this->Payments->find()
+                    ->contain(['PaymentMethodLines'])
+                    ->where(['Payments.id' => $paymentId])
+                    ->first();
+
+            $payment->docstatus = 'CO';
+            $payment->modifiedby = $this->Authen->getAuthenUserId();
+            $this->Payments->save($payment);
+
         }
     }
 

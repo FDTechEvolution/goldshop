@@ -7,6 +7,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\ORM\Query;
 use Cake\Database\Expression\QueryExpression;
+
 /**
  * GoodsMovement Controller
  *
@@ -18,6 +19,7 @@ class GoodsMovementController extends AppController {
     public $DocumentCodeMovement = 'MM';
     public $GoodsLines = null;
     public $WhProducts = null;
+    public $Warehouses = null;
     public $GoodsTransactions = null;
 
     public function beforeFilter(Event $event) {
@@ -28,11 +30,12 @@ class GoodsMovementController extends AppController {
         }
 
         $this->loadComponent('DocSequent');
-         $this->loadComponent('WarehouseProcess');
+        $this->loadComponent('WarehouseProcess');
         $this->loadModel('Warehouses');
         $this->GoodsTransactions = TableRegistry::get('GoodsTransactions');
         $this->GoodsLines = TableRegistry::get('GoodsLines');
         $this->WhProducts = TableRegistry::get('WhProducts');
+        $this->Warehouses = TableRegistry::get('Warehouses');
     }
 
     /**
@@ -42,7 +45,7 @@ class GoodsMovementController extends AppController {
      */
     public function index() {
         $q = $this->GoodsTransactions->find()
-                ->contain(['ToWarehouse', 'UserCreated'])
+                ->contain(['FromWarehouse' => ['Branches'], 'ToWarehouse' => ['Branches'], 'UserCreated'])
                 ->where(['GoodsTransactions.type' => $this->DocumentCodeMovement])
                 ->order(['GoodsTransactions.created' => 'DESC', 'GoodsTransactions.docno' => 'DESC']);
         $goodsReceipts = $q->toArray();
@@ -60,27 +63,38 @@ class GoodsMovementController extends AppController {
      */
     public function view($id = null) {
         $isApprove = $this->request->query('approve');
-        
+
         $isApproveProcess = 'Y';
-        if(is_null($isApprove) || $isApprove ==''){
+        if (is_null($isApprove) || $isApprove == '') {
             $isApproveProcess = 'N';
         }
-        
-        $q = $this->GoodsTransactions->find()
-                ->contain(['ToWarehouse', 'UserCreated','GoodsLines'=>['Products'],'ToWarehouse'=>['Branches'=>['Orgs','Addresses']]])
-                ->where(['GoodsTransactions.id'=>$id,'GoodsTransactions.type' => $this->DocumentCodeMovement]);
 
-        $goodsReceipts = $q->toArray();
-        //$this->log($goodsReceipts,'debug');
-        if(sizeof($goodsReceipts) ==0){
-            return $this->redirect(['action'=>'index']);
+        $goodsReceipt = $this->GoodsTransactions->find()
+                ->contain([
+                    'FromWarehouse'=>['Branches'=>['Orgs','Addresses']],
+                    'UserCreated',
+                    'GoodsLines' => ['Products'],
+                    ])
+                ->where(['GoodsTransactions.id' => $id, 'GoodsTransactions.type' => $this->DocumentCodeMovement])
+                ->first();
+        //$this->log($id, 'debug');
+        if (is_null($goodsReceipt)) {
+            return $this->redirect(['action' => 'index']);
+        }
+
+        if ($goodsReceipt->status == 'DR') {
+            return $this->redirect(['action' => 'edit', $id]);
         }
         
-        $goodsReceipt = $q->first();
+        $toWarehouse = $this->Warehouses->find()
+                ->contain(['Branches'=>['Orgs','Addresses']])
+                ->where(['Warehouses.id'=>$goodsReceipt->to_warehouse])
+                ->first();
+
         $docStatusList = $this->TransactionCode->getStatusCode();
-        $this->set('goodsReceipt', $goodsReceipt);
-        $this->set('docStatusList', $docStatusList);
-        $this->set('isApproveProcess', $isApproveProcess);
+        
+        $this->set(compact('toWarehouse','goodsReceipt','docStatusList','isApproveProcess','toWarehouse'));
+
     }
 
     /**
@@ -106,7 +120,7 @@ class GoodsMovementController extends AppController {
             $goodsTransaction->docdate = $this->Util->convertDate($postData['docdate']);
 
             if ($this->GoodsTransactions->save($goodsTransaction)) {
-                $this->Flash->success(__('บันทึกการนำเข้าสินค้าเรียบร้อย'));
+                $this->Flash->success(__(''));
 
                 return $this->redirect(['action' => 'edit', $goodsTransaction->id]);
             }
@@ -115,11 +129,12 @@ class GoodsMovementController extends AppController {
         }
 
         $docNo = $this->DocSequent->getLatest($this->DocumentCodeMovement);
-        $warehouses = $this->Core->getWarehouseList(['issales'=>'Y'],true);
+        $warehouses = $this->Core->getWarehouseList([], true);
+        $toWarehouses = $warehouses;
+        //$toWarehouses['0'] ='นอกระบบ';
         //$warehouseJson = $this->getWHJSON();
-
         //$branches = $this->GoodsTransactions->Branches->find('list', ['limit' => 200]);
-        $this->set(compact('goodsTransaction', 'docNo', 'warehouses', 'requestType'));
+        $this->set(compact('goodsTransaction', 'docNo', 'warehouses', 'toWarehouses', 'requestType'));
     }
 
     /**
@@ -130,51 +145,76 @@ class GoodsMovementController extends AppController {
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function edit($id = null) {
-        $goodsTransaction = $this->GoodsTransactions->get($id);
+        $goodsTransaction = $this->GoodsTransactions->find()
+                ->contain(['GoodsLines'=>[
+                    'Products'=>['Weights'=>['SdWeights']]
+                    ]])
+                ->where(['GoodsTransactions.id' => $id])
+                ->first();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $postData = $this->request->getData();
+            //$this->log($postData, 'debug');
+            //die();
+            $command = '';
+            if (isset($postData['command'])) {
+                $command = $postData['command'];
+            }
+
             $goodsTransaction = $this->GoodsTransactions->patchEntity($goodsTransaction, $postData);
 
-            if ($postData['command'] == 'COMPLETE') {
+            if ($command == 'COMPLETE') {
                 $goodsTransaction->status = 'WT';
                 //$this->completed($goodsTransaction->id);
             }
 
-            $goodsTransaction->modifiedby = $this->Authen->getAuthenUserId();
+            //Clear product
+            if (isset($postData['isclearproduct']) && $postData['isclearproduct'] == 'Y') {
+                foreach ($goodsTransaction['goods_lines'] as $line) {
+                    $this->GoodsLines->delete($line);
+                }
+            }
 
+            $goodsTransaction->modifiedby = $this->Authen->getAuthenUserId();
             $goodsTransaction->docdate = $this->Util->convertDate($postData['docdate']);
 
             //$this->log($this->request->getData(),'debug');
             if ($this->GoodsTransactions->save($goodsTransaction)) {
-                $this->Flash->success(__('บันทึกการนำเข้าสินค้าเรียบร้อย'));
 
-                if ($postData['command'] == 'COMPLETE') {
-                    $this->Flash->success(__('บันทึกการย้ายสินค้าแล้ว กรุณาแจ้งปลายทางเพื่อรับเข้าสินค้า'));
+                if ($command == 'COMPLETE') {
+                    if (is_null($goodsTransaction->to_warehouse)) {
+                        //$this->Flash->success(__('ยืนยันการย้ายสินค้าแล้ว กรุณาแจ้งปลายทางเพื่อรับเข้าสินค้า'));
+                        return $this->redirect(['action' => 'approve', $goodsTransaction->id]);
+                    } else {
+                        $this->Flash->success(__('ยืนยันการย้ายสินค้าแล้ว กรุณาแจ้งปลายทางเพื่อรับเข้าสินค้า'));
+                        return $this->redirect(['action' => 'view', $goodsTransaction->id]);
+                    }
+                } else {
+                    $this->Flash->success(__(''));
+                    return $this->redirect(['action' => 'edit', $goodsTransaction->id]);
                 }
-                return $this->redirect(['action' => 'view', $goodsTransaction->id]);
             }
             $this->Flash->error(__('The goods transaction could not be saved. Please, try again.'));
         }
 
-        $warehouses = $this->Core->getWarehouseList(['issales'=>'Y'],true);
+        $warehouses = $this->Core->getWarehouseList([], true);
 
         //$branches = $this->GoodsTransactions->Branches->find('list', ['limit' => 200]);
         $this->set(compact('goodsTransaction', 'docNo', 'warehouses'));
     }
-    
-    public function approveList(){
+
+    public function approveList() {
         $q = $this->GoodsTransactions->find()
                 ->contain(['ToWarehouse', 'UserCreated'])
-                ->where(['GoodsTransactions.type' => $this->DocumentCodeMovement,'GoodsTransactions.status'=>'WT'])
+                ->where(['GoodsTransactions.type' => $this->DocumentCodeMovement, 'GoodsTransactions.status' => 'WT'])
                 ->order(['GoodsTransactions.created' => 'DESC', 'GoodsTransactions.docno' => 'DESC']);
         $goodsReceipts = $q->toArray();
         $docStatusList = $this->TransactionCode->getStatusCode();
 
         $this->set(compact('goodsReceipts', 'docStatusList'));
     }
-    
-    public function approve($id = null){
+
+    public function approve($id = null) {
         $goodsTransaction = $this->GoodsTransactions->get($id);
         $this->completed($goodsTransaction->id);
         $goodsTransaction->status = 'CO';
@@ -256,15 +296,15 @@ class GoodsMovementController extends AppController {
         $lines = $goodsReceipt->goods_lines;
 
         //$this->loadModel('WhProducts');
-        
+
         foreach ($lines as $line) {
             //Update from warehouse
             //updateStock($warehouse_id = null, $product_id = null, $qty = 0, $isPlus = true)
-            $this->WarehouseProcess->updateStock($fromWarehouse_id,$line['product_id'],$line['qty'],false);
+            $this->WarehouseProcess->updateStock($fromWarehouse_id, $line['product_id'], $line['qty'], false);
             $this->Flash->success(__('ปรับลดจำนวนสินค้าต้นทางแล้ว'));
 
             //Update to warehouse
-            $this->WarehouseProcess->updateStock($warehouse_id,$line['product_id'],$line['qty']);
+            $this->WarehouseProcess->updateStock($warehouse_id, $line['product_id'], $line['qty']);
             $this->Flash->success(__('ปรับเพิ่มจำนวนสินค้าปลายทางแล้ว'));
         }
     }

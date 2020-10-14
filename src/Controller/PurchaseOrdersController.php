@@ -6,6 +6,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Date;
+use Cake\I18n\Time;
 
 /**
  * Orders Controller
@@ -75,7 +76,7 @@ class PurchaseOrdersController extends AppController {
                 $bpartner_id = $bpartner->id;
             }
 
-            $order = $this->OrderProcess->createDraft($data['docdate'], $data['duedate'], 'Y', $bpartner_id, $seller);
+            $order = $this->OrderProcess->createDraft($data['docdate'], $data['duedate'], 'Y', $bpartner_id, $seller,$data['docno']);
             $totalAmount = 0;
             foreach ($data['product'] as $item) {
                 $qty = $item['qty'];
@@ -92,14 +93,48 @@ class PurchaseOrdersController extends AppController {
 
             //Update payment
             if ($paidAmt > 0) {
-                $bankAccountId = null;
+                $_CashAmt = $data['cash_amt'];
+                $_TransferAmt = $data['tran_amt'];
+                $_CreditAmt = $data['cred_amt'];
+                $isMultiplePaymentMethod = false;
 
-                if (isset($data['bank_account_id'])) {
-                    $bankAccountId = $data['bank_account_id'];
+                $countPaymentMethod = 0;
+                $paymentMethods = [];
+                if ($_CashAmt > 0) {
+                    $countPaymentMethod++;
+                    array_push($paymentMethods, ['payment_method' => 'CASH', 'amount' => $_CashAmt, 'bank_account_id' => null]);
+                }
+                if ($_TransferAmt > 0) {
+                    $countPaymentMethod++;
+                    array_push($paymentMethods, ['payment_method' => 'TRAN', 'amount' => $_TransferAmt, 'bank_account_id' => $data['bank_account_id']]);
+                }
+                if ($_CreditAmt > 0) {
+                    $countPaymentMethod++;
+                    array_push($paymentMethods, ['payment_method' => 'CRED', 'amount' => $_CreditAmt, 'bank_account_id' => $data['credit_account_id']]);
                 }
 
 
-                $payment = $this->MakePayment->getSaveDraft($data['docdate'], $data['payment_method'], $bankAccountId, $order->bpartner_id, 'Y', null, 'DEPOSIT', $order->seller);
+                $bankAccountId = null;
+                $paymentMethod = null;
+                if ($countPaymentMethod > 1) {
+                    $paymentMethod = $paymentMethods;
+                    $bankAccountId = null;
+                } else {
+                    $paymentMethod = $paymentMethods[0]['payment_method'];
+                    if (isset($data['bank_account_id'])) {
+                        $bankAccountId = $data['bank_account_id'];
+                    }
+                    $creditAccountId = null;
+                    if (isset($data['credit_account_id'])) {
+                        $creditAccountId = $data['credit_account_id'];
+                    }
+                    if ($paymentMethod == 'CRED') {
+                        $bankAccountId = $creditAccountId;
+                    }
+                }
+
+
+                $payment = $this->MakePayment->getSaveDraft($data['docdate'], $paymentMethod, $bankAccountId, $order->bpartner_id, 'Y', null, 'DEPOSIT', $order->seller,$data['time']);
                 //getSavePaymentLine($payment_id = null,$seq = 1, $description = null, $order_id = null,$pawn_id = null,$saving_account_id=null,$productId = null,$amount =0,$qty=1,$isExchange = 'N')
                 $this->MakePayment->getSavePaymentLine($payment->id, 1, null, $order->id, null, null, null, $paidAmt, 1, 'N');
 
@@ -111,11 +146,13 @@ class PurchaseOrdersController extends AppController {
         }
 
         $docNo = $this->DocSequent->getLatest($this->DocumentCode);
-        
+        $time = Time::now();
+        $time = $time->i18nFormat('HHmm');
+
         $issales = 'Y';
         $productJsonList = $this->Product->getProductJsonList();
 
-        $this->set(compact('order', 'docNo', 'issales', 'productJsonList'));
+        $this->set(compact('order', 'docNo', 'issales', 'productJsonList', 'time'));
     }
 
     /**
@@ -177,7 +214,7 @@ class PurchaseOrdersController extends AppController {
         if ($dayList == 'Y') {
             $todayDate = new Date();
             $wording = 'รายการสั่งซื้อ/สั่งทำประจำวันที่ ' . ($todayDate->i18nFormat(DATE_FORMATE, null, TH_DATE));
-            array_push($where, ['Orders.docdate' => $todayDate]);
+            //array_push($where, ['Orders.docdate' => $todayDate]);
         }
         $q = $this->Orders->find()
                 ->select(['Orders.id', 'Orders.totalpaid', 'Orders.totalpaid', 'Orders.duedate', 'Orders.docno', 'Orders.isreceived', 'Orders.created', 'Orders.isordered', 'Orders.docstatus'])

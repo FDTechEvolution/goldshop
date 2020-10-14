@@ -10,10 +10,11 @@
                         <h3 class="card-title text-primary prompt-500 fa-3x"><i class="mdi mdi-account-card-details"></i> ต่อดอก/ไถ่ถอน</h3>
                     </div>
                 </div>
-                <div class="col-md-4  col-lg-4 col-xs-4">
+                <div class="col-md-4  col-lg-4 col-xs-4 text-right">
                     <div class="form-group">
-                        <label>ใบจำนำเลขที่</label>
-                        <?= $this->Form->control('docno', ['class' => 'form-control', 'label' => false, 'id' => 'docno', 'readonly' => 'readonly']) ?> 
+                        <strong>ใบจำนำเลขที่</strong>
+                        <h3 class="prompt-400"><?= $pawn->docno ?></h3>
+
                     </div>
                 </div>
             </div>
@@ -23,11 +24,11 @@
                     $bp = $pawn->bpartner;
                     $address = $bp->address;
                     ?>
-                    <h4 class="title-header prompt-500 text-primary">ลูกค้า</h4>
+                    <h3 class="title-header prompt-500 text-primary">ลูกค้า</h3>
                     <address style="margin-bottom: 0px;">
-                        <strong><?= h($bp->name) ?></strong><br>
+                        <h4><?= h($bp->name) ?></h4>
                         <?php if (!is_null($address) && $address != '') { ?>
-                            <?= h(' ' . $address->houseno . ' ' . $address->address_line . ' ' . $address->subdistrict . ' ' . $address->district . ' จังหวัด' . $address->province . ' ' . $address->postalcode) ?>
+                            <?= h($address->address_line) ?>
                         <?php } ?>
                     </address>
                     <?= $this->Form->control('totalmoney', ['type' => 'hidden', 'class' => 'form-control', 'label' => false, 'id' => 'totalmoney']) ?> 
@@ -37,11 +38,11 @@
             <div class="row">
                 <div class="col-12">
 
-                    <div class="row">
-                        <div class="col-md-6">
+                    <div class="row pb-md-1">
+                        <div class="col-md-6 button-list">
                             <button type="button" name="pawn_method_bt" class="btn btn-outline-success waves-effect btn-block btn-lg m-b-10 prompt-400" value="return">ไถ่ถอน</button>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 button-list">
                             <button type="button" name="pawn_method_bt" class="btn btn-light waves-effect btn-block btn-lg m-b-10 prompt-400" value="renew">ต่อดอก</button>
                         </div>
 
@@ -94,16 +95,82 @@
                         </div>
 
                     </div>
-                    <hr/>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label><strong>ประวัติการทำรายการ</strong></label>
-                            <?= '  <br> ' . $pawn->log_history ?>
-                        </div>
-                    </div>
+
+
                 </div>
             </div>
-            <hr>
+
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card m-b-20 card-body">
+            <div class="row m-b-10">
+                <div id='smoney1' class="col-md-6 text-left prompt-500" >
+                    <h4 class="">เงินต้น</h4>
+                </div>
+                <div id='smoney2' class="col-md-6 text-right color-green " ><h4 class="font-weight-bolder"><?= number_format($pawn->totalmoney) ?></h4></div>
+                <div class="col-md-6 text-left prompt-500" >
+                    <h4 class="" style="margin-bottom: 0px;">ดอกเบี้ย <span id="typeshow"><?= $pawn['type'] ?></span></h4>
+                </div>
+                <div class="col-md-6 text-right color-green" >
+                    <h4 class="font-weight-bold" style="margin-bottom: 0px;"><span id="interrestrateshow">0.00</span></h4>
+                </div>
+                <div class="col-md-12" id="box_date"  style="display: none;">
+                    <h5 class="prompt-500" style="margin-top: 0px;">วันที่ <strong id="l_date">0</strong></h5>
+
+                </div>
+                <?= $this->Form->control('rate', ['type' => 'hidden', 'readonly', 'class' => 'form-control', 'label' => false, 'id' => 'rate']) ?> 
+                <?= $this->Form->control('newinterrestrate', ['type' => 'hidden', 'readonly', 'class' => 'form-control', 'label' => false, 'id' => 'newinterrestrate']) ?> 
+
+                <?= $this->Form->control('interrestrate', ['type' => 'hidden', 'readonly', 'class' => 'form-control', 'label' => false, 'id' => 'interrestrate']) ?>
+            </div>
+
+            <div class="row" style="display: none;">
+                <div class="col-md-7 text-left">
+                    <h3 class="prompt-400" id="totalamt_title_label">จำนวนเงิน</h3>    
+                </div>
+                <div class="col-md-5 text-right">
+                    <h3 id="subtotalamt_label" class="">0</h3>
+                    <?= $this->Form->hidden('subtotalamt', ['label' => false, 'id' => 'subtotalamt', 'value' => '0']) ?>
+                </div>
+            </div>
+            <div class="row" id="box_discount"  style="display: none;">
+                <div class="col-md-6 text-left"><h4 class="text-warning prompt-300">ส่วนลด</h4></div>
+                <div class="col-md-6 text-right text-warning"><h4 id="l_discount_amt" class="prompt-500">0</h4></div>
+                <?= $this->Form->hidden('discountamt', ['id' => 'discountamt', 'value' => '0']) ?>
+            </div>
+            <div class="row" id="box_saving" style="display: none;">
+                <div class="col-md-6 text-left">
+                    <h3 class="text-success prompt-400" id="">ใช้เงินออม</h3>
+                </div>
+                <div class="col-md-6 text-right color-green">
+                    <h3 id="l_saving_amt" class="prompt-400">0</h3>
+                    <?= $this->Form->hidden('savingamt', ['value' => '0', 'id' => 'savingamt']) ?>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-md-7 text-left">
+                    <h3 class="text-success prompt-400" id="totalamt_title_label">เงินสุทธิ</h3>    
+                </div>
+                <div class="col-md-5 text-right">
+                    <h2 id="l_total_amt" class="text-success">0</h2>
+                    <?= $this->Form->hidden('totalamt', ['label' => false, 'id' => 'totalamt', 'value' => '0']) ?>
+                </div>
+            </div>
+            <?= $this->element('NumericKeybord/pawnreturn'); ?>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card-box ">
+            <div class="row">
+                <div class="col-md-12">
+                    <label><strong>ประวัติการทำรายการ</strong></label>
+                    <?= '  <br> ' . $pawn->log_history ?>
+                </div>
+            </div>
+            <hr/>
             <div class="row ">
                 <div class="col-md-12">
                     <h3 class="prompt-400"><i class="mdi mdi-book-open"></i> รายการรับจำนำ</h3>
@@ -141,12 +208,8 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4 col-xs-12">
-        <div class="card m-b-20 card-body">
-            <?= $this->element('NumericKeybord/pawnreturn'); ?>
-        </div>
-    </div>
 </div>
+
 
 <?= $this->Form->end() ?>
 
@@ -177,7 +240,7 @@
         </div>
     </div>
 </div>
-<?= $this->Html->script('gold-selector.js')?>
+<?= $this->Html->script('gold-selector.js') ?>
 <script>
 
     $(document).ready(function () {
@@ -235,18 +298,8 @@
         $('#modaldismoney').on('click', function () {
 
             if (parseInt($('#fielddis').val()) > parseInt($('#interrestrate').val())) {
-                swal({
-                    title: "จำนวนเงินไม่ถูกต้อง",
-                    text: "กรอกส่วนลดเกินค่าดอกเบี้ย",
-                    type: "warning",
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    confirmButtonClass: 'btn-warning',
-                    confirmButtonText: "Yes, delete it!",
-                    closeOnConfirm: false
-                }, function () {
-                    swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                });
+                Swal.fire({title: "จำนวนเงินไม่ถูกต้อง", text: "กรอกส่วนลดเกินค่าดอกเบี้ย", confirmButtonClass: "btn btn-primary mt-2"});
+
             } else {
                 $('#newinterrestrate').val($('#interrestrate').val() - $('#fielddis').val());
                 $('#discount').val($('#fielddis').val());
@@ -291,19 +344,10 @@
                     $('#totald').val(diffDays);
                     cal($('#type').val(), diffDays, amt);
                 } else {
+                    Swal.fire({title: "วันที่ ไม่ถูกต้อง", text: "กรุณากรอกวันที่มากกว่าวันทำรายการเดิม", confirmButtonClass: "btn btn-primary mt-2"});
 
-                    swal({
-                        title: "วันที่ ไม่ถูกต้อง",
-                        text: "กรุณากรอกวันที่มากกว่าวันทำรายการเดิม",
-                        type: "warning",
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        confirmButtonClass: 'btn-warning',
-                        confirmButtonText: "Yes, delete it!",
-                        closeOnConfirm: false
-                    }, function () {
-                        swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                    });
+
+
                     $('#returndate').val('');
                 }
             } else {
@@ -318,19 +362,8 @@
                     $('#totald').val(diffDays);
                     cal($('#type').val(), diffDays, amt);
                 } else {
+                    Swal.fire({title: "วันที่ ไม่ถูกต้อง", text: "กรุณากรอกวันที่มากกว่าครบกำหนดเดิม", confirmButtonClass: "btn btn-primary mt-2"});
 
-                    swal({
-                        title: "วันที่ ไม่ถูกต้อง",
-                        text: "กรุณากรอกวันที่มากกว่าครบกำหนดเดิม",
-                        type: "warning",
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        confirmButtonClass: 'btn-warning',
-                        confirmButtonText: "Yes, delete it!",
-                        closeOnConfirm: false
-                    }, function () {
-                        swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                    });
                     $('#returndate').val('');
                 }
             }
@@ -424,21 +457,22 @@
 
     });
     $('#conf').click(function () {
-        swal({
+
+        Swal.fire({
             title: "คุณต้องการทำรายการใช่ หรือไม่",
             text: "",
             type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "ทำรายการ",
-            cancelButtonText: "ยกเลิก",
-            closeOnConfirm: true,
-            closeOnCancel: true
-        }, function (isConfirm) {
-            if (isConfirm) {
-                $('#myform').submit();
-            }
-        });
+            showCancelButton: !0,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+        }
+        ).then(
+                function (t) {
+                    if (t.value) {
+                        $('#myform').submit();
+                    }
+
+                });
     });
 </script>
 <script>

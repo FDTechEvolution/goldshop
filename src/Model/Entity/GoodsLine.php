@@ -16,8 +16,12 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $modifiedby
  * @property string $goods_transaction_id
+ * @property string $order_id
  *
  * @property \App\Model\Entity\Product $product
+ * @property \App\Model\Entity\GoodsTransaction $goods_transaction
+ * @property \App\Model\Entity\User $UserCreated
+ * @property \App\Model\Entity\User $UserModified
  */
 class GoodsLine extends Entity
 {
@@ -41,6 +45,10 @@ class GoodsLine extends Entity
         'modified' => true,
         'modifiedby' => true,
         'goods_transaction_id' => true,
-        'product' => true
+        'order_id' => true,
+        'product' => true,
+        'goods_transaction' => true,
+        'UserCreated' => true,
+        'UserModified' => true
     ];
 }

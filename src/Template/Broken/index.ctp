@@ -6,14 +6,14 @@
         <div class="card m-b-20 card-body">
 
             <div class="form-group row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <h1 class="card-title text-primary fa-3x prompt-500"><i class="mdi mdi-basket-fill"></i> ชำรุด</h1>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="code">วันที่ทำรายการ<span class="text-danger">*</span></label>
                     <?= $this->Form->control('docdate', ['class' => 'form-control input-sm', 'id' => 'docdate', 'type' => 'text', 'label' => false, 'readonly' => 'readonly', 'data-provide' => 'datepicker', 'data-date-language' => 'th-th', 'autocomplete' => 'off']) ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="code">หมายเลขเอกสาร</label>
                     <?= $this->Form->control('code', ['class' => 'form-control input-sm', 'id' => 'code', 'value' => $docNo, 'label' => false, 'readonly' => 'readonly']) ?>
                 </div>
@@ -35,10 +35,10 @@
             </div>
             <hr/>
             <div class="form-group row">
-                <div class="col-lg-5 col-md-12 col-sm-12">
+                <div class="col-lg-5 col-md-10 col-sm-12">
                     <?= $this->Form->control('product_code', ['class' => 'form-control form-control-lg', 'id' => 'product_code', 'label' => false, 'placeholder' => 'รหัสสินค้า', 'autofocus' => 'autofocus']) ?>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <button type="button" id="search_product" class="btn btn-lg btn-icon waves-effect waves-light btn-primary m-b-5"> <i class="ti-search"></i> </button>
                 </div>
                 
@@ -77,8 +77,8 @@
     <div class="col-sm-4 col-xs-12">
         <div class="card m-b-20 card-body">
             <div class="row">
-                <div class="col-md-12 m-b-10">
-                    <button type="submit" class="btn btn-block btn-success waves-effect waves-light fa-2x" style="padding: 15px 0px;" id="save_document"><i class="mdi mdi-content-save-settings"></i> บันทึก</button>
+                <div class="col-md-12 ">
+                    <button type="submit" class="btn btn-block btn-success waves-effect waves-light fa-2x" style="padding: 10px 0px;" id="save_document"><i class="mdi mdi-content-save-settings"></i> บันทึก</button>
                 </div>
             </div>
         </div>

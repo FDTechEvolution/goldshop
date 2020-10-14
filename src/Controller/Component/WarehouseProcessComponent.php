@@ -70,7 +70,9 @@ class WarehouseProcessComponent extends Component {
                     $newBalance = $currentAmount + ($line->qty);
                     $whProduct->balance_amt = $newBalance;
                 }
-                $this->WhProducts->save($whProduct);
+                if(!$this->WhProducts->save($whProduct)){
+                     $this->log($whProduct->errors(), 'debug');
+                }
             }
         }
 
@@ -78,6 +80,11 @@ class WarehouseProcessComponent extends Component {
     }
 
     public function updateStock($warehouse_id = null, $product_id = null, $qty = 0, $isPlus = true) {
+        
+        if(is_null($warehouse_id) || $warehouse_id =='' || is_null($product_id) || $product_id ==''){
+            return false;
+        }
+        
         $this->WhProducts = TableRegistry::get('WhProducts');
 
         $q = $this->WhProducts->find()

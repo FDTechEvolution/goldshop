@@ -37,6 +37,7 @@ class BrokenController extends AppController {
      * @return \Cake\Http\Response|void
      */
     public function index() {
+        $this->viewBuilder()->layout('mobile');
         $isCompleted = true;
         $goodsTransaction = $this->GoodsTransactions->newEntity();
 

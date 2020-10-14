@@ -53,18 +53,23 @@ class BankAccountsController extends AppController {
      */
     public function view($id = null) {
         $bankAccount = $this->BankAccounts->get($id, [
-            'contain' => ['Banks', 'Orgs', 'Branches']
+            'contain' => ['Banks', 'Orgs', 'Branches','BankAccountTransactions'=>['sort'=>['BankAccountTransactions.created'=>'DESC']]]
         ]);
 
+        /*
         $q = $this->Payments->find()
                 ->contain(['Seller'])
                 ->where(['Payments.bank_account_id' => $id,'Payments.docstatus'=>'CO'])
                 ->order(['Payments.paymentdate' => 'DESC']);
         $payments = $q->toArray();
+         * 
+         */
+        
+        
 
         $paymentTypes = $this->TransactionCode->getPaymentType();
 
-        $this->set(compact('bankAccount', 'paymentTypes', 'payments'));
+        $this->set(compact('bankAccount', 'paymentTypes'));
     }
 
     /**

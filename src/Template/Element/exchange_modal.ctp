@@ -1,25 +1,28 @@
 <div id="exchange_product_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-full">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title text-primary prompt-500">รายการขอแลกเปลี่ยน</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-lg-5 form-group">
+                    <div class="col-md-4 form-group">
                         <?= $this->Form->select('product_category_id', [], ['class' => 'form-control form-control-lg', 'id' => 'product_category_id', 'label' => false]) ?>
                     </div>
-                    <div class="col-lg-3 form-group">
+                    <div class="col-md-2 form-group">
                         <?= $this->Form->select('percent', $percents, ['class' => 'form-control form-control-lg', 'id' => 'percent', 'label' => false]) ?>
                     </div>
-                    <div class="col-lg-4 form-group">
+                    <div class="col-lg-4 form-group" style="display: none;">
                         <?= $this->Form->select('design_id', [], ['empty' => 'ลาย', 'class' => 'form-control form-control-lg', 'id' => 'design_id', 'label' => false]) ?>
                     </div>
-                    <div class="col-lg-4 form-group">
-                        <?= $this->Form->control('weight', ['type' => 'text', 'class' => 'form-control form-control-lg', 'id' => 'weight', 'label' => false, 'placeholder' => 'น้ำหนัก/กรัม']) ?>
+                    <div class="col-md-3 form-group">
+                        <?= $this->Form->control('weight', ['type' => 'tel', 'class' => 'form-control form-control-lg', 'id' => 'weight', 'label' => false, 'placeholder' => 'น้ำหนัก/กรัม','data-action'=>'numpad']) ?>
                     </div>
-                    <div class="col-lg-4">
-                        <?= $this->Form->control('price', ['class' => 'form-control form-control-lg', 'id' => 'price', 'label' => false, 'placeholder' => 'ราคาแลกเปลี่ยน']) ?>
+                    <div class="col-md-3">
+                        <?= $this->Form->control('price', ['type'=>'tel','class' => 'form-control form-control-lg', 'id' => 'price', 'label' => false, 'placeholder' => 'ราคาแลกเปลี่ยน','data-action'=>'numpad']) ?>
+                    </div>
+                    <div class="col-12">
+                        <p class="font-bold text-primary">*** ราคาแลกเปลี่ยน คือจำนวนเงินที่ต้องรับเงินหรือจ่ายเงินเพิ่มให้ลูกค้า กรณีจ่ายคืนลูกค้า ให้ใส่เลขติดลบ</p>
                     </div>
                 </div>
             </div>

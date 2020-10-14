@@ -18,7 +18,7 @@
 
 <div class="col-md-12">
     <div id="save_customer_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-full">
             <div class="modal-content">
                 <div class="modal-header">
 
@@ -28,7 +28,11 @@
                     <div class="row">
 
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-dark waves-effect waves-light" id="smartcard-alert">ดึงข้อมูลจากบัตรประชาชน</button>
+                            <button type="button" class="btn btn-dark waves-effect waves-light" id="smartcard-alert" style="display: none;">ดึงข้อมูลจากบัตรประชาชน</button>
+                            <button type="button" class="btn btn-dark waves-effect waves-light" id="bt-smartcard-detect">ถ่ายบัตรประชาชน</button>
+                        </div>
+                        <div class="col-12" id="box-detect-smartcard" style="display: none;">
+                           <?=$this->element('Cam/cam_with_upload_v1')?>
                         </div>
                         <div class="form-group col-md-3">
                             <label for="code">คำนำหน้า <?= REQUIRE_FIELD ?></label>
@@ -142,6 +146,17 @@
 <?= $this->Html->script('/jquery.Thailand.js/src/jquery.Thailand.js') ?>
 
 <script type="text/javascript">
+    $(document).ready(function(){
+        $('#bt-smartcard-detect').on('click',function(){
+            if($('#box-detect-smartcard').is(':visible')){
+                $('#box-detect-smartcard').hide();
+            }else{
+                $('#box-detect-smartcard').show();
+            }
+            
+        });
+    });
+    
     $(document).ready(function () {
         $('#save_customer_modal').modal({
             backdrop: 'static',

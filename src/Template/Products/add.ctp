@@ -19,17 +19,22 @@
                     <label for="size_id">ขนาด</label>
                     <?= $this->Form->select('size_id', [], ['class' => 'form-control', 'id' => 'size_id', 'label' => false]) ?>
                 </div>
-                <div class="col-md-2 form-group" id="box_weight">
-                    <label for="weight_id">น้ำหนัก</label>
-                    <?= $this->Form->select('weight_id', $weights, ['class' => 'form-control', 'id' => 'weight_id', 'label' => false]) ?>
-                </div>
-                <div class="col-md-3 form-group" id="box_design">
+                
+                <div class="col-md-5 form-group" id="box_design">
                     <label for="design_id">ลวดลาย</label>
                     <?= $this->Form->select('design_id', [], ['class' => 'form-control', 'id' => 'design_id', 'label' => false]) ?>
                 </div>
                 <div class="col-md-2 form-group">
                     <label for="unittype">หน่วยนับ<span class="text-danger">*</span></label>
                     <?= $this->Form->select('unittype', $unitTypeList, ['class' => 'form-control', 'id' => 'unittype', 'label' => false]) ?>
+                </div>
+                <div class="col-md-2 form-group" id="box_weight">
+                    <label for="weight_id">น้ำหนัก</label>
+                    <?= $this->Form->select('weight_id', $weights, ['class' => 'form-control', 'id' => 'weight_id', 'label' => false]) ?>
+                </div>
+                <div class="col-md-2 form-group" id="box_manual_weight" style="display: none;">
+                    <label for="weight_id">น้ำหนักพิเศษ/g</label>
+                    <?= $this->Form->control('manual_weight', ['class' => 'form-control', 'id' => 'manual_weight','type'=>'tel', 'label' => false,'value'=>'0']) ?>
                 </div>
                 <div class="col-md-2 form-group"  id="box_percent">
                     <label for="percent">%<span class="text-danger">*</span></label>
@@ -38,13 +43,17 @@
 
                 <div class="col-md-2 form-group" id="box_cost">
                     <label for="standard_price">ค่ากำเหน็จเพิ่มเติม (บาท)</label>
-                    <?= $this->Form->control('cost', ['class' => 'form-control', 'id' => 'standard_price', ' parsley-trigger' => 'change', 'label' => false,'value'=>'0']) ?>
+                    <?= $this->Form->control('cost', ['class' => 'form-control', 'id' => 'standard_price', ' parsley-trigger' => 'change','type'=>'tel', 'label' => false,'value'=>'0']) ?>
+                </div>
+                <div class="col-md-2 form-group" id="box_cost">
+                    <label for="standard_price">ต้นทุน</label>
+                    <?= $this->Form->control('cost2', ['class' => 'form-control', 'id' => 'cost2', ' parsley-trigger' => 'change','type'=>'text', 'label' => false]) ?>
                 </div>
                 <div class="col-md-2 form-group">
                     <label for="actual_price">ราคาขาย (บาท)</label>
-                    <?= $this->Form->control('actual_price', ['class' => 'form-control', 'id' => 'actual_price', ' parsley-trigger' => 'change', 'label' => false,'value'=>'0']) ?>
+                    <?= $this->Form->control('actual_price', ['class' => 'form-control','type'=>'tel', 'id' => 'actual_price', ' parsley-trigger' => 'change', 'label' => false,'value'=>'0']) ?>
                 </div> 
-                <div class="form-group col-md-2" id="box_img">
+                <div class="form-group col-md-4" id="box_img">
                     <label >ภาพ</label>
                     <?= $this->Form->control('img', ['id'=>'imgInp','type' => 'file', 'class' => 'form-control', 'label' => false]) ?>
                 </div>

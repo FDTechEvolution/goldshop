@@ -54,7 +54,8 @@ $(function () {
         } else {
             var audio = document.getElementById("error_sound");
             audio.play();
-            $.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุหมวดหมู่', '');
+            //$.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุหมวดหมู่', '');
+            notisErr('จำเป็นต้องระบุหมวดหมู่');
             return false;
         }
 
@@ -64,7 +65,7 @@ $(function () {
             percent_element = '<input type="hidden" name="product[' + totalLine + '][percent]" value="' + percent_id + '"/>';
         }
         if (design_id !== '') {
-            product = product + ' ลาย' + $('#design_id option:selected').text();
+            //product = product + ' ลาย' + $('#design_id option:selected').text();
             design_element = '<input type="hidden" name="product[' + totalLine + '][design_id]" value="' + design_id + '"/>';
         }
         if (weight !== '') {
@@ -72,14 +73,16 @@ $(function () {
             weight_element = '<input type="hidden" name="product[' + totalLine + '][weight]" value="' + weight + '"/>';
         } else {
             $('#weight').focus();
-            var audio = document.getElementById("error_sound");
-            audio.play();
-            $.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุน้ำหนัก', '');
+            //var audio = document.getElementById("error_sound");
+            //audio.play();
+            //$.Notification.autoHideNotify('error', 'top right', 'จำเป็นต้องระบุน้ำหนัก', '');
+            notisErr('จำเป็นต้องระบุน้ำหนัก');
             return false;
         }
 
         if (price === '') {
-            price = 0;
+            notisErr('กรุณาระบุจำนวนเงิน หรือ ราคา');
+            return false;
         }
 
         product_element = '<input type="hidden" name="product[' + totalLine + '][product_name]" value="' + product + '"/>';
@@ -89,10 +92,11 @@ $(function () {
 
         $("#list_product > tbody").append(
                 '<tr id="' + data.idLineIndex + '" class="product_line" data-id="' + data.dataId + '">' +
-                '<td><button class="btn btn-icon waves-effect waves-light btn-danger m-b-5" type="button" onclick="removeLine(' + "'" + totalLine + "'" + ');"> <i class="fa fa-remove"></i> </button></td>' +
-                '<td><span id="' + data.idLineNo + '">' + totalLine + '</span></td>' +
-                '<td>' + product + '<br/>' + description + product_element + description_element + '</td>' +
-                '<td>' +
+                '<td class="align-middle"><button class="btn btn-icon waves-effect waves-light btn-primary" type="button" onclick="removeLine(' + "'" + totalLine + "'" + ');"> <i class="fas fa-times"></i> </button></td>' +
+                '<td class="align-middle"><span id="' + data.idLineNo + '">' + totalLine + '</span></td>' +
+                '<td class="align-middle">' + product + '<br/>' + description + product_element + description_element + '</td>' +
+                '<td class="align-middle text-right">'+weight+'</td>'+
+                '<td class="align-middle text-right">' +
                 '<span id="' + data.idPriceLabel + '">' + price + '</span> ' +
                 price_element + expect_price_element +
                 '</td>' + product_cat_element + percent_element + design_element + weight_element +
@@ -103,14 +107,20 @@ $(function () {
         reCalculateAllLine(totalLine);
 
         function getTotalLine() {
-            var rowCount = $('#list_product > tbody tr').length;
-            rowCount = parseInt(rowCount) + 1;
-            return rowCount;
+            //var rowCount = $('#list_product > tbody tr').length;
+           // rowCount = parseInt(rowCount) + 1;
+           var dt = new Date();
+           var time = dt.getHours() + "" + dt.getMinutes() + "" + dt.getSeconds();
+            return time;
         }
 
 
 
         function reCalculateAllLine(line) {
+
+            $('#weight').val('');
+            $('#price').val('');
+
             console.log('reCalculateAllLine');
             //setDefaultDataId(line);
             var totalAmt = 0;
@@ -131,11 +141,30 @@ $(function () {
         }
 
         window.removeLine = function (_totalLine) {
-            console.log('remove line:' + _totalLine);
-            setDefaultDataId(_totalLine);
+            
+            
+            Swal.fire({
+                title:"ต้องการลบรายการสินค้านี้?",
+                text:"",
+                type:"warning",
+                showCancelButton:!0,
+                confirmButtonColor:"#3085d6",
+                cancelButtonColor:"#d33",
+                confirmButtonText:"ลบ"
+            }).then(function(t){
+                //console.log(t);
+                if (t.value) {
+                    console.log('remove line:' + _totalLine);
+                    setDefaultDataId(_totalLine);
 
-            $('#' + data.idLineIndex).remove();
-            reCalculateAllLine();
+                    $('#' + data.idLineIndex).remove();
+                    reCalculateAllLine();
+                } else {
+                    return false;
+                }
+            });
+
+
         };
 
         function setDefaultDataId(code) {
@@ -169,9 +198,10 @@ $(document).ready(function () {
         console.log(bath_price);
         $('#weight').on('keyup', function () {
             if (bath_price > 0) {
-                var price = Math.round(((bath_price - 800) * 0.0656) * $(this).val());
+                var price = Math.round((bath_price* 0.0656) * $(this).val());
                 $('#price_sd').val(price);
-                console.log('Purchase standard price: '+price);
+                $('#price').val(price);
+                console.log('Purchase standard price: ' + price);
             }
         });
     });
@@ -182,34 +212,42 @@ $(document).ready(function () {
     $('#add_bt').on('click', function () {
         var weight = parseFloat($('#weight').val());
         var diff_percent = 3;
-        if(weight < 7.5){
+        if (weight < 7.5) {
             diff_percent = 5;
         }
-        
+
         var price_sd = parseFloat($('#price_sd').val());
         var price = parseFloat($('#price').val());
         var diff = price_sd * (diff_percent / 100);
         console.log(price);
-        console.log('diff:'+diff);
-        console.log('Price+diff: '+parseFloat(price_sd + diff));
-        console.log('Price-diff: '+parseFloat(price_sd - diff));
-        if (price > (price_sd - diff)) {
-            swal({
+        console.log('diff:' + diff);
+        console.log('Price+diff: ' + parseFloat(price_sd + diff));
+        console.log('Price-diff: ' + parseFloat(price_sd - diff));
+        
+        let minprice = price_sd-diff;
+        let maxprice = price_sd;
+        
+        if (price > maxprice || price < minprice) {
+
+
+            Swal.fire({
                 title: 'ราคามีส่วนต่างมากเกินไป',
-                text: "กรุณาตรวจสอบความถูกต้องของข้อมูล [คำนวนที่ " + price_sd + " - "+diff_percent+"%]",
+                text: "กรุณาตรวจสอบความถูกต้อง [คำนวนที่ " + minprice + " - " + maxprice + "]",
                 type: "warning",
-                showCancelButton: true,
-                cancelButtonClass: 'btn-secondary waves-effect waves-light',
-                confirmButtonClass: 'btn-success waves-effect waves-light',
-                confirmButtonText: 'ยืนยันราคา',
-                cancelButtonText: 'ยกเลิก',
-                loseOnCancel: true,
-                closeOnConfirm: true
-            }, function (isConfirm) {
-                if (isConfirm) {
-                    $(document).purchase();
-                }
-            });
+                showCancelButton: !0,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                onfirmButtonText: "ยืนยันราคา"}
+            ).then(
+                    function (t) {
+                        if (t.value) {
+
+                            $(document).purchase();
+                        }else{
+                            return false;
+                        }
+
+                    });
         } else {
             $(document).purchase();
         }
@@ -223,12 +261,5 @@ $(document).ready(function () {
             $(document).purchase();
         }
     });
-
-
-
-
-
-
-
 
 });

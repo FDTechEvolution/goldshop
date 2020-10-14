@@ -1,7 +1,7 @@
 <div class="row m-b-10">
     <div class="col-md-6 text-left prompt-500"><h2 class="color-green">จำนวนเงิน</h2></div>
     <div class="col-md-6 text-right color-green"><h2 id="totalmoneyshow">0.00</h2></div>
-    
+
     <?= $this->Form->control('rate', ['type' => 'hidden', 'readonly', 'class' => 'form-control', 'label' => false, 'id' => 'rate']) ?> 
     <?= $this->Form->control('interrestrate', ['type' => 'hidden', 'readonly', 'class' => 'form-control', 'label' => false, 'id' => 'interrestrate']) ?> 
     <?= $this->Form->hidden('totalmoney', ['class' => 'form-control form-control-lg', 'label' => false, 'id' => 'totalmoney', 'value' => '0']) ?>
@@ -13,7 +13,7 @@
 </script>
 <div class="row">
     <div class="col-md-12">
-        <p><strong>วิธีการชำระเงิน: </strong><span id="payment_method_label">เงินสด</span></p>
+        <p><strong>วิธีการชำระเงิน: </strong><span id="payment_method_label" class="text-danger">เงินสด</span></p>
     </div>
 </div>
 <div class="row" id="bank_account_box" style="display: none;">
@@ -27,16 +27,16 @@
     </div>
 </div>
 <?= $this->Form->hidden('transaction_type', ['id' => 'transaction_type']) ?>
-<div class="row m-b-10">
-    <div class="col-md-3">
+<div class="row">
+    <div class="col-md-6 button-list">
         <button type="button" name="payment_method_bt" class="btn btn-success waves-effect btn-block btn-lg m-b-10" value="CASH" style="font-size:14px;">เงินสด</button>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-6 button-list">
         <button type="button" name="payment_method_bt" class="btn btn-light waves-effect btn-block btn-lg m-b-10" value="TRAN" style="font-size:14px;">โอนเงิน</button>
     </div>
 </div>
-<div class="row m-b-10">
-    <div class="col-md-12 m-b-10">
+<div class="row">
+    <div class="col-md-12 button-list">
         <button type="button" class="btn btn-block btn-success waves-effect waves-light fa-2x" style="padding: 15px 0px;" id="bt_save"><i class="mdi mdi-content-save-settings"></i> บันทึก</button>
     </div>
 </div>

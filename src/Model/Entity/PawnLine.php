@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  * @property string $description
  * @property float $amount
  * @property \Cake\I18n\FrozenTime $created
- * @property string $creatbyed
+ * @property string $createdby
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $modifiedby
  * @property string $pawn_id
@@ -21,6 +21,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\Product $product
  * @property \App\Model\Entity\Pawn $pawn
+ * @property \App\Model\Entity\Image $image
  */
 class PawnLine extends Entity
 {
@@ -40,13 +41,14 @@ class PawnLine extends Entity
         'description' => true,
         'amount' => true,
         'created' => true,
-        'creatbyed' => true,
+        'createdby' => true,
         'modified' => true,
         'modifiedby' => true,
         'pawn_id' => true,
         'weight' => true,
         'image_id' => true,
         'product' => true,
-        'pawn' => true
+        'pawn' => true,
+        'image' => true
     ];
 }

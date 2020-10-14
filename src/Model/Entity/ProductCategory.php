@@ -20,6 +20,8 @@ use Cake\ORM\Entity;
  * @property string $type
  * @property string $isstock
  * @property string $unittype
+ * @property string $label
+ * @property string $runningno
  *
  * @property \App\Model\Entity\Org $org
  * @property \App\Model\Entity\Design[] $designs
@@ -27,8 +29,6 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Product[] $products
  * @property \App\Model\Entity\Size[] $sizes
  * @property \App\Model\Entity\Weight[] $weights
- * @property \App\Model\Entity\User $UserCreated
- * @property \App\Model\Entity\User $UserModified
  */
 class ProductCategory extends Entity
 {
@@ -56,13 +56,13 @@ class ProductCategory extends Entity
         'type' => true,
         'isstock' => true,
         'unittype' => true,
+        'label' => true,
+        'runningno' => true,
         'org' => true,
         'designs' => true,
         'product_sub_categories' => true,
         'products' => true,
         'sizes' => true,
-        'weights' => true,
-        'UserCreated' => true,
-        'UserModified' => true
+        'weights' => true
     ];
 }

@@ -16,11 +16,11 @@
 
             </div>
             <div class="row" id="customer_box" >
-                <div class="col-md-1 form-group">
+                <div class="col-md-2 col-sm-2 form-group">
                     <label for="title">คำนำหน้า<?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('title', ['class' => 'form-control', 'label' => false, 'options' => ['นาย' => 'นาย', 'นาง' => 'นาง', 'นางสาว' => 'นางสาว']]) ?>
                 </div>
-                <div class="col-md-3 form-group">
+                <div class="col-md-3 col-sm-3 form-group">
                     <label for="firstname">ชื่อจริง<?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('firstname', ['class' => 'form-control', 'id' => 'keyboard', 'label' => false]) ?>
                 </div>
@@ -28,9 +28,9 @@
                     <label for="lastname">นามสกุล<?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('lastname', ['class' => 'form-control', 'id' => 'lastname', 'label' => false]) ?>
                 </div>
-                <div class="col-md-3 form-group">
+                <div class="col-md-4 form-group">
                     <label for="cardno">เลขบัตรประชาชน<?= REQUIRE_FIELD ?></label>
-                    <?= $this->Form->control('cardno', ['class' => 'form-control', 'id' => 'cardno', 'label' => false]) ?>
+                    <?= $this->Form->control('cardno', ['class' => 'form-control', 'id' => 'cardno', 'label' => false,'type'=>'number']) ?>
                 </div>
                 <div class="col-md-2 form-group">
                     <label for="birthday">วัน เดือน ปีเกิด<?= REQUIRE_FIELD ?></label>
@@ -39,11 +39,11 @@
                     ])
                     ?>
                 </div>
-                <div class="col-md-2 form-group ">
+                <div class="col-md-3 form-group ">
                     <label for="mobileno">โทรศัพท์มือถือ <?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('mobileno', ['class' => 'form-control', 'label' => false, 'id' => 'mobileno']); ?>
                 </div>
-                <div class="col-md-3 form-group">
+                <div class="col-md-3 form-group" style="display: none;">
                     <label for="email" >E-mail</label>
                     <?= $this->Form->control('email', ['class' => 'form-control', 'label' => false]) ?> 
                 </div>
@@ -76,15 +76,15 @@
                     <label for="password"  >Password<?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('password', ['id' => 'password', 'class' => 'form-control', 'label' => false]) ?> 
                 </div>
-                <div class="col-md-3 ">
+                <div class="col-md-3 " style="display: none;">
 
-                    <label class=" col-form-label text-right">เปิดใช้งาน </label>
+                    <label class=" col-form-label text-right" >เปิดใช้งาน </label>
                     <div class="checkbox">
                         <?= $this->Form->checkbox('isactive', ['hiddenField' => 'N', 'id' => 'isactive', 'value' => 'Y', 'checked' => 'checked']) ?>
                         <label for="isactive"></label>
                     </div>
                 </div>
-                <div class="col-md-6 form-group">
+                <div class="col-md-6 form-group" style="display: none;">
                     <label for="description">รายละเอียด</label>
                     <?= $this->Form->textarea('description', ['class' => 'form-control', 'id' => 'description', 'label' => false]) ?>
                 </div>

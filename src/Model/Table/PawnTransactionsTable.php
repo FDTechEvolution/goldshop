@@ -10,6 +10,7 @@ use Cake\Validation\Validator;
  * PawnTransactions Model
  *
  * @property \App\Model\Table\PawnsTable|\Cake\ORM\Association\BelongsTo $Pawns
+ * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\BelongsTo $Payments
  *
  * @method \App\Model\Entity\PawnTransaction get($primaryKey, $options = [])
  * @method \App\Model\Entity\PawnTransaction newEntity($data = null, array $options = [])
@@ -44,22 +45,8 @@ class PawnTransactionsTable extends Table
             'foreignKey' => 'pawn_id',
             'joinType' => 'INNER'
         ]);
-        
-        $this->belongsTo('Seller', [
-            'className' => 'Users',
-            'foreignKey' => 'seller',
-            'propertyName' => 'Seller'
-        ]);
-         $this->belongsTo('UserCreated', [
-            'className' => 'Users',
-            'foreignKey' => 'createdby',
-            'propertyName' => 'UserCreated'
-        ]);
-
-        $this->belongsTo('UserModified', [
-            'className' => 'Users',
-            'foreignKey' => 'modifiedby',
-            'propertyName' => 'UserModified'
+        $this->belongsTo('Payments', [
+            'foreignKey' => 'payment_id'
         ]);
     }
 
@@ -105,6 +92,26 @@ class PawnTransactionsTable extends Table
             ->uuid('modifiedby')
             ->allowEmpty('modifiedby');
 
+        $validator
+            ->decimal('rate')
+            ->allowEmpty('rate');
+
+        $validator
+            ->date('start_date')
+            ->allowEmpty('start_date');
+
+        $validator
+            ->date('end_date')
+            ->allowEmpty('end_date');
+
+        $validator
+            ->decimal('interestamt')
+            ->allowEmpty('interestamt');
+
+        $validator
+            ->decimal('discount')
+            ->allowEmpty('discount');
+
         return $validator;
     }
 
@@ -118,6 +125,7 @@ class PawnTransactionsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['pawn_id'], 'Pawns'));
+        $rules->add($rules->existsIn(['payment_id'], 'Payments'));
 
         return $rules;
     }

@@ -39,30 +39,16 @@ $(document).ready(function () {
         //  var type = $('input[name=type]:checked').val()
         var type = $('#func').val();
         if (amt === 0) {
-            swal({
-                title: "ล้มเหลว",
-                text: "กรุณากรอกจำนวนเงินก่อนบันทึกรายการ",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning waves-effect waves-light',
-                confirmButtonText: 'แก้ไข !'
-
-            });
+            
+            Swal.fire({title: "กรุณากรอกจำนวนเงินก่อนบันทึกรายการ", confirmButtonClass: "btn btn-primary mt-2"});
+            
             $('#amount').focus();
             return false;
         }
 
         if (type === 'withdraw' && amt > balance) {
-
-            swal({
-                title: "ล้มเหลว",
-                text: "เงินในบัญชีของท่านมีไม่เพียงพอ",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning waves-effect waves-light',
-                confirmButtonText: 'แก้ไข !'
-
-            });
+            Swal.fire({title: "เงินในบัญชีของท่านมีไม่เพียงพอ", confirmButtonClass: "btn btn-primary mt-2"});
+            
             $('#amount').focus();
             return false;
         } else {
@@ -73,7 +59,7 @@ $(document).ready(function () {
                 $('#myform').submit();
             }
 
-            swal({
+            Swal.fire({
                 title: texttype,
                 text: '',
                 type: "info",
@@ -84,8 +70,8 @@ $(document).ready(function () {
                 cancelButtonText: 'ยกเลิก',
                 closeOnCancel: true,
                 closeOnConfirm: false
-            }, function (isConfirm) {
-                if (isConfirm) {
+            }, function (t) {
+                if (t.value) {
                     //$('#myform').submit();
                     swal({
                         title: "เพื่อความแน่ใจ",

@@ -58,12 +58,17 @@ class CoreComponent extends Component {
             $branchName = $branch->name;
         }
 
-        $this->request->session()->write('Global.org_id', $org_id);
-        $this->request->session()->write('Global.ismultiple_branch', $isMultipleBranch);
-        $this->request->session()->write('Global.branch_id', $use_branch_id);
-        $this->request->session()->write('Global.branchName', $branchName);
-
-        $this->log($this->request->session()->read('Global'), 'debug');
+        $golbal = [
+            'org_id'=>$org_id,
+            'ismultiple_branch'=>$isMultipleBranch,
+            'branch_id'=>$use_branch_id,
+            'branchName'=>$branchName
+        ];
+        $this->request->session()->write('Global', $golbal);
+        //$this->Cookie->write('Global',$golbal);
+        
+        return $golbal;
+        //$this->log($this->request->session()->read('Global'), 'debug');
     }
 
     public function getSaveClientDetail($user_id = null, $data = null) {
@@ -187,7 +192,7 @@ class CoreComponent extends Component {
     public function getWarehouseList($where = null, $isExceptBranch = false, $type = 'list') {
         $this->Warehouses = TableRegistry::get('Warehouses');
 
-        $wheres = ['org_id' => $this->getLocalOrgId(), 'isactive' => 'Y'];
+        $wheres = ['Warehouses.org_id' => $this->getLocalOrgId(), 'Warehouses.isactive' => 'Y'];
         if ($isExceptBranch == false) {
             array_push($wheres, ['branch_id' => $this->getLocalBranchId()]);
         }
@@ -195,22 +200,20 @@ class CoreComponent extends Component {
             array_push($wheres, $where);
         }
         
-        $q = '';
+        $warehouses = $this->Warehouses->find()
+                ->contain(['Branches'])
+                ->where($wheres)
+                ->order(['Warehouses.branch_id'=>'ASC'])
+                ->toArray();
+        
         if ($type == 'list') {
-            $q = $this->Warehouses->find('list', [
-                'keyField' => 'id',
-                'valueField' => 'name',
-                'conditions' => $wheres
-            ]);
-        } else {
-            $q = $this->Warehouses->find('all', [
-                'conditions' => $wheres
-            ]);
-        }
-
-        $warehouseList = $q->toArray();
-
-        return $warehouseList;
+            $list = $warehouses;
+            $warehouses = null;
+           
+            foreach ($list as $item){
+                $warehouses[$item['id']] = 'สาขา'.$item['branch']['name'] . '-' . $item['name'];
+            }
+        } 
+        return $warehouses;
     }
-
 }

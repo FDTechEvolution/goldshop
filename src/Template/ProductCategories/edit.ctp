@@ -22,6 +22,12 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label class="col-md-3 col-form-label text-right">ชื่อย่อ(สำหรับ QRCode)</label>
+                <div class="col-md-5">
+                    <?= $this->Form->control('label', ['class' => 'form-control', 'label' => false]) ?>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label class="col-md-3 col-form-label text-right">ประเภท <?= REQUIRE_FIELD ?></label>
                 <div class="col-md-5">
                     <?= $this->Form->select('type',$productType, ['class' => 'form-control', 'label' => false]) ?>

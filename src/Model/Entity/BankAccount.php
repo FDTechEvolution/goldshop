@@ -28,6 +28,8 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Pawn[] $pawns
  * @property \App\Model\Entity\Payment[] $payments
  * @property \App\Model\Entity\SavingTransaction[] $saving_transactions
+ * @property \App\Model\Entity\User $UserCreated
+ * @property \App\Model\Entity\User $UserModified
  */
 class BankAccount extends Entity
 {
@@ -61,6 +63,8 @@ class BankAccount extends Entity
         'branch' => true,
         'pawns' => true,
         'payments' => true,
-        'saving_transactions' => true
+        'saving_transactions' => true,
+        'UserCreated' => true,
+        'UserModified' => true
     ];
 }

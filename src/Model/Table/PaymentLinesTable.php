@@ -125,6 +125,10 @@ class PaymentLinesTable extends Table
             ->scalar('isoverprice')
             ->allowEmpty('isoverprice');
 
+        $validator
+            ->decimal('exchangamt')
+            ->allowEmpty('exchangamt');
+
         return $validator;
     }
 

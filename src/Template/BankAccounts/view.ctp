@@ -30,33 +30,34 @@
             </div>
 
             <hr/>
+            <?php $transactions = $bankAccount['bank_account_transactions']; ?>
             <div class="row">
                 <div class="col-md-12">
                     <table id="datatable-buttons" class="table table-hover" cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                              
+
                                 <th>ประเภท</th>
                                 <th>วันที่</th>
                                 <th>ผู้ทำรายการ</th>
-                                <th>จำนวนเงิน</th>
-                               
+                                <th class="text-right">จำนวนเงิน</th>
+
                             </tr>
                         </thead>
                         <tbody class="hand-cursor">
 
-                            <?php foreach ($payments as $payment): ?>
-                               
+                            <?php foreach ($transactions as $item): ?>
+
                                 <tr>
-                                    <td><?=$payment->type == null?'':$paymentTypes[$payment->type]?></td>
-                                    <td class="column-date"><?= h($payment->paymentdate->i18nFormat(DATE_FORMATE, null, TH_DATE)) ?></td>
-                                    <td><?=$payment->has('Seller')?($payment->Seller->firstname.' '.$payment->Seller->lastname):''?></td>
-                                    <td><?=$payment->isreceipt=='Y'?'+':'-'?><?=$this->Number->Format($payment->totalamt)?></td>
+                                    <td><?= $item->type ?></td>
+                                    <td class="column-date"><?= h($item->created->i18nFormat(DATE_TIME_FORMATE, null, TH_DATE)) ?></td>
+                                    <td></td>
+                                    <td class="text-right"><?= number_format($item->debit - $item->credit) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                  
+
                 </div>
             </div>
         </div>

@@ -29,7 +29,7 @@ var Validation = function () {
                                     {
                                         required: 'กรุณาระบุวันครบกำหนด'
                                     },
-                             docno:
+                            docno:
                                     {
                                         required: 'กรุณาระบุหมายเลขรับจำนำ'
                                     }
@@ -48,67 +48,50 @@ var Validation = function () {
 }();
 
 $(document).ready(function () {
-     Validation.initValidation();
-     
+    Validation.initValidation();
+
     $('#bt_save').click(function () {
-        if(!isHasProductLine()){
+        if (!isHasProductLine()) {
             return false;
         }
-        
+
         //Check customer
         console.log('Checking customer info.');
         var bpartner_id = $('#bpartner_id').val();
         if (bpartner_id === '') {
-            swal({
-                title: 'ข้อมูลลูกค้าไม่สมบูรณ์',
-                text: "",
-                type: "error",
-                showCancelButton: false,
-                cancelButtonClass: 'btn-secondary waves-effect waves-light',
-                confirmButtonClass: 'btn-success waves-effect waves-light',
-                confirmButtonText: 'ตกลง',
-                cancelButtonText: 'ยกเลิก',
-                loseOnCancel: true,
-                closeOnConfirm: true
-            });
+
+            Swal.fire({title: "ข้อมูลลูกค้าไม่สมบูรณ์", confirmButtonClass: "btn btn-primary mt-2"});
             return false;
         }
-        
-        swal({
-            title: 'บันทึกข้อมูลสำหรับ "จำนำ" ?',
+
+
+
+        Swal.fire({
+            title: "บันทึกข้อมูลสำหรับ จำนำ ?",
             text: "",
-            type: "info",
-            showCancelButton: true,
-            cancelButtonClass: 'btn-secondary waves-effect waves-light',
-            confirmButtonClass: 'btn-success waves-effect waves-light',
-            confirmButtonText: 'บันทึก',
-            cancelButtonText: 'ยกเลิก',
-            loseOnCancel: true,
-            closeOnConfirm: true
-        }, function (isConfirm) {
-            if (isConfirm) {
-                //$('#page-load').show();
-                //$('#transaction_type').val('normal');
-                $('#pawn').submit();
-            }
-        });
+            type: "warning",
+            showCancelButton: !0,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            onfirmButtonText: "บันทึก"}
+        ).then(
+                function (t) {
+                    if (t.value) {
+
+                        $('#pawn').submit();
+                    }
+
+                });
     });
-    
+
     function isHasProductLine() {
         console.log('Checking product row.');
         $('#start_row').remove();
         var count_row = $('#listdata > tbody tr').length;
-        
+
         if (count_row < 1) {
-            swal({
-                title: "ไม่พบรายการรับจำนำ",
-                text: "",
-                type: "error",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "ตกลง",
-                closeOnConfirm: true
-            });
+
+            Swal.fire({title: "ไม่พบรายการรับจำนำ", confirmButtonClass: "btn btn-primary mt-2"});
             return false;
         }
         return true;

@@ -6,6 +6,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Date;
+use Cake\I18n\Time;
 
 /**
  * Purchase Controller
@@ -58,7 +59,8 @@ class PurchaseController extends AppController {
         //$invoice = $this->Invoices->newEntity();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-
+            //$this->log($data,'debug');
+            //die();
 
             $bpartner_id = null;
             $customerType = $data['customer_type'];
@@ -87,8 +89,14 @@ class PurchaseController extends AppController {
                 $bankAccountId = $creditAccountId;
             }
 
+            if (!isset($data['time']) || is_null($data['time']) || $data['time'] == '') {
+                $time = Time::now();
+                $time = $time->i18nFormat('HHmm');
+                $data['time'] = $time;
+            }
 
-            $payment = $this->MakePayment->getSaveDraft($data['docdate'], $data['payment_method'], $bankAccountId, $bpartner_id, 'N', $warehouse_id, 'PURCHASE', $seller);
+
+            $payment = $this->MakePayment->getSaveDraft($data['docdate'], $data['payment_method'], $bankAccountId, $bpartner_id, 'N', $warehouse_id, 'PURCHASE', $seller, $data['time']);
 
 
             $totalAmount = 0;
@@ -100,7 +108,7 @@ class PurchaseController extends AppController {
                 $expectPrice = $item['expect_price'];
                 $weight = $item['weight'];
                 $diffPercent = 0.03;
-                if($weight < 7.5){
+                if ($weight < 7.5) {
                     $diffPercent = 0.05;
                 }
                 $priceDif = $expectPrice * $diffPercent;
@@ -130,16 +138,84 @@ class PurchaseController extends AppController {
             $this->Flash->success(__('บันทึกข้อมูลการรับซื้อแล้ว'));
 
             //return $this->redirect(['action' => 'view',$payment->id]);
-            return $this->redirect(['controller' => 'pos']);
+            return $this->redirect(['action' => 'index']);
         }
+
+        $time = Time::now();
+        $time = $time->i18nFormat('HH:mm');
+
         $docNo = $this->DocSequent->getLatest('AP');
-        $warehouseList = $this->Core->getWarehouseList(['ispurchase' => 'Y']);
+        $warehouseList = $this->Core->getWarehouseList(['type' => 'PURCHASE']);
 
         $percents = $this->Gold->getGoldPercent();
 
         $productType = $this->TransactionCode->getProductType();
 
-        $this->set(compact( 'docNo', 'warehouseList', 'percents', 'productType'));
+        $this->set(compact('docNo', 'warehouseList', 'percents', 'productType', 'time'));
+
+
+
+
+        $toDayTransactions = $this->toDayTransaction();
+
+        $this->set(compact('toDayTransactions'));
+    }
+
+    private function toDayTransaction() {
+        $todayDate = new Date();
+        $q = $this->Payments->find()
+                ->select(['Payments.id', 'Payments.created', 'Payments.amount', 'Payments.discount', 'Payments.totalamt', 'Payments.paymentdate', 'Payments.docno', 'Payments.isexchange', 'Payments.docstatus'])
+                ->contain([
+                    'PaymentLines' => [
+                        'fields' => ['payment_id', 'invoice_id', 'isoverprice', 'amount'],
+                        'Products' => [
+                            'fields' => ['name', 'manual_weight'],
+                            'Weights' => [
+                                'fields' => ['value']
+                            ]
+                        ],
+                    ], 'BankAccounts' => ['fields' => ['account_name']],
+                    'Seller' => [
+                        'fields' => ['firstname', 'lastname']
+                    ],
+                    'Bpartners' => [
+                        'fields' => ['name']
+                    ]
+                ])
+                ->where(['Payments.isreceipt' => 'N', 'Payments.isexchange' => 'N', 'Payments.paymentdate' => $todayDate, 'Payments.type' => 'PURCHASE', 'Payments.branch_id' => $this->Core->getLocalBranchId()])
+                ->order(['Payments.docno' => 'DESC']);
+        $payments = $q->toArray();
+
+        //Count total
+        $totalAmt = 0;
+        $weightAmt = 0;
+        $countItem = 0;
+
+        foreach ($payments as $payment) {
+            if ($payment->docstatus != 'VO') {
+                $totalAmt = $totalAmt + $payment->totalamt;
+                $countItem += sizeof($payment->payment_lines);
+                foreach ($payment->payment_lines as $line) {
+                    if ($line->has('product')) {
+
+                        if ($line->product->has('weight')) {
+                            $weightAmt = $weightAmt + $line->product->weight->value;
+                        } else {
+                            $weightAmt = $weightAmt + $line->product->manual_weight;
+                        }
+                    }
+                }
+            }
+        }
+
+        $data = [
+            'items' => $payments,
+            'totalAmt' => $totalAmt,
+            'weightAmt' => $weightAmt,
+            'countItem' => $countItem
+        ];
+
+        return $data;
     }
 
     public function view($id = null) {
@@ -201,7 +277,7 @@ class PurchaseController extends AppController {
                 ->select(['Payments.id', 'Payments.created', 'Payments.amount', 'Payments.discount', 'Payments.totalamt', 'Payments.paymentdate', 'Payments.docno', 'Payments.isexchange', 'Payments.docstatus'])
                 ->contain([
                     'PaymentLines' => [
-                        'fields' => ['payment_id', 'invoice_id', 'isoverprice'],
+                        'fields' => ['payment_id', 'invoice_id', 'isoverprice', 'amount'],
                         'Products' => [
                             'fields' => ['name', 'manual_weight'],
                             'Weights' => [
@@ -216,26 +292,28 @@ class PurchaseController extends AppController {
                         'fields' => ['name']
                     ]
                 ])
-                ->where(['Payments.isreceipt' => 'N', 'Payments.paymentdate' => $todayDate, 'Payments.type' => 'PURCHASE', 'Payments.branch_id' => $this->Core->getLocalBranchId()])
+                ->where(['Payments.isreceipt' => 'N', 'Payments.isexchange' => 'N', 'Payments.paymentdate' => $todayDate, 'Payments.type' => 'PURCHASE', 'Payments.branch_id' => $this->Core->getLocalBranchId()])
                 ->order(['Payments.created' => 'DESC']);
         $payments = $q->toArray();
 
         //Count total
         $totalAmt = 0;
         $weightAmt = 0;
+        $countItem = 0;
+
         foreach ($payments as $payment) {
             if ($payment->docstatus != 'VO') {
                 $totalAmt = $totalAmt + $payment->totalamt;
+                $countItem += sizeof($payment->payment_lines);
                 foreach ($payment->payment_lines as $line) {
                     if ($line->has('product')) {
-                        
+
                         if ($line->product->has('weight')) {
                             $weightAmt = $weightAmt + $line->product->weight->value;
                         } else {
                             $weightAmt = $weightAmt + $line->product->manual_weight;
                         }
                     }
-                    
                 }
             }
         }
@@ -266,7 +344,7 @@ class PurchaseController extends AppController {
             $todayDate = '';
         }
 
-        $this->set(compact('payments', 'todayDate', 'totalAmt', 'weightAmt', 'wording'));
+        $this->set(compact('payments', 'todayDate', 'totalAmt', 'weightAmt', 'wording', 'countItem'));
     }
 
     public function void($id = null) {
@@ -277,7 +355,7 @@ class PurchaseController extends AppController {
         if ($this->Payments->save($payment)) {
             $this->MakePayment->void($payment->id);
             $this->WarehouseProcess->updateStockByPayment($payment->id, 'Y');
-            
+
             $this->Flash->success(__('ยกเลิกรายการแล้ว'));
             return $this->redirect(['action' => 'showall']);
         } else {

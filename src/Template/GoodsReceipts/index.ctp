@@ -22,7 +22,7 @@
                 <tbody>
 
                     <?php foreach ($goodsReceipts as $item): ?>
-                        <tr data-url="<?= SITE_URL . 'goods-receipts/view/' . h($item->id) ?>">
+                        <tr data-url="<?= SITE_URL . 'goods-receipts/view/' . h($item->id) ?>" onclick="gourl(this);">
                             <td class="column-date"><?= h($item->docdate->i18nFormat(DATE_FORMATE, null, TH_DATE)) ?></td>
                             <td class=""><?= h($item->docno) ?></td>
                             <td class=""><?= $item->has('ToWarehouse') ? $item->ToWarehouse->name : '' ?></td>
@@ -41,10 +41,12 @@
     </div>
 </div>
 <script>
-    $(document).ready(function () {
-        $("#datatable-buttons > tbody tr").click(function () {
-            var selectedUrl = $(this).attr('data-url');
-            document.location = selectedUrl;
-        });
-    });
+    function gourl(e){
+         var selectedUrl = $(e).attr('data-url');
+            if (selectedUrl !== 'undefined' && selectedUrl !== undefined) {
+                console.log(selectedUrl);
+                document.location = selectedUrl;
+            }
+    }
+   
 </script>

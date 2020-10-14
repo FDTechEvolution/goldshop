@@ -1,22 +1,22 @@
 
 <!-- Required datatable js -->
-<?= $this->Html->script('/assets/plugins/datatables/jquery.dataTables.min.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/dataTables.bootstrap4.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/jquery.dataTables.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/dataTables.bootstrap4.min.js'); ?>
 <!-- Buttons examples -->
-<?= $this->Html->script('/assets/plugins/datatables/dataTables.buttons.min.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/buttons.bootstrap4.min.js'); ?> 
-<?= $this->Html->script('/assets/plugins/datatables/jszip.min.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/pdfmake.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/vfs_fonts.js'); ?> 
-<?= $this->Html->script('/assets/plugins/datatables/owner/vfs_fonts.js'); ?> 
-<?= $this->Html->script('/assets/plugins/datatables/buttons.html5.min.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/buttons.print.min.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/buttons.colVis.min.js'); ?> 
+<?= $this->Html->script('/css/plugins/datatables/dataTables.buttons.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/buttons.bootstrap4.min.js'); ?> 
+<?= $this->Html->script('/css/plugins/datatables/jszip.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/pdfmake.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/vfs_fonts.js'); ?> 
+<?= $this->Html->script('/css/plugins/datatables/owner/vfs_fonts.js'); ?> 
+<?= $this->Html->script('/css/plugins/datatables/buttons.html5.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/buttons.print.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/buttons.colVis.min.js'); ?> 
 
 
 <!-- Responsive examples -->
-<?= $this->Html->script('/assets/plugins/datatables/dataTables.responsive.min.js'); ?>
-<?= $this->Html->script('/assets/plugins/datatables/responsive.bootstrap4.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/dataTables.responsive.min.js'); ?>
+<?= $this->Html->script('/css/plugins/datatables/responsive.bootstrap4.min.js'); ?>
 
 <div class="row">
     <div class="col-12">
@@ -35,6 +35,7 @@
 
                                 <th></th>
                                 <th>ประเภทสินค้า</th>
+                                <th>ชื่อย่อ</th>
                                 <th>รหัส</th>
                                 <th>รูปแบบสินค้า</th>
                                 <th>สต๊อกสินค้า</th>
@@ -51,6 +52,7 @@
                                         <?= $this->Form->postLink(BT_DELETE, ['action' => 'delete', $productCategory->id], ['confirm' => __('Are you sure you want to delete # {0}?', $productCategory->name), 'escape' => false]) ?>
                                     </td>
                                     <td><?= h($productCategory->name) ?></td>
+                                    <td><?= h($productCategory->label)?></td>
                                     <td><?= h($productCategory->code) ?></td>
                                     <td><?= is_null($productCategory->type)?'':$productType[$productCategory->type]['title'] ?></td>
                                     <td><?= $productCategory->isstock == 'Y' ? YES : NO ?></td>
@@ -77,6 +79,11 @@
                                 ขนาด
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="#product" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                รายการสินค้า
+                            </a>
+                        </li>
                       
 
                     </ul>
@@ -87,6 +94,9 @@
                         </div>
                         <div class="tab-pane fade" id="size" aria-expanded="false">
                             <iframe id="size_iframe" src="<?= SITE_URL . 'sizes' ?>" frameborder="0" scrolling="yes" width="100%" height="600px"> </iframe>
+                        </div>
+                        <div class="tab-pane fade" id="product" aria-expanded="false">
+                            <iframe id="product_iframe" src="<?= SITE_URL . 'product-categories/product' ?>" frameborder="0" scrolling="yes" width="100%" height="600px"> </iframe>
                         </div>
                         
 
@@ -102,6 +112,7 @@
     var design_url = SITE_URL + 'designs/index/';
     var size_url = SITE_URL + 'sizes/index/';
     var weight_url = SITE_URL + 'weights/index/';
+    var product_url = SITE_URL + 'product-categories/product/';
 
     $(document).ready(function () {
 
@@ -110,7 +121,7 @@
             //alert(id);
             $('#design_iframe').attr('src', design_url + id);
             $('#size_iframe').attr('src', size_url + id);
-           // $('#weight_iframe').attr('src', weight_url + id);
+            $('#product_iframe').attr('src', product_url + id);
         });
     });
 

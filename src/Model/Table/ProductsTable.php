@@ -20,7 +20,7 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\InvoiceLinesTable|\Cake\ORM\Association\HasMany $InvoiceLines
  * @property \App\Model\Table\OrderLinesTable|\Cake\ORM\Association\HasMany $OrderLines
  * @property \App\Model\Table\PawnLinesTable|\Cake\ORM\Association\HasMany $PawnLines
- * @property |\Cake\ORM\Association\HasMany $PaymentLines
+ * @property \App\Model\Table\PaymentLinesTable|\Cake\ORM\Association\HasMany $PaymentLines
  * @property \App\Model\Table\ProductImagesTable|\Cake\ORM\Association\HasMany $ProductImages
  * @property \App\Model\Table\WhProductsTable|\Cake\ORM\Association\HasMany $WhProducts
  *
@@ -97,7 +97,7 @@ class ProductsTable extends Table
             'foreignKey' => 'product_id'
         ]);
         
-         $this->belongsTo('UserCreated', [
+        $this->belongsTo('UserCreated', [
             'className' => 'Users',
             'foreignKey' => 'createdby',
             'propertyName' => 'UserCreated'
@@ -124,7 +124,7 @@ class ProductsTable extends Table
 
         $validator
             ->scalar('name')
-            ->maxLength('name', 50)
+            ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->notEmpty('name');
 
@@ -143,6 +143,11 @@ class ProductsTable extends Table
             ->decimal('cost')
             ->requirePresence('cost', 'create')
             ->notEmpty('cost');
+
+        $validator
+            ->scalar('cost2')
+            ->maxLength('cost2', 50)
+            ->allowEmpty('cost2');
 
         $validator
             ->decimal('actual_price')
@@ -178,6 +183,10 @@ class ProductsTable extends Table
         $validator
             ->decimal('manual_weight')
             ->allowEmpty('manual_weight');
+
+        $validator
+            ->scalar('isprinted')
+            ->allowEmpty('isprinted');
 
         return $validator;
     }

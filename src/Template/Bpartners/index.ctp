@@ -18,7 +18,7 @@
                         <th scope="col"style="text-align: center">สาขา</th>
                         <th scope="col"style="text-align: center">เบอร์โทร</th>
                         <th>ที่อยู่</th>
-                        <th>เพิ่มวันที่</th>
+                       
                         <th width="100px">สถานะ</th>
                     </tr>
                 </thead>
@@ -35,7 +35,6 @@
                                 <small><?=h($address->address_line.' '.$address->subdistrict.' '.$address->district.' '.$address->province)?></small>
                                 <?php } ?>
                             </td>
-                            <td><?= h($address->created->i18nFormat(DATE_TIME_FORMATE, null, TH_DATE)) ?></td>
                             <td><?= $bpartner->isactive == 'Y' ? ACTIVE : INACTIVE ?></td>
                         </tr>
                     <?php endforeach; ?>

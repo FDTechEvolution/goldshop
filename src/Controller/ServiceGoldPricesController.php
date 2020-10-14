@@ -26,13 +26,16 @@ class ServiceGoldPricesController extends AppController {
         $this->Costs = TableRegistry::get('Costs');
     }
 
-    public function dailyPrice() {
-
+    public function dailyPrice($branchId = null) {
+        if(is_null($branchId)){
+            $branchId = $this->Core->getLocalBranchId();
+        }
         $todayDate = new Date();
         $q = $this->GoldPrices->find()
-                ->contain(['GoldPriceLines' => ['SdWeights', 'sort' => ['SdWeights.seq' => 'ASC']]])
-                ->where(['pricedate' => $todayDate, 'branch_id' => $this->Core->getLocalBranchId()])
+                ->contain(['GoldPriceLines' => ['SdWeights'=>['Weights'], 'sort' => ['SdWeights.seq' => 'ASC']]])
+                ->where(['branch_id' => $branchId])
                 ->order(['created' => 'DESC']);
+        
         $goldPrice = $q->first();
         $this->log($goldPrice,'debug');
         $data = [];
@@ -44,7 +47,13 @@ class ServiceGoldPricesController extends AppController {
                 if ($line->sd_weight->isdisplay == 'N') {
                     continue;
                 }
-                array_push($price, ['weight' => $line->sd_weight->name, 'sales' => $line->sales_price, 'purchase' => $line->purchase_price]);
+                
+                $weight_g = 0;
+                if(sizeof($line->sd_weight->weights)>0){
+                    $weight_g = $line->sd_weight->weights[0]->value;
+                }
+                
+                array_push($price, ['weight' => $line->sd_weight->name,'weight_g'=>$weight_g, 'sales' => $line->sales_price, 'purchase' => $line->purchase_price]);
                 //array_push($purchase, ['weight' => $line->sd_weight->name, 'price' => $line->purchase_price]);
             }
             $data['price'] = $price;

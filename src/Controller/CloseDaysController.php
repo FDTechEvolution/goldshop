@@ -7,6 +7,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Date;
 use Cake\I18n\Number;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * CloseDays Controller
@@ -19,10 +20,15 @@ class CloseDaysController extends AppController {
 
     public $Payments = null;
     public $CloseDayLines = null;
+    public $Connection = null;
 
     public function beforeFilter(Event $event) {
+        parent::beforeFilter($event);
         $this->Payments = TableRegistry::get('Payments');
         $this->CloseDayLines = TableRegistry::get('CloseDayLines');
+
+        $this->loadComponent('ReadSqlFiles');
+        $this->Connection = ConnectionManager::get('default');
     }
 
     /**
@@ -121,58 +127,39 @@ class CloseDaysController extends AppController {
                 $this->Flash->error(__('ไม่สามารถบันทึกได้'));
             }
 
-            $this->sendCloseDayToLineMsg($closeDay->id);
+            //$this->sendCloseDayToLineMsg($closeDay->id);
+            
             return $this->redirect(['action' => 'index']);
         } else {
-            $branchId = $this->Core->getLocalBranchId();
-            $todayDate = new Date();
-            $q = $this->CloseDays->find()
-                    ->contain(['UserModified'])
-                    ->where(['CloseDays.branch_id' => $branchId])
-                    ->order(['CloseDays.close_date' => 'DESC']);
-            $closeDays = $q->toArray();
-            $closeDayFirst = $q->first();
-            
-            //allow to close
-            $q = $this->CloseDays->find()
-                    ->where(['CloseDays.status'=>'DR'])
-                    ->order(['CloseDays.close_date'=>'ASC'])
-                    ->limit(1);
-            $allowToCloseDay = $q->first();
 
-            if (sizeof($closeDays) == 0 || (!is_null($closeDayFirst) && (strtotime($closeDayFirst) < strtotime($todayDate) ))) {
-                $wheres = ['Payments.branch_id' => $branchId];
-                if (!is_null($closeDayFirst)) {
-                    array_push($wheres, ['paymentdate > ' => $closeDayFirst->close_date]);
+            $sql = $this->ReadSqlFiles->read('close_day_list_null.sql');
+            $result = $this->Connection->execute($sql, [])->fetchAll('assoc');
+
+            foreach ($result as $item) {
+                $closeDay = $this->CloseDays->newEntity();
+                $closeDay->close_date = $item['paymentdate'];
+                $closeDay->actual_amt = 0;
+                $closeDay->actual_manual_amt = 0;
+
+                $closeDay->status = 'DR';
+                $closeDay->branch_id = $item['branch_id'];
+
+                if (!$this->CloseDays->save($closeDay)) {
+                    //$this->log();
                 }
-                $q = $this->Payments->find()
-                        ->where($wheres)
-                        ->group(['paymentdate'])
-                        ->order(['paymentdate' => 'ASC']);
-                $paymentDates = $q->toArray();
-
-                foreach ($paymentDates as $item) {
-                    $closeDay = $this->CloseDays->newEntity();
-                    $closeDay->close_date = $item->paymentdate;
-                    $closeDay->actual_amt = 0;
-                    $closeDay->actual_manual_amt = 0;
-
-                    $closeDay->status = 'DR';
-                    $closeDay->branch_id = $branchId;
-
-                    if (!$this->CloseDays->save($closeDay)) {
-                        //$this->log();
-                    }
-                }
-
-                $q = $this->CloseDays->find()
-                        ->contain(['UserModified'])
-                        ->where(['CloseDays.branch_id' => $branchId])
-                        ->order(['CloseDays.close_date' => 'DESC']);
-                $closeDays = $q->toArray();
             }
+
+            $branchId = $this->Core->getLocalBranchId();
             $branchName = $this->Core->getLocalBranchName();
-            $this->set(compact('closeDays', 'branchName','allowToCloseDay'));
+            
+            $closeDays = $this->CloseDays->find()
+                    ->where(['branch_id'=>$branchId])
+                    ->order(['close_date'=>'DESC'])
+                    ->limit(30)
+                    ->toArray();
+            
+            
+            $this->set(compact('closeDays', 'branchName', 'allowToCloseDay'));
         }
     }
 
@@ -261,7 +248,7 @@ class CloseDaysController extends AppController {
         $str = 'ปิดบัญชีวันที่ ' . $closeDay->close_date->i18nFormat(DATE_FORMATE, null, TH_DATE) . ' สาขา' . $closeDay->branch->name;
         $paymentMethod = '';
         foreach ($closeDay->close_day_lines as $index => $line) {
-            if ($paymentMethod !=(is_null($line->payment_method) ? '' : $line->payment_method) && $index != 1) {
+            if ($paymentMethod != (is_null($line->payment_method) ? '' : $line->payment_method) && $index != 1) {
                 $str = $str . chr(10);
             }
             $str = $str . chr(10) . $line->description . ' ' . (Number::format($line->debit_amt + $line->credit_amt));

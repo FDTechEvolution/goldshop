@@ -20,7 +20,7 @@
                         <th scope="col">ชื่อ - นามสกุล</th>
                         <th>สาขา</th>
                         <th>โทร</th>
-                        <th scope="col">E-mail</th>
+                        <th scope="col">Username</th>
                         <th scope="col">ประเภทสมาชิก</th>
                         <th scope="col">ตำแหน่ง</th>
                         <th scope="col"style="text-align: center">สถานะ</th>
@@ -37,7 +37,7 @@
                             <td><?= h($user->firstname . "    " . $user->lastname) ?></td>
                             <td><?= h($user->has('branch') ? $user->branch->name : '-') ?></td>
                             <td><?= h($user->mobileno) ?></td>
-                            <td><?= h($user->email) ?></td>
+                            <td><?= h($user->username) ?></td>
                             <td><?= $user->has('role') ? $user->role->name : '-' ?></td>
                             <td><?= h($user->position) ?></td>
                             <td><?= $user->isactive == 'Y' ? ACTIVE : INACTIVE ?></td>

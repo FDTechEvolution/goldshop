@@ -15,6 +15,10 @@
                     <?= $this->Form->control('name', ['class' => 'form-control', 'label' => false]) ?>
                 </div>
                 <div class="form-group col-md-2">
+                    <label class="col-form-label">ชื่อย่อ(สำหรับ QRCode)</label>
+                    <?= $this->Form->control('label', ['class' => 'form-control', 'label' => false]) ?>
+                </div>
+                <div class="form-group col-md-2">
                     <label class="col-form-label">ภาพลาย <?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('img', ['id'=>'imgInp','type' => 'file', 'class' => 'form-control', 'label' => false]) ?>
                 </div>
@@ -22,7 +26,7 @@
                    
                    <img id="blah" src="<?=SITE_URL.$design->image->path?>" alt="your image" class="thumb-image" height="100" width="100" />
                 </div>
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-2" style="display:none;">
                     <label class="col-form-label">เปิดให้ใช้งาน</label>
                     <div class="checkbox">
                         <?= $this->Form->checkbox('isactive', ['hiddenField' => 'N', 'id' => 'isactive', 'value' => 'Y']) ?>

@@ -81,5 +81,14 @@ class GoodsTransactionComponent extends Component {
             }
         }
     }
+    
+    public function getLineSeq($goods_trnasaction_id) {
+        $this->GoodsLines = TableRegistry::get('GoodsLines');
+        $q = $this->GoodsLines->find()
+                ->where(['GoodsLines.goods_transaction_id' => $goods_trnasaction_id]);
+        $seq = $q->count();
+
+        return $seq + 1;
+    }
 
 }

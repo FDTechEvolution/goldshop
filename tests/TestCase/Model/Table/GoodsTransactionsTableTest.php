@@ -50,6 +50,7 @@ class GoodsTransactionsTableTest extends TestCase
         'app.costs',
         'app.gold_price_lines',
         'app.gold_prices',
+        'app.master_prices',
         'app.goods_lines',
         'app.invoice_lines',
         'app.invoices',
@@ -63,20 +64,19 @@ class GoodsTransactionsTableTest extends TestCase
         'app.pawns',
         'app.pawn_lines',
         'app.pawn_transactions',
-        'app.seller',
         'app.storage_bins',
         'app.wh_products',
         'app.serial_numbers',
         'app.payment_method_lines',
+        'app.seller',
         'app.income_types',
         'app.saving_accounts',
         'app.saving_transactions',
         'app.glitems',
         'app.invoice_exchange',
+        'app.bank_account_transactions',
         'app.branchs',
-        'app.sequent_numbers',
-        'app.to_warehouse',
-        'app.from_warehouse'
+        'app.sequent_numbers'
     ];
 
     /**

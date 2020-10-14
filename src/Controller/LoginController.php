@@ -41,13 +41,7 @@ class LoginController extends AppController {
     }
 
     public function index() {
-        $this->viewBuilder()->layout('login');
-
-        $urlName = env('SERVER_NAME');
-        //if ($_SERVER['REQUEST_SCHEME'] == 'http' || (!$this->startsWith($urlName, 'www') && $urlName != '127.0.0.1')) {
-            //return $this->redirect('https://' . env('SERVER_NAME') . $this->request->here);
-            //return $this->redirect(SITE_URL);
-        //}
+        $this->viewBuilder()->layout('blank_v1');
 
         //Check if already login
         if (!(is_null($this->request->session()->read('Auth.User')))) {
@@ -56,19 +50,17 @@ class LoginController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $data = $this->request->getData();
+            $loginData = $this->request->getData();
+
+            $screen=[
+                'width'=>$loginData['screen_width'],
+                'height'=>$loginData['screen_height'],
+                'is_mobile'=>$loginData['is_mobile']
+            ];
+            //Set screen session
+            $this->request->session()->write('screen.', $screen);
+
             $user = $this->Auth->identify();
-
-            //Check when already login in other client
-            $q = $this->SystemUsages->find()
-                    ->where(['SystemUsages.user_id' => $user['id'], 'SystemUsages.isactive' => 'Y']);
-            $loginDataCount = $q->count();
-            if ($loginDataCount > 0) {
-                //$this->Flash->error('Account นี้กำลังใช้งานอยู่ไม่สามารถใช้งานซ้ำได้');
-                //return $this->redirect(['controller'=>'logout']);
-            }
-            //end
-
 
             if ($user) {
                 $user = $this->Users->get($user['id'], ['contain' => ['Roles']]);
@@ -86,14 +78,24 @@ class LoginController extends AppController {
 
                 $this->request->session()->write('rolePermissions', $rolePermissions);
 
-                $this->Flash->success(__('Login สำเร็จ'));
+                //$this->Flash->success(__('Login สำเร็จ'));
 
-                $this->Core->verifyBranch($user);
+                $golbal = $this->Core->verifyBranch($user);
                 //$this->Core->getSaveClientDetail($user->id);
                 //return $this->redirect(DEFAULT_HOME_URL);
-                return $this->redirect(['action' => 'verifyclient', $user->id]);
+                //return $this->redirect(['action' => 'verifyclient', $user->id]);
+
+                $this->Cookie->write('Global',$golbal);
+                $this->Cookie->write('user', $user);
+                $this->Cookie->write('rolePermissions', $rolePermissions);
+                $this->Cookie->write('remember_me_cookie',true);
+                $this->Cookie->write('screen',$screen);
+                //$this->Cookie->write('remember_me_cookie', $this->request->data['User'], true, '1 weeks');
+
+
+                return $this->redirect(DEFAULT_HOME_URL);
             } else {
-                $this->Flash->error(__('Invalid username or password, try again'));
+                $this->Flash->defaultError(__('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง'));
                 return $this->redirect(['controller' => 'login']);
             }
         }
@@ -102,7 +104,7 @@ class LoginController extends AppController {
     public function verifyclient($user_id = null) {
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-            
+
             $systemUse = $this->SystemUsages->newEntity();
             $systemUse->user_id = $user_id;
             $systemUse->ipaddress = $data['ip'];
@@ -144,10 +146,6 @@ class LoginController extends AppController {
         ];
         return $rolePermissions;
     }
-
-    
-
-    
 
     private function startsWith($haystack, $needle) {
         $length = strlen($needle);

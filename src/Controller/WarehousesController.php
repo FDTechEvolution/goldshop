@@ -22,22 +22,27 @@ class WarehousesController extends AppController {
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
+
+
+        if (!$this->Authen->authen()) {
+            return $this->redirect(USERPERMISSION);
+        }
+
         $this->Branches = TableRegistry::get('Branches');
         $this->Orgs = TableRegistry::get('Orgs');
         $this->Products = TableRegistry::get('Products');
         $this->WhProducts = TableRegistry::get('WhProducts');
-        if (!$this->Authen->authen()) {
-            return $this->redirect(USERPERMISSION);
-        }
+
+        $this->loadComponent('Warehouse');
     }
 
     public function index() {
 
         $branch_id = $this->Core->getLocalBranchId();
-        $where = ['Warehouses.org_id'=>$this->Core->getLocalOrgId()];
+        $where = ['Warehouses.org_id' => $this->Core->getLocalOrgId()];
         $isMultipleBranch = $this->Core->isMultipleBranch();
 
-        if ($branch_id != '0' && $isMultipleBranch==false) {
+        if ($branch_id != '0' && $isMultipleBranch == false) {
             array_push($where, ['Warehouses.branch_id' => $branch_id]);
         }
         $q = $this->Warehouses->find()
@@ -46,8 +51,8 @@ class WarehousesController extends AppController {
                 ->order(['Branches.name' => 'ASC']);
 
         $warehouses = $q->toArray();
-        //$this->log($warehouses,'debug');
-        $this->set(compact('warehouses'));
+        $types = $this->Warehouse->getTypeList();
+        $this->set(compact('warehouses','types'));
     }
 
     /**
@@ -96,6 +101,10 @@ class WarehousesController extends AppController {
             $warehouse->org_id = $branch['org_id'];
             $warehouse->createdby = $this->Authen->getAuthenUserId();
             $warehouse->isactive = 'Y';
+            
+            $this->loadComponent('Warehouse');
+            $warehouseType = $this->Warehouse->getTypeList();
+            $warehouse->name = $warehouseType[$data['type']];
             if ($this->Warehouses->save($warehouse)) {
                 $this->Flash->success(__('The warehouse has been saved.'));
 
@@ -103,10 +112,12 @@ class WarehousesController extends AppController {
             }
             $this->Flash->error(__('The warehouse could not be saved. Please, try again.'));
         }
-        $orgs = $this->Warehouses->Orgs->find('list', ['limit' => 200]);
+        
+        $types = $this->Warehouse->getTypeList();
+        //$orgs = $this->Warehouses->Orgs->find('list', ['limit' => 200]);
         $branches = $this->Warehouses->Branches->find('list', ['limit' => 200]);
         //debug($branches);
-        $this->set(compact('warehouse', 'orgs', 'branches'));
+        $this->set(compact('warehouse', 'branches','types'));
     }
 
     /**
@@ -120,7 +131,7 @@ class WarehousesController extends AppController {
         $warehouse = $this->Warehouses->get($id, [
             'contain' => []
         ]);
-        if($warehouse->islock=='Y'){
+        if ($warehouse->islock == 'Y') {
             $this->Flash->error(__('ไม่อนุญาตให้แก้ไข'));
             return $this->redirect(['action' => 'index']);
         }
@@ -140,9 +151,9 @@ class WarehousesController extends AppController {
             }
             $this->Flash->error(__('The warehouse could not be saved. Please, try again.'));
         }
-        $orgs = $this->Warehouses->Orgs->find('list', ['limit' => 200]);
+        $types = $this->Warehouse->getTypeList();
         $branches = $this->Warehouses->Branches->find('list', ['limit' => 200]);
-        $this->set(compact('warehouse', 'orgs', 'branches'));
+        $this->set(compact('warehouse', 'types', 'branches'));
     }
 
     /**
@@ -155,21 +166,21 @@ class WarehousesController extends AppController {
     public function delete($id = null) {
         $this->request->allowMethod(['post', 'delete']);
         $warehouse = $this->Warehouses->get($id);
-        
+
         $_count = 0;
-        $q = $this->Warehouses->InvoiceLines->find()->where(['InvoiceLines.warehouse_id'=>$warehouse->id]);
-        $_count = sizeof($q->toArray())+$_count;
-        
-        $q = $this->Warehouses->WhProducts->find()->where(['WhProducts.warehouse_id'=>$warehouse->id]);
-        $_count = sizeof($q->toArray())+$_count;
-        
-        
-        if($_count > 0){
+        $q = $this->Warehouses->InvoiceLines->find()->where(['InvoiceLines.warehouse_id' => $warehouse->id]);
+        $_count = sizeof($q->toArray()) + $_count;
+
+        $q = $this->Warehouses->WhProducts->find()->where(['WhProducts.warehouse_id' => $warehouse->id]);
+        $_count = sizeof($q->toArray()) + $_count;
+
+
+        if ($_count > 0) {
             $this->Flash->error(__('ไม่สามารถลบได้เนื่องจากมีการใช้งานในธุรกรรมอื่น ๆ'));
             return $this->redirect(['action' => 'index']);
         }
 
-        
+
         if ($this->Warehouses->delete($warehouse)) {
             $this->Flash->success(__('The warehouse has been deleted.'));
         } else {

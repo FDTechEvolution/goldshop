@@ -31,6 +31,8 @@ class ProductCategoriesFixture extends TestFixture
         'type' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'isstock' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'Y', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'unittype' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'label' => ['type' => 'string', 'length' => 45, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'runningno' => ['type' => 'string', 'length' => 45, 'null' => true, 'default' => 'aaaa', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -48,20 +50,22 @@ class ProductCategoriesFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 'c1cf6b73-0f9b-484d-ab01-1160491096bf',
+            'id' => 'af34f276-0100-40e7-a77f-5121a5e893bd',
             'name' => 'Lorem ipsum dolor sit amet',
             'isactive' => 'Lorem ipsum dolor sit amet',
-            'org_id' => '0c60c1f8-b368-4952-98c2-c8555ca5a109',
+            'org_id' => '8f373a90-b1b0-4571-85cd-ec896d870e07',
             'description' => 'Lorem ipsum dolor sit amet',
-            'created' => '2018-06-05 19:25:01',
-            'createdby' => '7d78169e-8c5b-4fd7-8b2f-78b81daf6fb0',
-            'modified' => '2018-06-05 19:25:01',
-            'modifiedby' => '3fe2d151-8384-4deb-84ce-e95de7e2bf50',
+            'created' => '2020-02-06 20:54:47',
+            'createdby' => '0df9da59-3d34-4abd-b02a-5562522a4437',
+            'modified' => '2020-02-06 20:54:47',
+            'modifiedby' => '632bc791-1876-4e65-b66d-598c5047fb9f',
             'code' => 'Lor',
             'isdefault' => 'Lorem ipsum dolor sit amet',
             'type' => 'Lorem ipsum dolor sit amet',
             'isstock' => 'Lorem ipsum dolor sit amet',
-            'unittype' => 'Lorem ipsum dolor sit amet'
+            'unittype' => 'Lorem ipsum dolor sit amet',
+            'label' => 'Lorem ipsum dolor sit amet',
+            'runningno' => 'Lorem ipsum dolor sit amet'
         ],
     ];
 }

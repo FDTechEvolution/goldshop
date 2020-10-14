@@ -1,6 +1,7 @@
 <?= $this->element('Lib/data_table') ?>
 <div class="row">
     <div class="col-12">
+  
         <div class="card-box table-responsive">
             <h3 class="m-t-0 gold-title">รายชื่อธนาคาร</h3>
             <p class="text-muted font-13 m-b-30">

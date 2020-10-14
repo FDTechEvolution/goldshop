@@ -27,6 +27,8 @@ class GoodsLinesController extends AppController {
     }
 
     public $WhProducts = null;
+    public $Orders = null;
+    public $OrderLines = null;
 
     /**
      * Index method
@@ -76,6 +78,19 @@ class GoodsLinesController extends AppController {
 
         $this->set(compact('goodsLine', 'products', 'goodsLines', 'productJsonList'));
     }
+    
+    public function saveGoodsLine(){
+        $orderId = $this->request->getQuery('order_id');
+        $goodsLineId = $this->request->getQuery('goods_line_id');
+        
+        $this->viewBuilder()->layout('json');
+        $goodsLine = $this->GoodsLines->find()->where(['id'=>$goodsLineId])->first();
+        $goodsLine->order_id = $orderId;
+        $this->GoodsLines->save($goodsLine);
+        
+        $json = json_encode([], JSON_UNESCAPED_UNICODE);
+        $this->set(compact('json'));
+    }
 
     public function import($goods_transaction_id = null) {
 
@@ -86,14 +101,14 @@ class GoodsLinesController extends AppController {
             if ($this->saveLine($this->request->getData(), $goods_transaction_id)) {
                 $this->Flash->success(__('The goods line has been saved.'));
 
-                return $this->redirect(['action' => 'import', $goods_transaction_id,'warehouse_id'=>$warehouse_id]);
+                return $this->redirect(['action' => 'import', $goods_transaction_id, 'warehouse_id' => $warehouse_id]);
             }
 
             $this->Flash->error(__('ไม่สามารถบันทึกได้'));
         }
 
         $q = $this->GoodsLines->find()
-                ->contain(['Products'])
+                ->contain(['Products' => ['Weights'], 'GoodsTransactions'])
                 ->where(['GoodsLines.goods_transaction_id' => $goods_transaction_id])
                 ->order(['GoodsLines.seq' => 'ASC']);
         $goodsLines = $q->toArray();
@@ -114,10 +129,26 @@ class GoodsLinesController extends AppController {
             }
         }
 
-        $productJsonList = $this->Product->getProductJsonList();
+        $this->OrderLines = TableRegistry::get('OrderLines');
+        $goodsTransaction = $this->GoodsLines->GoodsTransactions->get($goods_transaction_id);
+        $bpartnerId = $goodsTransaction->bpartner_id;
+        $orderLines = $this->OrderLines->find()
+                ->contain(['Orders'=>['Bpartners'],'Products'])
+                ->where(['OrderLines.bpartner_id' => $bpartnerId])
+              
+                ->toArray();
+        $orders = [];
+        foreach ($orderLines as $index=>$line){
+            if($line->order != 'CO' && $line->order != 'VO' ){
+                $orders[$line['order_id']] = sprintf('%s-%s',$line->order->docno,$line->order->bpartner->name);
+            }
+            
+        }
+
+        $productJsonList = $this->Product->getProductLabelCodeJsonList();
 
 
-        $this->set(compact('goodsLine', 'products', 'goodsLines', 'productJsonList'));
+        $this->set(compact('goodsLine', 'products', 'goodsLines', 'productJsonList', 'orders'));
     }
 
     private function checkTotalBalance($warehouse_id = null, $product_id = null, $amount = 0) {
@@ -218,16 +249,18 @@ class GoodsLinesController extends AppController {
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+    
     public function delete($id = null) {
         $this->request->allowMethod(['post', 'delete']);
         $goodsLine = $this->GoodsLines->get($id);
+        $goods_transaction_id = $goodsLine->goods_transaction_id;
         if ($this->GoodsLines->delete($goodsLine)) {
             $this->Flash->success(__('The goods line has been deleted.'));
         } else {
             $this->Flash->error(__('The goods line could not be deleted. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['action' => 'import', $goods_transaction_id]);
     }
 
 }

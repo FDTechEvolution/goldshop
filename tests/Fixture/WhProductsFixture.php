@@ -27,6 +27,7 @@ class WhProductsFixture extends TestFixture
         'description' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'storage_bin_id' => ['type' => 'uuid', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'warehouse_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'inorderqty' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => '0', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -38,22 +39,27 @@ class WhProductsFixture extends TestFixture
     // @codingStandardsIgnoreEnd
 
     /**
-     * Records
+     * Init method
      *
-     * @var array
+     * @return void
      */
-    public $records = [
-        [
-            'id' => '2f16b5c5-045d-4d89-a8a0-46cac7999e51',
-            'product_id' => '0703a4aa-7044-4b66-9272-bcecb1b9ab29',
-            'balance_amt' => 1,
-            'created' => '2018-03-12 13:46:30',
-            'createdby' => '073c79d4-8cc7-4cbf-9b9a-43331584e607',
-            'modified' => '2018-03-12 13:46:30',
-            'modifiedby' => '78f66a3e-ed98-426c-b74d-587f66d36e2a',
-            'description' => 'Lorem ipsum dolor sit amet',
-            'storage_bin_id' => 'a433a6ee-37c9-485e-b64b-df9f227a5c56',
-            'warehouse_id' => '433869e6-4547-4b85-b0e7-6e30713072fd'
-        ],
-    ];
+    public function init()
+    {
+        $this->records = [
+            [
+                'id' => 'e69eb00d-c27c-45f3-ad00-5157e144a73c',
+                'product_id' => '1f4cdbf3-e3ba-409f-8fd4-3e25b42f0e98',
+                'balance_amt' => 1,
+                'created' => '2020-10-05 16:26:57',
+                'createdby' => 'e72c0231-0a26-4609-8563-d9f3e800aff4',
+                'modified' => '2020-10-05 16:26:57',
+                'modifiedby' => 'e7b9a909-1843-4b2a-8e50-3ab8be9bdb8b',
+                'description' => 'Lorem ipsum dolor sit amet',
+                'storage_bin_id' => '7f85174f-fdee-44c5-bbe5-7472aa5ac369',
+                'warehouse_id' => '853bec7f-fe9f-4082-84bb-dc4e64e72fcf',
+                'inorderqty' => 1
+            ],
+        ];
+        parent::init();
+    }
 }

@@ -22,13 +22,13 @@ class ServiceSelectorController extends AppController {
 
         $q = $this->Users->find()
                 ->select(['id', 'firstname', 'lastname'])
-                ->where(['OR' => [['Users.branch_id' => $this->Core->getLocalBranchId()], ['Users.branch_id' => '0']], 'Users.id !=' => '0'])
+                ->where(['OR' => [['Users.branch_id' => $this->Core->getLocalBranchId()], ['Users.branch_id' => '0']], 'Users.id !=' => '0','role_id'=>'1568c033-3819-46ba-9d4c-6e5132115aa4'])
                 ->order(['Users.firstname' => 'ASC']);
         $sellers = $q->toArray();
 
         $list = [];
         foreach ($sellers as $item) {
-            $fullName = $item['firstname'] . '  ' . $item['lastname'];
+            $fullName = $item['firstname'];
             $item['full_name'] = $fullName;
             array_push($list, $item);
         }

@@ -22,7 +22,7 @@ class OrderProcessComponent extends Component {
     public $OrderLines = null;
     public $SalesDocumentCode = 'SO';
 
-    public function createDraft($docdate = null, $duedate = null, $issale = 'Y', $bpartner_id = null, $seller = null) {
+    public function createDraft($docdate = null, $duedate = null, $issale = 'Y', $bpartner_id = null, $seller = null,$docno = '_temp') {
         $this->Orders = TableRegistry::get('Orders');
 
         $order = $this->Orders->newEntity();
@@ -34,7 +34,7 @@ class OrderProcessComponent extends Component {
         $order->duedate = $this->Util->convertDate($duedate);
 
         //$docNo = $this->DocSequent->getLatestAndSave($this->SalesDocumentCode);
-        $docNo = '_temp';
+        $docNo = $docno;
         $order->docno = $docNo;
         $order->docstatus = 'DR';
         $order->bpartner_id = $bpartner_id;
@@ -89,8 +89,8 @@ class OrderProcessComponent extends Component {
         $order = $this->Orders->get($order_id);
 
         $order->isactive = 'Y';
-        $docNo = $this->DocSequent->getLatestAndSave($this->SalesDocumentCode);
-        $order->docno = $docNo;
+        //$docNo = $this->DocSequent->getLatestAndSave($this->SalesDocumentCode);
+        //$order->docno = $docNo;
         $order->docstatus = 'OD';
         $order->isprocessed = 'Y';
         $order->netamt = $totalAmount;

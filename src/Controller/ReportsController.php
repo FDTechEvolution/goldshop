@@ -8,6 +8,7 @@ use Cake\ORM\TableRegistry;
 use Cake\I18n\Time;
 use Cake\Datasource\ConnectionManager;
 use Cake\I18n\Date;
+
 /**
  * Login Controller
  *
@@ -58,6 +59,7 @@ class ReportsController extends AppController {
         }
 
         $this->loadComponent('Accounting');
+        $this->loadComponent('ReadSqlFiles');
 
         $this->Connection = ConnectionManager::get('default');
     }
@@ -131,7 +133,7 @@ class ReportsController extends AppController {
 
             $q = $this->CloseDays->find()
                     ->contain(['CloseDayLines'])
-                    ->where(['CloseDays.close_date >='=>$newStartDate,'CloseDays.close_date <='=>$newEndDate,'CloseDays.status'=>'CO'])
+                    ->where(['CloseDays.close_date >=' => $newStartDate, 'CloseDays.close_date <=' => $newEndDate, 'CloseDays.status' => 'CO'])
                     ->order(['CloseDays.close_date' => 'ASC']);
             $incomes = $q->toArray();
             //$this->log($incomes,'debug');
@@ -164,7 +166,7 @@ class ReportsController extends AppController {
                         . 'join bpartners on pawns.bpartner_id = bpartners.id '
                         . 'join users on pawns.seller = users.id '
                         . 'where product_categories.type = :type and pawns.branch_id = :branch_id '
-                        . 'and pawns.status = "CO" order by pawns.docno ASC,pawns.created ASC';
+                        . 'and pawns.status = "CO" order by pawns.docno DESC';
             } else {
                 $reportSubTitle = 'รายงานรับจำนำ';
 
@@ -495,7 +497,7 @@ class ReportsController extends AppController {
             $this->WhProducts = TableRegistry::get('WhProducts');
 
             $postData = $this->request->getData();
-            $this->log($postData, 'debug');
+            //$this->log($postData, 'debug');
             $branchId = $postData['branch_id'];
             $warehouse_id = $postData['warehouse_id'];
 
@@ -517,6 +519,48 @@ class ReportsController extends AppController {
         $branches = $this->Branches->find('list', ['conditions' => ['id !=' => '0']]);
         $warehouses = $this->Warehouses->find('list', []);
         $this->set(compact('branches', 'warehouses', 'warehouseArr', 'branch', 'date'));
+    }
+
+    public function warehousev2() {
+        $this->Warehouses = TableRegistry::get('Warehouses');
+        $this->loadComponent('WarehouseReport');
+        $warehouseArr = null;
+        $branch = null;
+        $date = null;
+        $datas = [];
+        
+        $endDate = new Date();
+        $startDate = new Date();
+        
+        $startDate->modify('-7 days');
+        $startDate = $startDate->format('Y-m-d');
+        $endDate = $endDate->format('Y-m-d');
+
+
+
+        if ($this->request->is('post')) {
+
+            $postData = $this->request->getData();
+            //$this->log($postData, 'debug');
+            //$branchId = $postData['branch_id'];
+            $warehouse_id = $postData['warehouse_id'];
+            
+            $startDate = $postData['start_date'];
+            $endDate = $postData['end_date'];
+            $startDate = $this->Util->convertDate($startDate);
+            $endDate = $this->Util->convertDate($endDate);
+            
+
+            $datas = $this->WarehouseReport->getData($warehouse_id,$startDate,$endDate);
+        }
+
+
+
+
+
+        $branches = $this->Branches->find('list', ['conditions' => ['id !=' => '0']]);
+        $warehouses = $this->Core->getWarehouseList(['type' => 'SALES']);
+        $this->set(compact('branches', 'warehouses', 'warehouseArr', 'branch', 'date', 'datas'));
     }
 
     private function getStatData() {
@@ -547,7 +591,7 @@ class ReportsController extends AppController {
             'Payments.paymentdate <=' => $end_of_the_week,
             'Payments.isreceipt' => 'Y',
             'Payments.docstatus' => 'CO',
-            //'Payments.branch_id' => $this->Core->getLocalBranchId()
+                //'Payments.branch_id' => $this->Core->getLocalBranchId()
         ]);
         $q->select([
                     'totalamt' => $q->func()->sum('amount'),
@@ -565,7 +609,6 @@ class ReportsController extends AppController {
             //$this->log($salesData,'debug');
         }
         //End Sales payment
-        
         //Get Sales from payment
         $this->Payments = TableRegistry::get('Payments');
         $q = $this->Payments->find()
@@ -574,7 +617,7 @@ class ReportsController extends AppController {
             'Payments.paymentdate <=' => $end_of_the_week,
             'Payments.isreceipt' => 'N',
             'Payments.docstatus' => 'CO',
-            //'Payments.branch_id' => $this->Core->getLocalBranchId()
+                //'Payments.branch_id' => $this->Core->getLocalBranchId()
         ]);
         $q->select([
                     'totalamt' => $q->func()->sum('amount'),

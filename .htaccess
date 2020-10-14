@@ -4,12 +4,14 @@
 #    RequestHeader unset Proxy
 #</IfModule>
 
-<IfModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteRule    ^(\.well-known/.*)$ $1 [L]
-    RewriteRule    ^$    webroot/    [L]
-    RewriteRule    (.*) webroot/$1    [L]
-    
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
+RewriteEngine on
+RewriteRule    ^(\.well-known/.*)$ $1 [L]
+RewriteRule    ^$    webroot/    [L]
+RewriteRule    (.*) webroot/$1    [L]
+
+
+php_value post_max_size 1000M
+php_value upload_max_filesize 2500M
+php_value max_execution_time 6000000
+php_value max_input_time 6000000
+php_value memory_limit 2500M

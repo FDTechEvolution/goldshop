@@ -7,77 +7,85 @@
             </address>
         </div>
     </div>
+
 </div>
-<div class="col-md-12">
-    <button type="button" class="btn btn-outline-success" data-name="customer_type" value="normal">ลูกค้าทั่วไป</button>
-    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#save_customer_modal" data-name="customer_type" value="save" id="add_bp_bt">เพิ่มข้อมูลลูกค้า</button>
-    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#search_customer_modal" data-name="customer_type" value="save" id="search_bp_box_bt">ลูกค้าเก่า</button>
+
+<div class="col-md-12 button-list" style="padding-left: 0px;padding-right: 0px;">
+    <button type="button" class="btn btn-outline-success" data-name="customer_type" value="normal">ลค.ทั่วไป</button>
+    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#save_customer_modal" data-name="customer_type" value="save" id="add_bp_bt">เพิ่มข้อมูล</button>
+    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#search_customer_modal" data-name="customer_type" value="save" id="search_bp_box_bt">ลค.เก่า</button>
     <?= $this->Form->hidden('customer_type', ['value' => 'normal', 'id' => 'customer_type']) ?>
     <?= $this->Form->hidden('bpartner_id', ['id' => 'bpartner_id']) ?>
+
 </div>
 
 
 <div class="col-md-12">
     <div id="save_customer_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-full">
             <div class="modal-content">
-                <div class="modal-header">
 
-                    <h4 class="modal-title text-primary prompt-500">บันทึกข้อมูลลูกค้า</h4>
-                </div>
                 <div class="modal-body">
                     <div class="row">
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="form-group col-md-3">
+                                    <label for="code">คำนำหน้า <?= REQUIRE_FIELD ?></label>
+                                    <?= $this->Form->control('customer.title', ['class' => 'form-control', 'id' => 'title', 'label' => false, 'options' => ['นาย' => 'นาย', 'นาง' => 'นาง', 'นางสาว' => 'นางสาว', 'คุณ' => 'คุณ']]) ?>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="code">ชื่อจริง <?= REQUIRE_FIELD ?></label>
+                                    <?= $this->Form->control('customer.firstname', ['class' => 'form-control', 'id' => 'firstname', 'label' => false]) ?>
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label for="code">นามสกุล <?= REQUIRE_FIELD ?></label>
+                                    <?= $this->Form->control('customer.lastname', ['class' => 'form-control', 'id' => 'lastname', 'label' => false]) ?>
+                                </div>
+                                <div class="col-12" id="box-suggest-bp">
 
-                        <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-dark waves-effect waves-light" id="smartcard-alert">ดึงข้อมูลจากบัตรประชาชน</button>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="code">คำนำหน้า <?= REQUIRE_FIELD ?></label>
-                            <?= $this->Form->control('customer.title', ['class' => 'form-control', 'id' => 'title', 'label' => false, 'options' => ['นาย' => 'นาย', 'นาง' => 'นาง', 'นางสาว' => 'นางสาว', 'คุณ' => 'คุณ']]) ?>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="code">ชื่อจริง <?= REQUIRE_FIELD ?></label>
-                            <?= $this->Form->control('customer.firstname', ['class' => 'form-control', 'id' => 'firstname', 'label' => false]) ?>
-                        </div>
-                        <div class="form-group col-md-5">
-                            <label for="code">นามสกุล <?= REQUIRE_FIELD ?></label>
-                            <?= $this->Form->control('customer.lastname', ['class' => 'form-control', 'id' => 'lastname', 'label' => false]) ?>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="code"  >เลขบัตรประชาชน</label>
-                            <?= $this->Form->control('customer.cardno', ['class' => 'form-control', 'id' => 'cardno', 'label' => false]) ?>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="code" >วัน เดือน ปีเกิด</label>
-                            <?= $this->Form->control('customer.birthday', ['class' => 'form-control', 'id' => 'birthday', 'type' => 'text', 'label' => false, 'data-provide' => 'datepicker', 'data-date-language' => 'th-th', 'autocomplete' => 'off']) ?>
-                        </div>
-                        <div class="form-group col-md-5 ">
-                            <label >โทรศัพท์มือถือ</label>
-                            <?= $this->Form->control('customer.mobile', ['class' => 'form-control', 'label' => false, 'id' => 'mobile']); ?>
-                        </div>
-                        <div class="col-md-12">
-                            <h5 class="title-header text-primary prompt-500">ที่อยู่</h5>
-                        </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="code"  >เลขบัตรประชาชน</label>
+                                    <?= $this->Form->control('customer.cardno', ['class' => 'form-control', 'type' => 'tel', 'id' => 'cardno', 'label' => false]) ?>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="code" >วัน เดือน ปีเกิด</label>
+                                    <?= $this->Form->control('customer.birthday', ['class' => 'form-control', 'id' => 'birthday', 'type' => 'text', 'label' => false, 'data-provide' => 'datepicker', 'data-date-language' => 'th-th', 'autocomplete' => 'off', 'readonly' => 'readonly']) ?>
+                                </div>
+                                <div class="form-group col-md-5 ">
+                                    <label >โทรศัพท์มือถือ</label>
+                                    <?= $this->Form->control('customer.mobile', ['class' => 'form-control', 'label' => false, 'id' => 'mobile', 'type' => 'tel']); ?>
+                                </div>
+                                <div class="col-md-12">
+                                    <h5 class="title-header text-primary prompt-500">ที่อยู่</h5>
+                                </div>
 
-                        <div class="form-group col-md-8">
-                            <label for="address_line">เลขที่/หมู่ที่/ตึก/ห้อง/ซอย/ถนน</label>
-                            <?= $this->Form->control('address.address_line', ['class' => 'form-control', 'id' => 'address_line', 'label' => false]) ?>
+                                <div class="form-group col-md-12">
+                                    <label for="address_line">เลขที่/หมู่ที่/ตึก/ห้อง/ซอย/ถนน</label>
+                                    <?= $this->Form->control('address.address_line', ['class' => 'form-control', 'id' => 'address_line', 'label' => false]) ?>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label for="subdistrict">ตำบล/แขวง</label>
-                            <?= $this->Form->control('address.subdistrict', ['class' => 'form-control', 'id' => 'subdistrict', 'label' => false]) ?>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="district">อำเภอ/เขต</label>
-                            <?= $this->Form->control('address.district', ['class' => 'form-control', 'id' => 'district', 'label' => false]) ?>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="province">จังหวัด</label>
-                            <?= $this->Form->control('address.province', ['class' => 'form-control', 'id' => 'province', 'label' => false]) ?>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="province">รหัสไปรษณีย์</label>
-                            <?= $this->Form->control('address.postalcode', ['class' => 'form-control', 'id' => 'postalcode', 'label' => false]) ?>
+                        <div class="col-4 border-left">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="fileupload btn btn-secondary waves-effect mt-1">
+                                        <span><i class="mdi mdi-cloud-upload mr-1"></i>เลือกรูปถ่าย/บัตรประชาชน</span>
+                                        <input type="file" name="img_file" id="img_file" class="upload"  onchange="readURL(this);" >
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-10 offset-1">
+                                    <div class="d-flex align-items-center">
+                                        <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                        <strong> กำลังวิเคราะห์ข้อมูลจากรูปถ่าย...</strong>
+                                    </div>
+                                    <img id="blah" src="#" alt="your image" class="img-fluid w-100" style="display: none;"/>
+                                    <p id="bbb"></p>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -92,10 +100,9 @@
     </div>
 </div>
 
-
 <div class="col-md-12">
     <div id="search_customer_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-full">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title text-primary prompt-500">ค้นหาข้อมูลลูกค้า</h4>
@@ -135,7 +142,6 @@
     </div>
 </div>
 
-
 <?= $this->Html->script('/jquery.Thailand.js/dependencies/JQL.min.js') ?>
 <?= $this->Html->script('/jquery.Thailand.js/dependencies/typeahead.bundle.js') ?>
 
@@ -143,6 +149,172 @@
 <?= $this->Html->script('/jquery.Thailand.js/src/jquery.Thailand.js') ?>
 
 <script type="text/javascript">
+
+
+    
+
+
+    function detectImg(imgBase64) {
+        //var dataURL = canvas.toDataURL('image/png');
+        //console.log(dataURL);
+        //dataURL = dataURL.replace('data:image/png;base64,', '');
+        var markers = {
+
+            "requests": [
+                {
+                    "image": {
+                        "content": imgBase64
+                    },
+                    "features": [
+                        {
+                            "type": "TEXT_DETECTION"
+                        }
+                    ]
+                }
+            ]
+
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBkxLp24HC_3-QC1pzYJheDv8f9BJKCo4I",
+            // The key needs to match your method's input parameter (case-sensitive).
+            data: JSON.stringify(markers),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+
+                var datas = data['responses'][0]['textAnnotations'];
+
+                //Find title
+                var title = 'คุณ';
+                $(datas).each(function (index, text) {
+                    var t = $.trim(text['description']);
+                    if (t.startsWith('นาย')) {
+                        title = 'นาย';
+                    } else if (t.startsWith('นาง')) {
+                        title = 'นาง';
+                    } else if (t.startsWith('นางสาว')) {
+                        title = 'นางสาว';
+                    }
+                });
+                $('#title').val(title);
+
+                //Fullname
+                var firstname = '';
+                var lastname = '';
+                $(datas).each(function (index, text) {
+                    var t = $.trim(text['description']);
+                    if (t.startsWith('ชื่อ')) {
+                        firstname = $.trim(datas[index + 2]['description']);
+                        lastname = $.trim(datas[index + 3]['description']);
+
+                        $('#firstname').val(firstname);
+                        $('#lastname').val(lastname);
+                    }
+                });
+
+                //ID Card
+                $(datas).each(function (index, text) {
+                    var t = $.trim(text['description']);
+                    if (t.startsWith('เลขประจำ')) {
+                        var cardno = datas[index + 1]['description'] + datas[index + 2]['description'] + datas[index + 3]['description'] + datas[index + 4]['description'] + datas[index + 5]['description'];
+                        $('#cardno').val(cardno);
+                    }
+                });
+
+
+
+
+                $(datas).each(function (index, text) {
+                    var t = $.trim(text['description']);
+                    console.log(index + ": " + t);
+                    if (index == 0) {
+                        $('#t-read').text(t);
+                        var t1 = (t.split("\n"));
+                        $(t1).each(function (i, text1) {
+                            if (text1.startsWith('ที่อยู่')) {
+                                $('#address_line').val(text1);
+                            }
+                        });
+                    }
+
+
+
+                });
+
+            },
+            failure: function (errMsg) {
+                console.log(errMsg);
+            }
+        });
+    }
+
+    function selectBp(id) {
+        $.post(SITE_URL + 'service-bpartners/find-by-id', {id: id}).done(function (data) {
+            var json = JSON.parse(data);
+
+
+            $('#box-suggest-bp').empty();
+
+
+        });
+    }
+
+    function readURL(input) {
+        var imgBase64 = '';
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah').attr('src', e.target.result);
+                $('#blah').show();
+
+                imgBase64 = e.target.result;
+                $('#bbb').text(imgBase64);
+                imgBase64 = imgBase64.replace('data:image/jpeg;base64,', '');
+                console.log(imgBase64);
+
+            };
+
+            reader.readAsDataURL(input.files[0]);
+
+            detectImg(imgBase64);
+        }
+    }
+
+    function checkBpInfo() {
+        var firstname = $('#firstname').val();
+        var lastname = $('#lastname').val();
+        $.post(SITE_URL + 'service-bpartners/find-by-fullname', {firstname: firstname, lastname: lastname}).done(function (data) {
+            var json = JSON.parse(data);
+            //console.log(json);
+            var bpText = '';
+            $.each(json['bpartners'], function (index, bp) {
+                bpText += '<strong class="text-primary">พบข้อมูลลูกค้าที่ใกล้เคียงกัน</strong>';
+                bpText += '<div class="alert alert-danger alert-dismissible bg-white text-danger fade show" role="alert">';
+                bpText += '                    <button type="button" class="close" aria-label="Close">';
+                bpText += '                        เลือก';
+                bpText += '                    </button>';
+                bpText += bp.name + ', ' + bp.address.address_line;
+                bpText += '                </div>';
+
+
+            });
+            $('#box-suggest-bp').empty();
+            $('#box-suggest-bp').append(bpText);
+
+        });
+
+    }
+
+    $(document).ready(function () {
+        $('#lastname').on('keyup', function () {
+            checkBpInfo();
+        });
+
+    });
 
     $(function () {
         jQuery('#birthday').datepicker({
@@ -213,9 +385,10 @@
                 setBpText(jsonData['id'], fullname, address);
 
                 $('#save_customer_modal').modal('hide');
-                
+
             } else {
-                $.Notification.autoHideNotify('error', 'top right', _data, '');
+                //$.Notification.autoHideNotify('error', 'top right', _data, '');
+                notisErr(_data);
 
             }
             $('#page-load-label').text('');

@@ -17,8 +17,15 @@ use Cake\ORM\Entity;
  * @property string $createdby
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $modifiedby
+ * @property float $rate
+ * @property \Cake\I18n\FrozenDate $start_date
+ * @property \Cake\I18n\FrozenDate $end_date
+ * @property float $interestamt
+ * @property string $payment_id
+ * @property float $discount
  *
  * @property \App\Model\Entity\Pawn $pawn
+ * @property \App\Model\Entity\Payment $payment
  */
 class PawnTransaction extends Entity
 {
@@ -43,6 +50,13 @@ class PawnTransaction extends Entity
         'createdby' => true,
         'modified' => true,
         'modifiedby' => true,
-        'pawn' => true
+        'rate' => true,
+        'start_date' => true,
+        'end_date' => true,
+        'interestamt' => true,
+        'payment_id' => true,
+        'discount' => true,
+        'pawn' => true,
+        'payment' => true
     ];
 }

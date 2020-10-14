@@ -30,6 +30,8 @@ require __DIR__ . '/constants.php';
  */
 require CORE_PATH . 'config' . DS . 'bootstrap.php';
 require_once(ROOT . DS.'vendor' . DS  . 'class-upload-php-master' . DS . 'src' . DS . 'class.upload.php');
+require ROOT. DS .'vendor'.DS.'phpexcel'.DS.'Classes'.DS.'PHPExcel.php';
+require ROOT. DS .'vendor'.DS.'phpexcel'.DS.'Classes'.DS.'PHPExcel'.DS.'IOFactory.php';
 
 use Cake\Cache\Cache;
 use Cake\Console\ConsoleErrorHandler;

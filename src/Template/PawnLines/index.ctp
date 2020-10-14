@@ -26,7 +26,7 @@
                 <th scope="col"><?= $this->Paginator->sort('amount') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('pawn_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('creatbyed') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('createdby') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('modifiedby') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -42,7 +42,7 @@
                 <td><?= $this->Number->format($pawnLine->amount) ?></td>
                 <td><?= $pawnLine->has('pawn') ? $this->Html->link($pawnLine->pawn->id, ['controller' => 'Pawns', 'action' => 'view', $pawnLine->pawn->id]) : '' ?></td>
                 <td><?= h($pawnLine->created) ?></td>
-                <td><?= h($pawnLine->creatbyed) ?></td>
+                <td><?= h($pawnLine->createdby) ?></td>
                 <td><?= h($pawnLine->modified) ?></td>
                 <td><?= h($pawnLine->modifiedby) ?></td>
                 <td class="actions">

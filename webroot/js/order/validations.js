@@ -15,6 +15,9 @@ var Validation = function () {
                             duedate: {
                                 required: true
                             },
+                            docno:{
+                                required: true
+                            }
 
                         },
 
@@ -28,6 +31,10 @@ var Validation = function () {
                             duedate:
                                     {
                                         required: 'กรุณาระบุวันครบกำหนด'
+                                    },
+                                    docno:
+                                    {
+                                        required: 'กรุณาระบุหมายเลขสั่งทำ'
                                     }
 
                         },
@@ -52,28 +59,14 @@ $(document).ready(function () {
         var count_row = $('#list_product > tbody tr').length;
         if (count_row < 1) {
             isCorrect = false;
-            swal({
-                title: "ยังไม่ได้ระบุรายการสินค้า",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+            
+            Swal.fire({title: "ยังไม่ได้ระบุรายการสินค้า", confirmButtonClass: "btn btn-primary mt-2"});
         }
 
         if ($('#customer_type').val() === 'save' && $('#bpartner_id').val() === '') {
             isCorrect = false;
-            swal({
-                title: "กรุณาระบุข้อมูลลูกค้า",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+            
+            Swal.fire({title: "กรุณาระบุข้อมูลลูกค้า", confirmButtonClass: "btn btn-primary mt-2"});
             
         }
         if (isCorrect === true) {

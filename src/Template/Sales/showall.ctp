@@ -12,11 +12,9 @@
                 }
                 ?></h3>
             <div class="row">
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-4">
                     <div class="widget-bg-color-icon card-box">
-                        <div class="bg-icon bg-icon-success pull-left">
-                            <i class="ion-social-bitcoin text-success"></i>
-                        </div>
+                       
                         <div class="text-right">
                             <h3 class="text-dark m-t-10"><b class="counter"><?= $this->Number->format($totalAmt) ?></b></h3>
                             <p class="text-muted mb-0">มูลค่าขายวันนี้ (บาท)</p>
@@ -24,11 +22,9 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-4">
                     <div class="widget-bg-color-icon card-box fadeInDown animated">
-                        <div class="bg-icon bg-icon-primary pull-left">
-                            <i class="mdi mdi-scale text-info"></i>
-                        </div>
+                       
                         <div class="text-right">
                             <h3 class="text-dark m-t-10"><b class="counter"><?= $this->Number->format($weightAmt) ?></b></h3>
                             <p class="text-muted mb-0">น้ำหนักขายวันนี้ (กรัม)</p>
@@ -37,11 +33,9 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-4">
                     <div class="widget-bg-color-icon card-box">
-                        <div class="bg-icon bg-icon-danger pull-left">
-                            <i class="mdi mdi-format-list-numbers text-pink"></i>
-                        </div>
+                       
                         <div class="text-right">
                             <h3 class="text-dark m-t-10"><b class="counter"><?= sizeof($payments) ?></b></h3>
                             <p class="text-muted mb-0">จำนวนรายการวันนี้</p>

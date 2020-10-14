@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -27,8 +28,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class PaymentsTable extends Table
-{
+class PaymentsTable extends Table {
 
     /**
      * Initialize method
@@ -36,8 +36,7 @@ class PaymentsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('payments');
@@ -63,12 +62,16 @@ class PaymentsTable extends Table
             'foreignKey' => 'warehouse_id'
         ]);
         $this->hasMany('PaymentLines', [
-            'foreignKey' => 'payment_id'
+            'foreignKey' => 'payment_id',
+            'dependent' => true,
+            'cascadeCallbacks' => true,
         ]);
         $this->hasMany('PaymentMethodLines', [
-            'foreignKey' => 'payment_id'
+            'foreignKey' => 'payment_id',
+            'dependent' => true,
+            'cascadeCallbacks' => true,
         ]);
-        
+
         $this->belongsTo('UserCreated', [
             'className' => 'Users',
             'foreignKey' => 'createdby',
@@ -86,7 +89,7 @@ class PaymentsTable extends Table
             'foreignKey' => 'seller',
             'propertyName' => 'Seller'
         ]);
-        
+
         $this->belongsTo('PaymentRef', [
             'className' => 'Payments',
             'foreignKey' => 'payment_ref',
@@ -100,114 +103,113 @@ class PaymentsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
-            ->uuid('id')
-            ->allowEmpty('id', 'create');
+                ->uuid('id')
+                ->allowEmpty('id', 'create');
 
         $validator
-            ->date('paymentdate')
-            ->requirePresence('paymentdate', 'create')
-            ->notEmpty('paymentdate');
+                ->date('paymentdate')
+                ->requirePresence('paymentdate', 'create')
+                ->notEmpty('paymentdate');
 
         $validator
-            ->scalar('docno')
-            ->maxLength('docno', 50)
-            ->requirePresence('docno', 'create')
-            ->notEmpty('docno');
+                ->scalar('docno')
+                ->maxLength('docno', 50)
+                ->requirePresence('docno', 'create')
+                ->notEmpty('docno');
 
         $validator
-            ->scalar('payment_method')
-            ->maxLength('payment_method', 50)
-            ->allowEmpty('payment_method');
+                ->scalar('payment_method')
+                ->maxLength('payment_method', 50)
+                ->allowEmpty('payment_method');
 
         $validator
-            ->scalar('isactive')
-            ->allowEmpty('isactive');
+                ->scalar('isactive')
+                ->allowEmpty('isactive');
 
         $validator
-            ->scalar('isreceipt')
-            ->requirePresence('isreceipt', 'create')
-            ->notEmpty('isreceipt');
+                ->scalar('isreceipt')
+                ->requirePresence('isreceipt', 'create')
+                ->notEmpty('isreceipt');
 
         $validator
-            ->scalar('ispartial')
-            ->requirePresence('ispartial', 'create')
-            ->notEmpty('ispartial');
+                ->scalar('ispartial')
+                ->requirePresence('ispartial', 'create')
+                ->notEmpty('ispartial');
 
         $validator
-            ->scalar('isprocessed')
-            ->allowEmpty('isprocessed');
+                ->scalar('isprocessed')
+                ->allowEmpty('isprocessed');
 
         $validator
-            ->decimal('netamt')
-            ->requirePresence('netamt', 'create')
-            ->notEmpty('netamt');
+                ->decimal('netamt')
+                ->requirePresence('netamt', 'create')
+                ->notEmpty('netamt');
 
         $validator
-            ->decimal('vatamt')
-            ->requirePresence('vatamt', 'create')
-            ->notEmpty('vatamt');
+                ->decimal('vatamt')
+                ->requirePresence('vatamt', 'create')
+                ->notEmpty('vatamt');
 
         $validator
-            ->decimal('totalamt')
-            ->requirePresence('totalamt', 'create')
-            ->notEmpty('totalamt');
+                ->decimal('totalamt')
+                ->requirePresence('totalamt', 'create')
+                ->notEmpty('totalamt');
 
         $validator
-            ->scalar('description')
-            ->maxLength('description', 255)
-            ->allowEmpty('description');
+                ->scalar('description')
+                ->maxLength('description', 255)
+                ->allowEmpty('description');
 
         $validator
-            ->uuid('createdby')
-            ->requirePresence('createdby', 'create')
-            ->notEmpty('createdby');
+                ->uuid('createdby')
+                ->requirePresence('createdby', 'create')
+                ->notEmpty('createdby');
 
         $validator
-            ->uuid('modifiedby')
-            ->allowEmpty('modifiedby');
+                ->uuid('modifiedby')
+                ->allowEmpty('modifiedby');
 
         $validator
-            ->uuid('seller')
-            ->allowEmpty('seller');
+                ->uuid('seller')
+                ->allowEmpty('seller');
 
         $validator
-            ->scalar('type')
-            ->maxLength('type', 45)
-            ->allowEmpty('type');
+                ->scalar('type')
+                ->maxLength('type', 45)
+                ->allowEmpty('type');
 
         $validator
-            ->decimal('amount')
-            ->requirePresence('amount', 'create')
-            ->notEmpty('amount');
+                ->decimal('amount')
+                ->requirePresence('amount', 'create')
+                ->notEmpty('amount');
 
         $validator
-            ->scalar('docstatus')
-            ->maxLength('docstatus', 45)
-            ->requirePresence('docstatus', 'create')
-            ->notEmpty('docstatus');
+                ->scalar('docstatus')
+                ->maxLength('docstatus', 45)
+                ->requirePresence('docstatus', 'create')
+                ->notEmpty('docstatus');
 
         $validator
-            ->decimal('outstandingamt')
-            ->allowEmpty('outstandingamt');
+                ->decimal('outstandingamt')
+                ->allowEmpty('outstandingamt');
 
         $validator
-            ->decimal('discount')
-            ->allowEmpty('discount');
+                ->decimal('discount')
+                ->allowEmpty('discount');
 
         $validator
-            ->decimal('usesavingamt')
-            ->allowEmpty('usesavingamt');
+                ->decimal('usesavingamt')
+                ->allowEmpty('usesavingamt');
 
         $validator
-            ->scalar('isexchange')
-            ->allowEmpty('isexchange');
+                ->scalar('isexchange')
+                ->allowEmpty('isexchange');
 
         $validator
-            ->uuid('payment_ref')
-            ->allowEmpty('payment_ref');
+                ->uuid('payment_ref')
+                ->allowEmpty('payment_ref');
 
         return $validator;
     }
@@ -219,8 +221,7 @@ class PaymentsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['bank_account_id'], 'BankAccounts'));
         $rules->add($rules->existsIn(['org_id'], 'Orgs'));
         $rules->add($rules->existsIn(['branch_id'], 'Branches'));
@@ -229,4 +230,5 @@ class PaymentsTable extends Table
 
         return $rules;
     }
+
 }

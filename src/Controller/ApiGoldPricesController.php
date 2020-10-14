@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Controller;
+
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Time;
 use Cake\I18n\Number;
 use Cake\I18n\Date;
-
 use App\Controller\AppController;
 
 /**
@@ -16,45 +16,86 @@ use App\Controller\AppController;
  * @method \App\Model\Entity\ApiGoldPrice[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class ApiGoldPricesController extends AppController {
+
     public $MasterPrices = null;
     public $GoldPrices = null;
-    
+
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
 
         $this->Auth->allow();
         $this->viewBuilder()->layout('ajax');
     }
-    
-    public function price(){
+
+    public function price() {
         $this->loadComponent('GoldPrice');
         $masterPrice = $this->GoldPrice->getMasterPrice();
-        
+
         $json = json_encode($masterPrice);
         $this->set(compact('json'));
     }
-    
+
+    public function priceByWeight($weightValue = 0,$branchId = NULL) {
+        $this->loadComponent('GoldPrice');
+        $result = [];
+        $todayPrices = $this->GoldPrice->toDayPrice($branchId);
+        
+        $weightValue = (float)$weightValue;
+        $correctItem = [];
+        foreach ($todayPrices['price'] as $index => $item){
+            if((float)$item['weight_g'] <= $weightValue){
+                $correctItem = $item;
+                
+            }else{
+                
+            }
+        }
+         $result['master'] = $correctItem;
+         
+         $purchase = 0;
+         $sales = 0;
+         if($weightValue == $correctItem['weight_g']){
+             $purchase = $correctItem['purchase'];
+             $sales =  $correctItem['sales'];
+         }else{
+             $purchase = $correctItem['purchase']*$weightValue;
+             $sales =  $correctItem['sales']*$weightValue;
+         }
+         
+         $result['result'] = [
+             'weight'=>$weightValue,
+             'sales'=>$sales,
+             'purchase'=>$purchase
+         ];
+         $result['today'] = $todayPrices['price'];
+        
+        
+
+        $json = json_encode($result);
+        $this->set(compact('json'));
+    }
+
     public function updatePrice() {
         $content = file_get_contents('https://www.goldtraders.or.th/');
-        
+
         $doc = new \DOMDocument();
         $doc->loadHTML($content);
         $titleObj = $doc->getElementById('DetailPlace_uc_goldprices1_lblAsTime');
-        
+
         $title = trim($titleObj->nodeValue);
-        
+
         $goldBarPurchaseObj = $doc->getElementById('DetailPlace_uc_goldprices1_lblBLBuy');
         $gold_bar_purchase_price = trim($goldBarPurchaseObj->nodeValue);
-        
+
         $goldBarSalesObj = $doc->getElementById('DetailPlace_uc_goldprices1_lblBLSell');
         $gold_bar_sales_price = trim($goldBarSalesObj->nodeValue);
-        
+
         $goldPurchaseObj = $doc->getElementById('DetailPlace_uc_goldprices1_lblOMBuy');
         $gold_purchase_price = trim($goldPurchaseObj->nodeValue);
-        
+
         $goldSalesObj = $doc->getElementById('DetailPlace_uc_goldprices1_lblOMSell');
         $gold_sales_price = trim($goldSalesObj->nodeValue);
-            
+
         $gold_bar_purchase_price = str_replace(',', '', trim($gold_bar_purchase_price));
         $gold_bar_sales_price = str_replace(',', '', trim($gold_bar_sales_price));
         $gold_purchase_price = str_replace(',', '', trim($gold_purchase_price));
@@ -64,57 +105,56 @@ class ApiGoldPricesController extends AppController {
         $this->MasterPrices = TableRegistry::get('MasterPrices');
 
         $q = $this->MasterPrices->find()
-                    ->where(['title'=>$title]);
-        if(sizeof($q->toArray()) ==0){
+                ->where(['title' => $title]);
+        if (sizeof($q->toArray()) == 0) {
             $price = $this->MasterPrices->newEntity();
             $price->gold_bar_purchase_price = $gold_bar_purchase_price;
             $price->gold_bar_sales_price = $gold_bar_sales_price;
             $price->gold_purchase_price = $gold_purchase_price;
             $price->gold_sales_price = $gold_sales_price;
             $price->title = $title;
-            
+
             $this->MasterPrices->save($price);
             $this->sendDailyPriceToLine($price);
         }
-      
     }
 
-    private function sendDailyPriceToLine($price){
+    private function sendDailyPriceToLine($price) {
         $this->loadComponent('LineMessage');
 
         $str = 'อัพเดทราคาทองตามประกาศของสมาคมค้าทองคำ';
-        $str = $str.chr(10).'วันที่ '.$price->title;
-        $str = $str.chr(10).'ทองคำแท่ง รับซื้อ '
-                .(Number::format($price->gold_bar_purchase_price))
-                .', ขายออก '.(Number::format($price->gold_bar_sales_price));
-        $str = $str.chr(10).'ทองรูปพรรณ รับซื้อ '
-                .(Number::format($price->gold_purchase_price))
-                .', ขายออก '.(Number::format($price->gold_sales_price));
+        $str = $str . chr(10) . 'วันที่ ' . $price->title;
+        $str = $str . chr(10) . 'ทองคำแท่ง รับซื้อ '
+                . (Number::format($price->gold_bar_purchase_price))
+                . ', ขายออก ' . (Number::format($price->gold_bar_sales_price));
+        $str = $str . chr(10) . 'ทองรูปพรรณ รับซื้อ '
+                . (Number::format($price->gold_purchase_price))
+                . ', ขายออก ' . (Number::format($price->gold_sales_price));
 
         $data = array(
             'message' => $str
         );
-        
+
         $this->LineMessage->sendMsg($data);
     }
-    
+
     public function updateStorePrice() {
         $this->GoldPrices = TableRegistry::get('GoldPrices');
         $this->loadComponent('GoldPrice');
         $branchId = $this->Core->getLocalBranchId();
         $masterPrice = $this->GoldPrice->getMasterPrice();
         $data = [
-            'master_price'=>$masterPrice
+            'master_price' => $masterPrice
         ];
         $q = $this->GoldPrices->find()
                 ->contain(['GoldPriceLines' => ['SdWeights', 'sort' => ['SdWeights.seq' => 'ASC']]])
-                ->where(['pricedate' => date('Y-m-d'),'GoldPrices.branch_id'=>$branchId,'GoldPrices.master_price_id'=>$masterPrice->id])
+                ->where(['pricedate' => date('Y-m-d'), 'GoldPrices.branch_id' => $branchId, 'GoldPrices.master_price_id' => $masterPrice->id])
                 ->order(['GoldPrices.created' => 'DESC'])
                 ->limit(1);
         $data['update_status'] = 'no';
         if (sizeof($q->toArray()) == 0) {
             $allGoldPrices = $this->GoldPrice->getAllLastPriceByOnline();
-            
+
             $todayDate = new Date();
             $goldPrice = $this->GoldPrices->newEntity();
             $goldPrice->branch_id = $this->Core->getLocalBranchId();
@@ -132,7 +172,7 @@ class ApiGoldPricesController extends AppController {
                         $this->log($line->errors(), 'debug');
                     }
                 }
-            }else{
+            } else {
                 $data['errors'] = $goldPrice->errors();
             }
             $data['update_status'] = 'yes';
@@ -140,4 +180,5 @@ class ApiGoldPricesController extends AppController {
         $json = json_encode($data);
         $this->set(compact('json'));
     }
+
 }

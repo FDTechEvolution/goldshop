@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
-
+use Cake\I18n\Time;
 /**
  * Designs Controller
  *
@@ -54,6 +54,7 @@ class DesignsController extends AppController {
             //  $this->log($design,'debug');
             if ($this->Designs->save($design)) {
                 $this->Flash->success(__('The design has been saved.'));
+                $this->createJsonData();
                 return $this->redirect(['action' => 'add', $productCatId]);
             } else {
                 $this->log($design->errors(), 'debug');
@@ -87,7 +88,7 @@ class DesignsController extends AppController {
 
             if ($this->Designs->save($design)) {
                 $this->Flash->success(__('The design has been saved.'));
-
+                $this->createJsonData();
                 return $this->redirect(['action' => 'index', $design->product_category_id]);
             }
             $this->Flash->error(__('The design could not be saved. Please, try again.'));
@@ -106,6 +107,9 @@ class DesignsController extends AppController {
         $this->request->allowMethod(['post', 'delete']);
         $design = $this->Designs->get($id);
         $productCatId = $design->product_category_id;
+        
+        
+         return $this->redirect(['action' => 'index', $productCatId]);
 
         if ($this->Designs->delete($design)) {
             $this->Flash->success(__('The design has been deleted.'));
@@ -113,7 +117,20 @@ class DesignsController extends AppController {
             $this->Flash->error(__('The design could not be deleted. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'index', $productCatId]);
+        $this->createJsonData();
+       
+    }
+    
+    private function createJsonData(){
+         $this->loadComponent('Json');
+         $modelName = 'designs';
+         $this->Json->deleteFilesByModel($modelName);
+         
+         $time = Time::now();
+         $timeStr = $time->i18nFormat('yyyyMMdd_HHmm');
+         $designs = $this->Designs->find()->order(['name'=>'ASC'])->toArray();
+         $this->Json->write('design_'.$timeStr.'.json',$modelName,$designs);
+         
     }
 
 }

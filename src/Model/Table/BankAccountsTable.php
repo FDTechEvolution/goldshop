@@ -12,7 +12,9 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\BanksTable|\Cake\ORM\Association\BelongsTo $Banks
  * @property \App\Model\Table\OrgsTable|\Cake\ORM\Association\BelongsTo $Orgs
  * @property \App\Model\Table\BranchesTable|\Cake\ORM\Association\BelongsTo $Branches
+ * @property |\Cake\ORM\Association\HasMany $BankAccountTransactions
  * @property \App\Model\Table\PawnsTable|\Cake\ORM\Association\HasMany $Pawns
+ * @property |\Cake\ORM\Association\HasMany $PaymentMethodLines
  * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\HasMany $Payments
  * @property \App\Model\Table\SavingTransactionsTable|\Cake\ORM\Association\HasMany $SavingTransactions
  *
@@ -56,7 +58,13 @@ class BankAccountsTable extends Table
             'foreignKey' => 'branch_id',
             'joinType' => 'INNER'
         ]);
+        $this->hasMany('BankAccountTransactions', [
+            'foreignKey' => 'bank_account_id'
+        ]);
         $this->hasMany('Pawns', [
+            'foreignKey' => 'bank_account_id'
+        ]);
+        $this->hasMany('PaymentMethodLines', [
             'foreignKey' => 'bank_account_id'
         ]);
         $this->hasMany('Payments', [

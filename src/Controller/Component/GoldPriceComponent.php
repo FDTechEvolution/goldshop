@@ -37,6 +37,43 @@ class GoldPriceComponent extends Component {
         return $masterPrice;
     }
 
+    public function toDayPrice($branchId = NULL) {
+        if (is_null($branchId)) {
+            $branchId = $this->Core->getLocalBranchId();
+        }
+
+        $this->GoldPrices = TableRegistry::get('GoldPrices');
+        $goldPrice = $this->GoldPrices->find()
+                ->contain(['GoldPriceLines' => ['SdWeights' => ['Weights'], 'sort' => ['SdWeights.seq' => 'ASC']]])
+                ->where(['branch_id' => $branchId])
+                ->order(['created' => 'DESC'])
+                ->first();
+
+        $data = [];
+
+        $priceLines = $goldPrice->gold_price_lines;
+        $price = [];
+
+        foreach ($priceLines as $line) {
+            if ($line->sd_weight->isdisplay == 'N') {
+                continue;
+            }
+
+            $weight_g = 0;
+            if (sizeof($line->sd_weight->weights) > 0) {
+                $weight_g = $line->sd_weight->weights[0]->value;
+            }
+
+            array_push($price, ['weight' => $line->sd_weight->name, 'weight_g' => $weight_g, 'sales' => $line->sales_price, 'purchase' => $line->purchase_price]);
+            //array_push($purchase, ['weight' => $line->sd_weight->name, 'price' => $line->purchase_price]);
+        }
+        $data['price'] = $price;
+        $data['pricedate'] = $goldPrice->created->i18nFormat(DATE_TIME_FORMATE, null, TH_DATE);
+
+
+        return $data;
+    }
+
     public function getPrice() {
         $data = $this->getContent();
         return $data;
@@ -107,7 +144,6 @@ class GoldPriceComponent extends Component {
 
         //$this->log('bahtSalesPrice: ' . $bahtSalesPrice, 'debug');
         //$this->log('bahtPurchasePrice: ' . $bahtPurchasePrice, 'debug');
-
         //Get 1b weight
         $q = $this->SdWeights->find()
                 ->contain(['Weights'])
@@ -120,8 +156,6 @@ class GoldPriceComponent extends Component {
         //$this->log('bathWeightValue: ' . $bathWeightValue, 'debug');
         //$this->log('oneGSalesPrice: ' . $oneGSalesPrice, 'debug');
         //$this->log('oneGPurchasePrice: ' . $oneGPurchasePrice, 'debug');
-
-
         //$bahtSalesPrice = 19850;
         // $slungSalesPrice = ceil($bahtSalesPrice / 4);
         //$slungPurchasePrice = ceil($bahtPurchasePrice / 4);
@@ -134,7 +168,7 @@ class GoldPriceComponent extends Component {
 
         $q = $this->Costs->find()
                 //->contain(['CostLines' => ['sort' => ['amount' => 'ASC']]])
-                ->where(['enddate IS' => NULL,'branch_id'=>$this->Core->getLocalBranchId(),'type'=>'NORMAL','Costs.org_id' => $this->Core->getLocalOrgId()])
+                ->where(['enddate IS' => NULL, 'branch_id' => $this->Core->getLocalBranchId(), 'type' => 'NORMAL', 'Costs.org_id' => $this->Core->getLocalOrgId()])
                 ->order(['startdate' => 'DESC', 'created' => 'DESC'])
                 ->limit(1);
         $cost = $q->first();
@@ -150,7 +184,7 @@ class GoldPriceComponent extends Component {
             //Calculate
             $salesPrice = $bahtSalesPrice;
             $purchasePrice = $bahtPurchasePrice;
-            $spacialCost = 800;
+            $spacialCost = $purchasePrice * 0.034;
             $oneGSpacialCost = $spacialCost / $bathWeightValue;
             //$this->log('oneGSpacialCost: ' . $oneGSpacialCost, 'debug');
 
@@ -279,10 +313,13 @@ class GoldPriceComponent extends Component {
             $data = $this->calculatePriceProcess(0, 0);
         }
 
+        $this->log($data, 'debug');
+
         return $data;
     }
 
     private function calculatePriceProcess($weight = 0, $cost = 0) {
+        //$this->log($weight,'debug');
         $this->GoldPrices = TableRegistry::get('GoldPrices');
         $this->GoldPriceLines = TableRegistry::get('GoldPriceLines');
         $this->Weights = TableRegistry::get('Weights');

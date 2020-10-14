@@ -21,14 +21,11 @@ use Cake\ORM\Entity;
  * @property string $to_warehouse
  * @property string $seller
  * @property string $isdispose
+ * @property string $bpartner_id
  *
  * @property \App\Model\Entity\Branch $branch
+ * @property \App\Model\Entity\Bpartner $bpartner
  * @property \App\Model\Entity\GoodsLine[] $goods_lines
- * @property \App\Model\Entity\User $UserCreated
- * @property \App\Model\Entity\User $UserModified
- * @property \App\Model\Entity\Warehouse $ToWarehouse
- * @property \App\Model\Entity\Warehouse $FromWarehouse
- * @property \App\Model\Entity\User $Seller
  */
 class GoodsTransaction extends Entity
 {
@@ -57,12 +54,9 @@ class GoodsTransaction extends Entity
         'to_warehouse' => true,
         'seller' => true,
         'isdispose' => true,
+        'bpartner_id' => true,
         'branch' => true,
-        'goods_lines' => true,
-        'UserCreated' => true,
-        'UserModified' => true,
-        'ToWarehouse' => true,
-        'FromWarehouse' => true,
-        'Seller' => true
+        'bpartner' => true,
+        'goods_lines' => true
     ];
 }

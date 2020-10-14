@@ -3,6 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+
 //For resize iframe
 function resizeIframe(obj) {
     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
@@ -45,14 +47,18 @@ function setDefaultDate(inpId, date) {
 }
 
 $(window).bind("beforeunload", function () {
-    $('#page-load').show();
+    $('#preloader').show();
 });
 
 //Page loading
 $(document).ready(function () {
-    $('#page-load').hide();
+    $('#preloader').hide();
 
     validateTextbox();
+
+
+
+
 });
 
 function validateTextbox() {
@@ -95,3 +101,4 @@ jQuery.fn.ForceNumericOnly =
                 });
             });
         };
+        

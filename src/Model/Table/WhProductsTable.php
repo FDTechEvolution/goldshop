@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\ProductsTable|\Cake\ORM\Association\BelongsTo $Products
  * @property \App\Model\Table\StorageBinsTable|\Cake\ORM\Association\BelongsTo $StorageBins
- * @property |\Cake\ORM\Association\BelongsTo $Warehouses
+ * @property \App\Model\Table\WarehousesTable|\Cake\ORM\Association\BelongsTo $Warehouses
  * @property \App\Model\Table\SerialNumbersTable|\Cake\ORM\Association\HasMany $SerialNumbers
  *
  * @method \App\Model\Entity\WhProduct get($primaryKey, $options = [])
@@ -57,18 +57,6 @@ class WhProductsTable extends Table
         $this->hasMany('SerialNumbers', [
             'foreignKey' => 'wh_product_id'
         ]);
-        
-        $this->belongsTo('UserCreated', [
-            'className' => 'Users',
-            'foreignKey' => 'createdby',
-            'propertyName' => 'UserCreated'
-        ]);
-
-        $this->belongsTo('UserModified', [
-            'className' => 'Users',
-            'foreignKey' => 'modifiedby',
-            'propertyName' => 'UserModified'
-        ]);
     }
 
     /**
@@ -101,6 +89,10 @@ class WhProductsTable extends Table
             ->scalar('description')
             ->maxLength('description', 255)
             ->allowEmpty('description');
+
+        $validator
+            ->integer('inorderqty')
+            ->allowEmpty('inorderqty');
 
         return $validator;
     }

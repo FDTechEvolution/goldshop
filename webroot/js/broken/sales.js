@@ -36,12 +36,14 @@ $(function () {
             if (_data === 'notfound') {
                 var audio = document.getElementById("error_sound");
                 audio.play();
-                $.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าหรือบริการ', '');
+                //$.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าหรือบริการ', '');
+                notisErr('ไม่พบสินค้าหรือบริการ');
 
             } else if (_data === 'nostock') {
                 var audio = document.getElementById("error_sound");
                 audio.play();
-                $.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าในคลัง', '');
+                //$.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าในคลัง', '');
+                notisErr('ไม่พบสินค้าในคลัง');
             } else {
                 dataJson = JSON.parse(_data);
                 console.log(dataJson);
@@ -71,7 +73,7 @@ $(function () {
             var totalLine = getTotalLine();
             $(_table_id + ' > tbody').append(
                     '<tr id="' + data.idLineIndex + '" class="product_line">' +
-                    '<td width="40px"><button class="btn btn-icon waves-effect waves-light btn-danger m-b-5" type="button" onclick="removeLine(' + "'" + table_id + dataJson["code"] + "'" + ');"> <i class="fa fa-remove"></i> </button>' +
+                    '<td width="40px"><button class="btn btn-icon waves-effect waves-light btn-primary" type="button" onclick="removeLine(' + "'" + table_id + dataJson["code"] + "'" + ');"> <i class="fas fa-times"></i> </button>' +
                     '<input type="hidden" name="product_code" value="' + dataJson["code"] + '"/></td>' +
                     '<td>' + dataJson["name"] + description + '<input type="hidden" name="product[' + totalLine + '][product_id]" value="' + dataJson["id"] + '" id="' + data.idProduct + '"/></td>' +
                     
@@ -175,7 +177,8 @@ $(document).ready(function () {
         if (count_row < 1) {
             var audio = document.getElementById("error_sound");
             audio.play();
-            $.Notification.autoHideNotify('error', 'top right', 'ยังไม่ได้ระบุรายการสินค้า', '');
+            //$.Notification.autoHideNotify('error', 'top right', 'ยังไม่ได้ระบุรายการสินค้า', '');
+            notisErr('ยังไม่ได้ระบุรายการสินค้า');
             return false;
         }
 

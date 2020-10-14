@@ -6,22 +6,42 @@
 
 
 $(function () {
-    $(document).pos();
-    $(document).on('scan.pos.barcode', function (event) {
-        //alert(event.code);
-        //access `event.code` - barcode data
-        //getProduct(event.code);
-        var warehouse_id = $('#warehouse_id').val();
-        $(document).productProcess(event.code, warehouse_id, 'list_product');
+
+    var barcode = "";
+    $(document).keydown(function (e)
+    {
+        var code = (e.keyCode ? e.keyCode : e.which);
+
+        if (code == 13)// Enter key hit
+        {
+            var warehouse_id = $('#warehouse_id').val();
+            console.log(barcode);
+            $(document).productProcess(barcode.trim(), warehouse_id, 'list_product');
+            barcode = '';
+
+        } else if (code == 9)// Tab key hit
+        {
+            //console.log(barcode);
+            /*
+             barcode = barcode.substring(1);
+             var warehouse_id = $('#warehouse_id').val();
+             $(document).productProcess(barcode.trim(), warehouse_id, 'list_product');
+             barcode = '';
+             * 
+             */
+        } else if (code == 16) {
+            //Shift key
+
+        } else if(code == 32){
+            barcode = barcode + ' ';
+        }else
+        {
+            barcode = barcode + String(String.fromCharCode(code).trim());
+            console.log(barcode);
+            //console.log(code);
+        }
     });
-    $(document).on('swipe.pos.card', function (event) {
-        //access following:
-        // `event.card_number` - card number only
-        // `event.card_holder_first_name` - card holder first name only
-        // `event.card_holder_last_name` - card holder last name only
-        // `event.card_exp_date_month` - card expiration month - 2 digits
-        // `event.card_exp_date_year_2` - card expiration year - 2 digits
-        // `event.card_exp_date_year_4` - card expiration year - 4 digits
-        // `event.swipe_data` - original swipe data from raw processing or sending to a 3rd party service
-    });
+
+
+
 });

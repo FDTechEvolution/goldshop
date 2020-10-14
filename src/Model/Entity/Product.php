@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property string $code
  * @property string $unittype
  * @property float $cost
+ * @property string $cost2
  * @property float $actual_price
  * @property string $description
  * @property string $isactive
@@ -27,6 +28,7 @@ use Cake\ORM\Entity;
  * @property float $percent
  * @property string $image_id
  * @property float $manual_weight
+ * @property string $isprinted
  *
  * @property \App\Model\Entity\ProductCategory $product_category
  * @property \App\Model\Entity\ProductSubCategory $product_sub_category
@@ -39,10 +41,9 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\InvoiceLine[] $invoice_lines
  * @property \App\Model\Entity\OrderLine[] $order_lines
  * @property \App\Model\Entity\PawnLine[] $pawn_lines
+ * @property \App\Model\Entity\PaymentLine[] $payment_lines
  * @property \App\Model\Entity\ProductImage[] $product_images
  * @property \App\Model\Entity\WhProduct[] $wh_products
- * @property \App\Model\Entity\User $UserCreated
- * @property \App\Model\Entity\User $UserModified
  */
 class Product extends Entity
 {
@@ -61,6 +62,7 @@ class Product extends Entity
         'code' => true,
         'unittype' => true,
         'cost' => true,
+        'cost2' => true,
         'actual_price' => true,
         'description' => true,
         'isactive' => true,
@@ -77,6 +79,7 @@ class Product extends Entity
         'percent' => true,
         'image_id' => true,
         'manual_weight' => true,
+        'isprinted' => true,
         'product_category' => true,
         'product_sub_category' => true,
         'org' => true,
@@ -88,9 +91,8 @@ class Product extends Entity
         'invoice_lines' => true,
         'order_lines' => true,
         'pawn_lines' => true,
+        'payment_lines' => true,
         'product_images' => true,
-        'wh_products' => true,
-        'UserCreated' => true,
-        'UserModified' => true
+        'wh_products' => true
     ];
 }

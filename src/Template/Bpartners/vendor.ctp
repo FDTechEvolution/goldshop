@@ -43,8 +43,7 @@
 
                         <div class="tab-pane fade active show" id="last" aria-expanded="true">
                             <div class="row">
-                                <div class="col-md-12 text-right">
-                                    <button class="btn btn-secondary waves-effect m-b-5" id="bt_order_goods_receipt"> <i class="mdi mdi-cart-plus m-r-5"></i> <span>รับสินค้าจากช่าง</span> </button>
+                                <div class="col-md-12 text-right form-group">
                                     <button class="btn btn-secondary waves-effect m-b-5" id="bt_order_paid"> <i class="ion-card m-r-5"></i> <span>จ่ายเงินช่าง</span> <span id="l_paid_selected"></span></button>
                                 </div>
                             </div>

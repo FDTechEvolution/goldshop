@@ -53,48 +53,37 @@ $(document).ready(function () {
         if (count_row < 1) {
             isCorrect = false;
             //$.Notification.autoHideNotify('error', 'top right', 'ยังไม่ได้ระบุรายการรับซื้อ', '');
-            swal({
-                title: "ยังไม่ได้ระบุรายการรับซื้อ",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+            Swal.fire({title: "ยังไม่ได้ระบุรายการรับซื้อ", confirmButtonClass: "btn btn-primary mt-2"});
+
         }
 
         if ($('#customer_type').val() === 'save' && $('#bpartner_id').val() === '') {
             isCorrect = false;
-            swal({
-                title: "กรุณาระบุข้อมูลลูกค้า",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+
+            Swal.fire({title: "กรุณาระบุข้อมูลลูกค้า", confirmButtonClass: "btn btn-primary mt-2"});
         }
 
         if (isCorrect) {
-            swal({
-                title: 'ยืนยันการรับซื้อและจ่ายเงิน ?',
-                text: "กรุณาตรวจสอบความถูกต้องของข้อมูล",
+            $('#frm').submit();
+            /*Swal.fire({
+                title: "ยืนยันการรับซื้อและจ่ายเงิน ?",
+                text: "กรุณาตรวจสอบความถูกต้องของข้อมู",
                 type: "warning",
-                showCancelButton: true,
-                cancelButtonClass: 'btn-secondary waves-effect waves-light',
-                confirmButtonClass: 'btn-success waves-effect waves-light',
-                confirmButtonText: 'บันทึก',
-                cancelButtonText: 'ยกเลิก',
-                loseOnCancel: true,
-                closeOnConfirm: true
-            }, function (isConfirm) {
-                if (isConfirm) {
-                    
-                    $('#frm').submit();
-                }
-            });
+                showCancelButton: !0,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                onfirmButtonText: "บันทึก"}
+            ).then(
+                    function (t) {
+                        if (t.value) {
+
+                            $('#frm').submit();
+                        }
+
+                    });
+             * 
+             */
+
         }
 
     });

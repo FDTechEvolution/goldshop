@@ -75,18 +75,10 @@
         $('#modaldismoney').on('click', function () {
 
             if (parseInt($('#fielddis').val()) > parseInt($('#newinterrestrate').val())) {
-                swal({
-                    title: "จำนวนเงินไม่ถูกต้อง",
-                    text: "กรอกส่วนลดเกินค่าดอกเบี้ย",
-                    type: "warning",
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    confirmButtonClass: 'btn-warning',
-                    confirmButtonText: "Yes, delete it!",
-                    closeOnConfirm: false
-                }, function () {
-                    swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                });
+                
+                Swal.fire({title: "จำนวนเงินไม่ถูกต้อง",text:"กรอกส่วนลดเกินค่าดอกเบี้ย", confirmButtonClass: "btn btn-primary mt-2"});
+                
+                
             } else {
                 $('#newinterrestrate').val($('#newinterrestrate').val() - $('#fielddis').val());
                 $('#discount').val($('#fielddis').val());
@@ -112,20 +104,12 @@
                     $('#totald').val(diffDays);
                     cal($('#type').val(), diffDays, amt);
                 } else {
-
-                    swal({
-                        title: "วันที่ ไม่ถูกต้อง",
-                        text: "กรุณากรอกวันที่มากกว่าวันเริ่มต้น",
-                        type: "warning",
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        confirmButtonClass: 'btn-warning',
-                        confirmButtonText: "Yes, delete it!",
-                        closeOnConfirm: false
-                    }, function () {
-                        swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                    });
+                    
+                    Swal.fire({title: "วันที่ไม่ถูกต้อง",text:"กรุณากรอกวันที่มากกว่าวันเริ่มต้น", confirmButtonClass: "btn btn-primary mt-2"});
+                
                     $('#returndate').val('');
+                    
+                    
                 }
             } else {
 
@@ -139,19 +123,8 @@
                     $('#totald').val(diffDays);
                     cal($('#type').val(), diffDays, amt);
                 } else {
-
-                    swal({
-                        title: "วันที่ ไม่ถูกต้อง",
-                        text: "กรุณากรอกวันที่มากกว่าวันเริ่มต้น",
-                        type: "warning",
-                        showCancelButton: true,
-                        showConfirmButton: false,
-                        confirmButtonClass: 'btn-warning',
-                        confirmButtonText: "Yes, delete it!",
-                        closeOnConfirm: false
-                    }, function () {
-                        swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                    });
+                     Swal.fire({title: "วันที่ไม่ถูกต้อง",text:"กรุณากรอกวันที่มากกว่าวันเริ่มต้น", confirmButtonClass: "btn btn-primary mt-2"});
+                
                     $('#returndate').val('');
                 }
             }

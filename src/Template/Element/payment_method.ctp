@@ -1,31 +1,30 @@
 <div class="row">
     <div class="col-md-12">
-        <p><strong>วิธีการชำระเงิน: </strong><span id="payment_method_label">เงินสด</span></p>
-    </div>
-</div>
-<div class="row" id="bank_account_box" style="display: none;">
-    <div class="col-md-12 form-group">
-        <?= $this->Form->select('bank_account_id',[], ['class' => 'form-control form-control-lg', 'id' => 'bank_account_id']) ?>
+        <p><strong>วิธีการชำระเงิน: </strong><span id="payment_method_label" class="text-primary">เงินสด</span></p>
     </div>
 </div>
 
+
+
+<div class="row form-group">
+    <div class="col-md-6 button-list">
+        <button type="button" name="payment_method_bt" class="btn btn-outline-success waves-effect waves-light btn-block btn-lg" value="CASH" style="font-size:14px;">เงินสด</button>
+    </div>
+    <div class="col-md-6 button-list">
+        <button type="button" name="payment_method_bt" class="btn btn-outline-success waves-effect waves-light btn-block btn-lg" value="TRAN" style="font-size:14px;">โอนเงิน</button>
+    </div>
+</div>
 <div class="row" id="credit_account_box" style="display: none;">
     <div class="col-md-12 form-group">
         <?= $this->Form->select('credit_account_id', [], ['class' => 'form-control form-control-lg', 'id' => 'credit_account_id']) ?>
     </div>
 </div>
 <?= $this->Form->hidden('transaction_type', ['id' => 'transaction_type']) ?>
-<div class="row m-b-10">
-    <div class="col-md-3">
-        <button type="button" name="payment_method_bt" class="btn btn-success waves-effect btn-block btn-lg m-b-10" value="CASH" style="font-size:14px;">เงินสด</button>
+<div class="row" id="bank_account_box" style="display: none;">
+    <div class="col-md-12 form-group">
+        <?= $this->Form->select('bank_account_id', [], ['class' => 'form-control form-control-lg', 'id' => 'bank_account_id']) ?>
     </div>
-    <div class="col-md-3">
-        <button type="button" name="payment_method_bt" class="btn btn-light waves-effect btn-block btn-lg m-b-10" value="TRAN" style="font-size:14px;">โอนเงิน</button>
-    </div>
-
-
 </div>
-
 
 <script>
     $(document).ready(function () {

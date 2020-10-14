@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
  * @property string $bank_account_id
  * @property \Cake\I18n\FrozenDate $docdate
  * @property string $docno
+ * @property \Cake\I18n\FrozenDate $startdate
  * @property \Cake\I18n\FrozenDate $expiredate
  * @property \Cake\I18n\FrozenDate $returndate
  * @property string $status
@@ -29,6 +30,7 @@ use Cake\ORM\Entity;
  * @property string $seller
  * @property string $warehouse_id
  * @property string $isoverprice
+ * @property string $isactive
  *
  * @property \App\Model\Entity\Org $org
  * @property \App\Model\Entity\Branch $branch
@@ -38,9 +40,6 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\PawnLine[] $pawn_lines
  * @property \App\Model\Entity\PawnTransaction[] $pawn_transactions
  * @property \App\Model\Entity\PaymentLine[] $payment_lines
- * @property \App\Model\Entity\User $Seller
- * @property \App\Model\Entity\User $UserCreated
- * @property \App\Model\Entity\User $UserModified
  */
 class Pawn extends Entity
 {
@@ -61,6 +60,7 @@ class Pawn extends Entity
         'bank_account_id' => true,
         'docdate' => true,
         'docno' => true,
+        'startdate' => true,
         'expiredate' => true,
         'returndate' => true,
         'status' => true,
@@ -77,6 +77,7 @@ class Pawn extends Entity
         'seller' => true,
         'warehouse_id' => true,
         'isoverprice' => true,
+        'isactive' => true,
         'org' => true,
         'branch' => true,
         'bpartner' => true,
@@ -84,9 +85,6 @@ class Pawn extends Entity
         'warehouse' => true,
         'pawn_lines' => true,
         'pawn_transactions' => true,
-        'payment_lines' => true,
-        'Seller' => true,
-        'UserCreated' => true,
-        'UserModified' => true
+        'payment_lines' => true
     ];
 }

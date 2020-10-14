@@ -11,18 +11,15 @@
                         <tr>
                             <th width="150px" style="text-align: center"><?= __('เครื่องมือ') ?></th>
                             <th>คลังสินค้า</th>
-                            <th style="text-align: center">บริษัท </th>
+                          
                             <th>สาขา</th>
                             <th width="100px">สถานะ</th>
-                            <th style="text-align: center" width="100px">คลังหลัก</th>
-                            <th style="text-align: center" width="100px">คลังขาย</th>
-                            <th style="text-align: center" width="100px">คลังซื้อ</th>
-                            <th style="text-align: center" width="100px">คลังจำนำ</th>
+                            <th>ประเภทคลัง</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($warehouses as $warehouse): ?>
-                            <tr class="hand-cursor" data-id="<?= $warehouse->id ?>" show-gold-day="<?=$warehouse->ispurchase?>">
+                            <tr class="hand-cursor" data-id="<?= $warehouse->id ?>" show-gold-day="<?=$warehouse->type=='PURCHASE'?'Y':'N'?>">
                                 <td class="actions" style="text-align: center">
                                     <?php if ($warehouse->islock == 'N') { ?>
                                         <?= $this->Html->link(BT_EDIT, ['action' => 'edit', $warehouse->id], ['escape' => false, 'label' => false]) ?>
@@ -30,14 +27,11 @@
                                     <?php } ?>
                                 </td>
                                 <td><?= h($warehouse->name) ?></td>
-                                <td><?= h($warehouse->org->name) ?></td>
+                              
                                 <td><?= h($warehouse->branch->name) ?></td>
 
                                 <td><?= $warehouse->isactive == 'Y' ? ACTIVE : INACTIVE ?></td>
-                                <td style="text-align: center"><?= $warehouse->ismain == 'Y' ? YES : NO ?></td>
-                                <td style="text-align: center"><?= $warehouse->issales == 'Y' ? YES : NO ?></td>
-                                <td style="text-align: center"><?= $warehouse->ispurchase == 'Y' ? YES : NO ?></td>
-                                <td style="text-align: center"><?= $warehouse->ispawn == 'Y' ? YES : NO ?></td>
+                                <td><?= $types[$warehouse->type]?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

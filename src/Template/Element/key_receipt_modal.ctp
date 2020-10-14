@@ -1,84 +1,76 @@
+<div class="col-md-6 text-left">
+    <h3 class="text-success prompt-400" style="margin-bottom: 0px;" id="">รับเงิน</h3>
+</div>
+<div class="col-md-6 text-right color-green">
+    <h3 id="l_receipt_amt" class="prompt-400" style="margin-bottom: 0px;">0</h3>
+
+</div>
+
+<div class="col-md-6 text-left"><h4 id="changeamt_title_label" class=" prompt-400">เงินทอน</h4></div>
+<div class="col-md-6 text-right"><h4 id="changeamt_label" class=" prompt-400">0</h4></div>
+
+<div class="col-md-12">
+    <p style="margin-bottom: 0px;"><strong>วิธีการชำระเงิน: </strong><span id="payment_method_label">เงินสด</span></p>
+    <p id="bank_f_box" style="display:none;"><strong>ธนาคาร/เครดิต: </strong><span id="bank_f_label"></span></p>
+</div>
+<div class="col-md-6 text-left button-list">
+    <button type="button" class="btn btn-block btn-lg btn-outline-secondary waves-effect waves-light m-b-5" data-toggle="modal" data-target="#key_receipt_modal" id="bt_receipt"> 
+        <i class="ion-cash m-r-5"></i> <span>รับเงิน</span> 
+    </button>
+</div>
+<div class="col-md-6 text-left button-list" style="display: none;" id="box_saving_bt">
+    <button type="button" class="btn btn-block btn-lg btn-outline-secondary waves-effect waves-light m-b-5" data-toggle="modal" data-target="#key_saving_modal"> 
+        <i class=" mdi mdi-coin m-r-5"></i> <span>เงินออม</span> 
+    </button>
+</div>
+<div class="col-md-6 text-left button-list">
+    <button type="button" class="btn btn-block btn-lg btn-outline-warning waves-effect waves-light m-b-5" data-toggle="modal" data-target="#key_discount_modal"> 
+        <i class="ion-arrow-graph-down-right m-r-5"></i> <span>ส่วนลด</span> 
+    </button>
+</div>
+
 <div id="key_receipt_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title text-primary prompt-500">รับเงิน</h4>
             </div>
             <div class="modal-body">
-                <div class="row border-bottom ">
-                    <div class="col-md-3">
-                        <button type="button" name="payment_method_bt" class="btn btn-success waves-effect btn-block btn-lg m-b-10" value="CASH" >เงินสด</button>
-                    </div>
-                    <div class="col-md-9 text-right">
-                        <h1 id="_l_cash_amt" class="prompt-400 color-green">0</h1>
-                    </div>
-                </div>
-
-                <div class="row border-bottom p-t-10">
-                    <div class="col-md-3">
-                        <button type="button" name="payment_method_bt" class="btn btn-light waves-effect btn-block btn-lg m-b-10" value="TRAN" >โอนเงิน</button>
-                    </div>
-                    <div class="col-md-9 text-right">
-                        <h1 id="_l_tran_amt" class="prompt-400 color-green">0</h1>
-                    </div>
-                    <div class="col-md-12 form-group" id="bank_account_box" style="display: none;">
-                        <?= $this->Form->select('bank_account_id', [], ['class' => 'form-control form-control-lg', 'id' => 'bank_account_id']) ?>
-                    </div>
-                </div>
-                <div class="row p-t-10">
-                    <div class="col-md-3">
-                        <button type="button" name="payment_method_bt" class="btn btn-light waves-effect btn-block btn-lg m-b-10" value="CRED" >เครดิต</button>
-                    </div>
-                    <div class="col-md-9 text-right">
-                        <h1 id="_l_cred_amt" class="prompt-400 color-green">0</h1>
-                    </div>
-                    <div class="col-md-12 form-group" id="credit_account_box" style="display: none;">
-                        <?= $this->Form->select('credit_account_id', $creditAccountList, ['class' => 'form-control form-control-lg', 'id' => 'credit_account_id']) ?>
-                    </div>
-                </div>
-
-                <hr />
                 <div class="row">
-                    <div class="col-md-12 text-center">
-                        <?= $this->Form->hidden('_receiptamt', ['id' => '_receiptamt', 'value' => '0']) ?>
-                        <?= $this->Form->hidden('cash_amt', ['id' => 'cash_amt', 'value' => '0']) ?>
-                        <?= $this->Form->hidden('cred_amt', ['id' => 'cred_amt', 'value' => '0']) ?>
-                        <?= $this->Form->hidden('tran_amt', ['id' => 'tran_amt', 'value' => '0']) ?>
-                    </div>
-                </div>
-                <?php
-                $secondary = 'btn btn-secondary waves-effect btn-block btn-lg m-b-10';
-                $data_name = 'receipt_key';
-                ?>
-                <div class="row m-b-10">
-                    <div class="col-md-10 offset-md-1">
-                        <div class="row">
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="7">7</button></div>
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="8">8</button></div>
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="9">9</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-primary waves-effect btn-block btn-lg m-b-10" id="del_bt">DEL</button></div>
-
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="4">4</button></div>
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="5">5</button></div>
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="6">6</button></div>
-                            <div class="col-md-3"></div>
-
-
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="1">1</button></div>
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="2">2</button></div>
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="3">3</button></div>
-
-
-                            <div class="col-md-6"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value="0">0</button></div>
-
-                            <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value=".">.</button></div>
-                            <div class="col-md-3"></div>
-
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="100" style="font-size:14px;">+100</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="500" style="font-size:14px;">+500</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="1000" style="font-size:14px;;padding-left: 3px;padding-right: 3px;">+1,000</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="10000" style="font-size:14px;;padding-left: 3px;padding-right: 3px;">+10,000</button></div>
+                    <div class="col-12">
+                        <div class="row ">
+                            <div class="col-md-5 form-group align-middle">
+                                <h2>เงินสด</h2>
+                            </div>
+                            <div class="col-md-7 text-right form-group">
+                                <input type="tel" name="cash_amt" id="cash_amt" class="form-control form-control-lg" value="0" />
+                            </div>
                         </div>
+                        <hr/>
+
+                        <div class="row">
+                            <div class="col-md-5 form-group align-middle">
+                                <h2>โอนเงิน</h2>
+                            </div>
+                            <div class="col-md-7 text-right form-group align-middle">
+                                <input type="tel" name="tran_amt" id="tran_amt" class="form-control form-control-lg" value="0"/>
+                            </div>
+                            <div class="col-md-12 form-group" id="bank_account_box">
+                                <?= $this->Form->select('bank_account_id', [], ['class' => 'form-control form-control-lg', 'id' => 'bank_account_id']) ?>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <?= $this->Form->hidden('_receiptamt', ['id' => '_receiptamt', 'value' => '0']) ?>
+                            
+                                <?= $this->Form->hidden('cred_amt', ['id' => 'cred_amt', 'value' => '0']) ?>
+                       
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -98,41 +90,14 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-12 text-center">
-                        <h1 id="_l_discount_amt" class="prompt-400 color-green">0</h1>
-                        <input type="hidden" name="_discountamt" id="_discountamt" value="0"/>
+                    <div class="col-md-8 offset-md-2 text-center form-group">
+
+                        <input type="tel" class="form-control form-control-lg" name="_discountamt" id="_discountamt" value="0"/>
                     </div>
                 </div>
-                <?php
-                $secondary = 'btn btn-secondary waves-effect btn-block btn-lg m-b-10';
-                $data_name_discount = 'discount_key';
-                ?>
-                <div class="row m-b-10">
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="7">7</button></div>
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="8">8</button></div>
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="9">9</button></div>
-                    <div class="col-md-3"><button type="button" class="btn btn-primary waves-effect btn-block btn-lg m-b-10" id="discount_del_bt">DEL</button></div>
 
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="4">4</button></div>
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="5">5</button></div>
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="6">6</button></div>
-                    <div class="col-md-3"></div>
-
-
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="1">1</button></div>
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="2">2</button></div>
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="3">3</button></div>
-
-
-                    <div class="col-md-6"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value="0">0</button></div>
-
-                    <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name_discount ?>" value=".">.</button></div>
-                    <div class="col-md-3"></div>
-
-
-                </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer text-center">
                 <button type="button" class="btn btn-success waves-effect waves-light" id="discount_save">บันทึกข้อมูล</button>
             </div>
         </div>
@@ -307,6 +272,11 @@
 
 
     $(document).ready(function () {
+
+        $("input[type='tel']").click(function () {
+            $(this).select();
+        });
+
         $('#bt_receipt').on('click', function () {
             var sub_total_amt = $('#subtotalamt').val();
             var cash_amt = parseFloat($('#cash_amt').val());
@@ -316,23 +286,7 @@
             }
         });
 
-        $('button[data-name="<?= $data_name ?>"]').on('click', function () {
-            //console.log(this.value);
-            enterKey(this.value, '_receiptamt', '_l_receipt_amt', 'receipt');
 
-        });
-
-        $('button[data-name="<?= $data_name_discount ?>"]').on('click', function () {
-            //console.log(this.value);
-            enterKey(this.value, '_discountamt', '_l_discount_amt', '');
-
-        });
-
-        $('button[data-name="<?= $data_name_saving ?>"]').on('click', function () {
-            //console.log(this.value);
-            enterKey(this.value, '_savingamt', '_l_saving_amt', '');
-
-        });
 
         $('#del_bt').on('click', function () {
             var activePaymentMethod = $('#payment_method').val();
@@ -346,7 +300,7 @@
             if (currect_value === '') {
                 currect_value = 0;
             }
-            $(filed).val(currect_value);
+            $(filed).val(currect_value).trigger('change');
             $(label).html(Number(currect_value).toLocaleString('en'));
         });
 
@@ -357,7 +311,7 @@
                 currect_value = 0;
             }
 
-            $('#_discountamt').val(currect_value);
+            $('#_discountamt').val(currect_value).trigger('change');
             $('#_l_discount_amt').html(Number(currect_value).toLocaleString('en'));
         });
 
@@ -368,13 +322,13 @@
                 currect_value = 0;
             }
 
-            $('#_savingamt').val(currect_value);
+            $('#_savingamt').val(currect_value).trigger('change');
             $('#_l_saving_amt').html(Number(currect_value).toLocaleString('en'));
         });
 
         $('button[name="payment_method_bt"]').on('click', function () {
             var paymentMethod = this.value;
-            $('#payment_method').val(paymentMethod);
+            $('#payment_method').val(paymentMethod).trigger('change');
             //$('#payment_method_label').html($(this).text());
             //console.log(paymentMethod);
             $('button[name="payment_method_bt"]').addClass('btn-light').removeClass('btn-success');
@@ -413,7 +367,7 @@
                 currect_value = parseFloat(currect_value) + parseFloat(this.value);
             }
 
-            $(filed).val(currect_value);
+            $(filed).val(currect_value).trigger('change');
             $(label).html(Number(currect_value).toLocaleString('en'));
         });
 

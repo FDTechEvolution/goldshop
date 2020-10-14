@@ -74,7 +74,9 @@ class PawnsTableTest extends TestCase
         'app.costs',
         'app.gold_price_lines',
         'app.gold_prices',
+        'app.master_prices',
         'app.pawn_lines',
+        'app.bank_account_transactions',
         'app.branchs',
         'app.pawn_transactions'
     ];

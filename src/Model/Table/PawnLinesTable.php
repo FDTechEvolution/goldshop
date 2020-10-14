@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\ProductsTable|\Cake\ORM\Association\BelongsTo $Products
  * @property \App\Model\Table\PawnsTable|\Cake\ORM\Association\BelongsTo $Pawns
- * @property |\Cake\ORM\Association\BelongsTo $Images
+ * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
  *
  * @method \App\Model\Entity\PawnLine get($primaryKey, $options = [])
  * @method \App\Model\Entity\PawnLine newEntity($data = null, array $options = [])
@@ -83,9 +83,9 @@ class PawnLinesTable extends Table
             ->notEmpty('amount');
 
         $validator
-            ->uuid('creatbyed')
-            ->requirePresence('creatbyed', 'create')
-            ->notEmpty('creatbyed');
+            ->uuid('createdby')
+            ->requirePresence('createdby', 'create')
+            ->notEmpty('createdby');
 
         $validator
             ->uuid('modifiedby')

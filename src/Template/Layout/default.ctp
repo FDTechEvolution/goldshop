@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <title><?= isset($pageTitle) ? $pageTitle . '-' : '' ?><?= PAGE_TITLE ?></title>
@@ -20,34 +20,34 @@
         <link rel="icon" type="image/png" sizes="32x32" href="<?= SITE_URL ?>fav/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="96x96" href="<?= SITE_URL ?>fav/favicon-96x96.png">
         <link rel="icon" type="image/png" sizes="16x16" href="<?= SITE_URL ?>fav/favicon-16x16.png">
-        <link rel="manifest" href="<?= SITE_URL ?>fav/manifest.json">
         <meta name="msapplication-TileColor" content="#ffffff">
         <meta name="msapplication-TileImage" content="<?= SITE_URL ?>fav/ms-icon-144x144.png">
         <meta name="theme-color" content="#ffffff">
 
-        <?= $this->Html->css('/assets/plugins/switchery/switchery.min.css') ?>
-
-        <?= $this->Html->css('/assets/css/bootstrap.min.css') ?>
-        <?= $this->Html->css('/assets/css/icons.min.css') ?>
-        <?= $this->Html->css('/assets/css/style.css') ?>
-
-        <?= $this->Html->css('/assets/plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') ?>
-        <?= $this->Html->css('/assets/plugins/bootstrap-daterangepicker/daterangepicker.css') ?>
-        <?= $this->Html->css('/assets/plugins/bootstrap-sweetalert/sweet-alert.css') ?>
-
-        <?= $this->Html->css('/thaifont/prompt-master/css/fonts.css') ?>
+        <!-- App css -->
+        <?= $this->Html->css('assets/css/bootstrap.min.css') ?>
+        <?= $this->Html->css('assets/css/icons.min.css') ?>
+        <?= $this->Html->css('assets/css/app.min.css') ?>
+        <?= $this->Html->css('assets/libs/sweetalert2/sweetalert2.min.css') ?>
         <?= $this->Html->css('gold-style.css') ?>
+        <?= $this->Html->css('thai-fonts.css') ?>
+        <?= $this->Html->css('loading.css') ?>
 
-        <?= $this->Html->script('/assets/js/modernizr.min.js'); ?>
-        <?= $this->Html->script('/assets/js/jquery.min.js'); ?>
+        <?= $this->Html->script('/css/assets/js/vendor.min.js') ?>
+        <?= $this->Html->script('/css/assets/libs/custombox/custombox.min.js') ?>
 
-        <!-- validate js -->
         <?= $this->Html->script('jquery.validate.min.js') ?>
         <?= $this->Html->script('gold.js'); ?>
         <?= $this->Html->script('utils.js'); ?>
         <?= $this->Html->script('/bootstrap-datepicker-thai-thai/js/bootstrap-datepicker.js'); ?>
         <?= $this->Html->script('/bootstrap-datepicker-thai-thai/js/bootstrap-datepicker-thai.js'); ?>
         <?= $this->Html->script('/bootstrap-datepicker-thai-thai/js/locales/bootstrap-datepicker.th.js'); ?>
+
+        <?= $this->Html->script('/css/assets/libs/sweetalert2/sweetalert2.min.js') ?>
+        <?= $this->Html->css('assets/libs/jquery-toast/jquery.toast.min.css') ?>
+        <?= $this->Html->script('/css/assets/libs/jquery-toast/jquery.toast.min.js') ?>
+        <?= $this->Html->script('me.notis.js') ?>
+
         <?php $actionName = $this->request->getParam('action'); ?>
         <script>
             var branch_id = '<?= $this->request->session()->read('Global.branch_id') ?>';
@@ -55,67 +55,64 @@
             var seller = '<?= $this->request->session()->read('Auth.User.id') ?>';
             var SITE_URL = '<?= SITE_URL ?>';
             var action_name = '<?= $actionName ?>';
+            
+            function show_loading(){
+                $('#box-loading').show();
+            }
+            function hide_loading(){
+                $('#box-loading').hide();
+            }
         </script>
+
+
     </head>
-    <body class="fixed-left">
-        <div id="page-load" class="processing">
-            <?= $this->Html->image('ball_loading.gif', []) ?>
-            <h2 class="prompt-400" id="page-load-label"></h2>
+
+    <body>
+        <div class="loading" id="box-loading" style="display: none;">Loading&#8230;</div>
+        <audio id="play" src="<?= SITE_URL ?>sound/error.mp3"></audio>
+        <audio id="play_ding" src="<?= SITE_URL ?>sound/ding.mp3"></audio>
+        <div id="preloader">
+            <div id="status">
+                <div class="bouncingLoader"><div ></div><div ></div><div ></div></div>
+            </div>
         </div>
+        <!-- Begin page -->
         <div id="wrapper">
-            <?= $this->element('Layout/header_v') ?>
-            <div class="content-page">
+            <?= $this->element('Layout/header_v_1') ?>
+            <div class="content-page" style="margin-top: 3px;">
                 <div class="content">
                     <div class="container-fluid">
                         <?= $this->Flash->render() ?>
                         <?= $this->fetch('content') ?>
                     </div>
                 </div>
-                <?= $this->element('Layout/footer') ?>
+                <?= ''// $this->element('Layout/footer') ?>
 
             </div>
-        </div>
+        </div>    
+
+        <!-- Right bar overlay-->
+        <div class="rightbar-overlay"></div>
+
+
+        <?= $this->Html->script('/css/assets/js/app.min.js') ?>
+
+
+
         <script>
-            var resizefunc = [];
-        </script>
-        <?= $this->Html->script('/assets/js/popper.min.js'); ?>
-        <?= $this->Html->script('/assets/js/bootstrap.min.js'); ?>
-        <?= $this->Html->script('/assets/js/detect.js'); ?>
-        <?= $this->Html->script('/assets/js/fastclick.js'); ?>
-        <?= $this->Html->script('/assets/js/jquery.slimscroll.js'); ?>
-        <?= $this->Html->script('/assets/js/jquery.blockUI.js'); ?>
-        <?= $this->Html->script('/assets/js/waves.js'); ?>
-        <?= $this->Html->script('/assets/js/wow.min.js'); ?>
-        <?= $this->Html->script('/assets/js/jquery.nicescroll.js'); ?>
-        <?= $this->Html->script('/assets/js/jquery.scrollTo.min.js'); ?>
-        <?= $this->Html->script('/assets/plugins/switchery/switchery.min.js'); ?>
 
-
-        <!-- Custom main Js -->
-        <?= $this->Html->script('/assets/js/jquery.core.js'); ?>
-        <?= $this->Html->script('/assets/js/jquery.app.js'); ?>
-
-        <!-- Notification js -->
-        <?= $this->Html->script('/assets/plugins/notifyjs/dist/notify.min.js'); ?>
-        <?= $this->Html->script('/assets/plugins/notifications/notify-metro.js'); ?>
-
-        <?= $this->Html->script('/assets/plugins/bootstrap-sweetalert/sweet-alert.min.js') ?>
-        <?= $this->Html->script('/assets/pages/jquery.sweet-alert.init.js') ?>
-        <?= $this->Html->script('check.js') ?>
-
-        <!-- Modal-Effect -->
-        <?= $this->Html->script('/assets/plugins/custombox/dist/custombox.min.js'); ?>
-        <?= $this->Html->script('/assets/plugins/custombox/dist/legacy.min.js'); ?>
-        <script>
             $(document).ready(function () {
                 if ($("#branch_id").val() === '' || action_name === 'add') {
-                    $("#branch_id").val(branch_id);
+                    $("#branch_id").val(branch_id).trigger('change');
                 }
 
                 if ($("#org_id").val() === '' || action_name === 'add') {
-                    $("#org_id").val(org_id);
+                    $("#org_id").val(org_id).trigger('change');
                 }
+                //$('body').fullscreen();
+
             });
         </script>
+
     </body>
 </html>

@@ -62,11 +62,6 @@
                             <div class="col-md-3"><button type="button" class="<?= $secondary ?>" data-name="<?= $data_name ?>" value=".">.</button></div>
                             <div class="col-md-3"></div>
 
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="100" style="font-size:14px;">+100</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="500" style="font-size:14px;">+500</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="1000" style="font-size:14px;;padding-left: 3px;padding-right: 3px;">+1,000</button></div>
-                            <div class="col-md-3"><button type="button" class="btn btn-info waves-effect btn-block btn-lg m-b-10" data-name="plus" value="10000" style="font-size:14px;;padding-left: 3px;padding-right: 3px;">+10,000</button></div>
-
                         </div>
                     </div>
 
@@ -232,7 +227,7 @@
 
         //Set Label
         $("#l_receipt_amt").html(Number(receiptamt).toLocaleString('en'));
-        $("#l_discount_amt").html(Number(discount).toLocaleString('en'));
+        $("#l_discount_amt").html('-'+Number(discount).toLocaleString('en'));
         $("#l_saving_amt").html(Number(savingamt).toLocaleString('en'));
         $("#l_receipt_total_amt").html(Number(receiptTotalAmt).toLocaleString('en'));
         $("#subtotalamt_label").html(Number(subtotalamt).toLocaleString('en'));

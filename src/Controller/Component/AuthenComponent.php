@@ -17,6 +17,9 @@ use Cake\Controller\Component;
 class AuthenComponent extends Component {
 
     public function authen() {
+        
+        return true;
+        
         $control = strtolower($this->request->params['controller']);
         $action = strtolower($this->request->params['action']);
         //$this->log($control,'debug');

@@ -8,7 +8,7 @@ class TransactionCodeComponent extends Component {
     
     public function getOrderStatus(){
         $status = [
-            'DR'=>'','ฉบับร่าง','OD'=>'กำลังสั่งซื้อ','OM'=>'กำลังสั่งทำ','WT'=>'รอลูกค้ารับของ','CO'=>'รับของแล้ว','PD'=>'จ่ายเงินแล้ว','RC'=>'รับของแล้ว','VO'=>'ยกเลิก'
+            'DR'=>'','ฉบับร่าง','OM'=>'กำลังสั่งทำ/ซื้อ','WT'=>'รอลูกค้ารับของ','CO'=>'รับของแล้ว','PD'=>'จ่ายเงินแล้ว','RC'=>'รับของจากช่างแล้ว','VO'=>'ยกเลิก'
         ];
         
         return $status;
@@ -38,7 +38,7 @@ class TransactionCodeComponent extends Component {
         } else {
             $data = ['PW' => 'ใบจำนำ', 'SO' => 'ใบสั่งซื้อ', 'IV' => 'ใบแจ้งหนี้', 'AR' => 'ใบเสร็จรับเงิน',
                 'AP' => 'ใบจ่ายเงิน', 'DP' => 'ใบฝากเงิน', 'WD' => 'ใบถอนเงิน', 'GR' => 'ใบรับสินค้า',
-                'MM' => 'ใบย้ายสินค้า', 'RF' => 'ใบไถ่ถอน', 'BK' => 'แจ้งชำรุด'];
+                'MM' => 'ใบย้ายสินค้า', 'RF' => 'ใบไถ่ถอน', 'BK' => 'แจ้งชำรุด','RN'=>'ต่อดอก'];
         }
         return $data;
     }
@@ -55,6 +55,7 @@ class TransactionCodeComponent extends Component {
                 'DR' => ['code' => 'DR', 'name' => 'ฉบับร่าง'],
                 'CO' => ['code' => 'CO', 'name' => 'เสร็จสมบูรณ์'],
                 'RF' => ['code' => 'RF', 'name' => 'ไถ่ถอน'],
+                'RN' => ['code' => 'RN', 'name' => 'ต่อดอก'],
                 'VO' => ['code' => 'VO', 'name' => 'ยกเลิกแล้ว'],
                 'WT' => ['code' => 'WT', 'name' => 'กำลังดำเนินการ/รออนุมัติ'],
                 'RC' =>['code'=>'RC','name'=>'รับแล้ว'],
@@ -107,10 +108,14 @@ class TransactionCodeComponent extends Component {
                 'GOLD' => ['code' => 'GOLD', 'title' => 'ทอง'],
                 'SILVER' => ['code' => 'SILVER', 'title' => 'เงิน'],
                 'DIMOND' => ['code' => 'DIMOND', 'title' => 'เพชร'],
+                'NAK' => ['code' => 'NAK', 'title' => 'นาค'],
+                'GOLDCLAD' => ['code' => 'GOLDCLAD', 'title' => 'ทองหุ้ม'],
+                'BOND' => ['code' => 'BOND', 'title' => 'บอร์น'],
                 'S' => ['code' => 'S', 'title' => 'บริการ'],
+                'ORDER' => ['code' => 'ORDER', 'title' => 'สั่งทำ'],
             ];
         } elseif ($type == 'list') {
-            $data = ['GOLD' => 'ทอง', 'SILVER' => 'เงิน', 'DIMOND' => 'เพชร', 'S' => 'บริการ'];
+            $data = ['GOLD' => 'ทอง', 'SILVER' => 'เงิน', 'DIMOND' => 'เพชร','NAK'=>'นาค','GOLDCLAD'=>'ทองหุ้ม','BOND'=>'บอร์น', 'S' => 'บริการ','ORDER'=>'สั่งทำ'];
         }
 
         return $data;

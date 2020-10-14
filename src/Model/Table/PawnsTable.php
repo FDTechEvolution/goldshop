@@ -76,23 +76,6 @@ class PawnsTable extends Table
         $this->hasMany('PaymentLines', [
             'foreignKey' => 'pawn_id'
         ]);
-        
-        $this->belongsTo('Seller', [
-            'className' => 'Users',
-            'foreignKey' => 'seller',
-            'propertyName' => 'Seller'
-        ]);
-         $this->belongsTo('UserCreated', [
-            'className' => 'Users',
-            'foreignKey' => 'createdby',
-            'propertyName' => 'UserCreated'
-        ]);
-
-        $this->belongsTo('UserModified', [
-            'className' => 'Users',
-            'foreignKey' => 'modifiedby',
-            'propertyName' => 'UserModified'
-        ]);
     }
 
     /**
@@ -117,6 +100,10 @@ class PawnsTable extends Table
             ->maxLength('docno', 100)
             ->requirePresence('docno', 'create')
             ->notEmpty('docno');
+
+        $validator
+            ->date('startdate')
+            ->allowEmpty('startdate');
 
         $validator
             ->date('expiredate')
@@ -180,6 +167,10 @@ class PawnsTable extends Table
         $validator
             ->scalar('isoverprice')
             ->allowEmpty('isoverprice');
+
+        $validator
+            ->scalar('isactive')
+            ->allowEmpty('isactive');
 
         return $validator;
     }

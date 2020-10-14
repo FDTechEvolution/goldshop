@@ -76,7 +76,8 @@ class ProductsTableTest extends TestCase
         'app.cost_lines',
         'app.costs',
         'app.gold_price_lines',
-        'app.gold_prices'
+        'app.gold_prices',
+        'app.master_prices'
     ];
 
     /**

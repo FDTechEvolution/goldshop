@@ -9,6 +9,14 @@ $(function () {
     };
 
     $.fn.productProcess = function (productCode, warehouse_id, table_id, description, price, order_id) {
+        console.log(productCode);
+        productCode = encodeURI(productCode);
+        productCode = productCode.replace('%10', " ");
+        productCode = productCode.replace('%20', " ");
+        console.log(productCode);
+        
+        var productCodeEle = productCode.replace(' ', '_');
+        console.log(productCode);
         if (description === 'undefined' || description === undefined) {
             description = '';
         } else {
@@ -27,21 +35,26 @@ $(function () {
             idAmtLabel: ''
         };
 
-        data = setDefaultDataId(table_id + productCode);
+        data = setDefaultDataId(table_id + productCodeEle);
         var _qty = parseInt($('#' + data.idQty).val()) + 1;
         var dataJson = [];
 
 
-        $('#page-load').show();
+        $('#box-loading').show();
         $.post(SITE_URL + "products/getdetailjson/", {code: productCode, warehouse_id: warehouse_id, qty: _qty}, function (_data) {
             if (_data === 'notfound') {
-                $.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าหรือบริการ', '');
+                //$.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าหรือบริการ', '');
+                errorSound();
+                Swal.fire({title: "ไม่พบสินค้าหรือบริการ", confirmButtonClass: "btn btn-primary mt-2"});
             } else if (_data === 'nostock') {
-                $.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าในคลัง', '');
+                //$.Notification.autoHideNotify('error', 'top right', 'ไม่พบสินค้าในคลัง', '');
+                errorSound();
+                Swal.fire({title: "ไม่พบสินค้าในคลัง", confirmButtonClass: "btn btn-primary mt-2"});
             } else {
                 dataJson = JSON.parse(_data);
                 console.log(dataJson);
-                data = setDefaultDataId(table_id + dataJson["code"]);
+                productCodeEle = dataJson['code'].replace(' ', '_');
+                data = setDefaultDataId(table_id + productCodeEle);
                 if ($('#' + data.idLineIndex).length > 0) {
                     //Update qty
                     var amtUnit = $('#' + data.idQty).val();
@@ -52,8 +65,9 @@ $(function () {
                     insertRow();
                 }
                 reCalculateAllLine();
+                successSound();
             }
-            $('#page-load').hide();
+            $('#box-loading').hide();
         });
 
         function insertRow() {
@@ -74,20 +88,21 @@ $(function () {
 
             $(_table_id + ' > tbody').append(
                     '<tr id="' + data.idLineIndex + '" class="product_line">' +
-                    '<td width="40px"><button class="btn btn-icon waves-effect waves-light btn-danger m-b-5" type="button" onclick="removeLine(' + "'" + table_id + dataJson["code"] + "'" + ');"> <i class="fa fa-remove"></i> </button>' +
+                    '<td width="40px" class="align-middle"><button class="btn btn-icon waves-effect waves-light btn-primary" type="button" onclick="removeLine(' + "'" + table_id + dataJson["code"] + "'" + ');"> <i class="fas fa-times"></i> </button>' +
                     '<input type="hidden" name="product_code" value="' + dataJson["code"] + '"/></td>' +
-                    '<td>' + dataJson["name"] + description + '<input type="hidden" name="product[' + totalLine + '][product_id]" value="' + dataJson["id"] + '" id="' + data.idProduct + '"/></td>' +
-                    '<td  width="100px">' +
-                    '<input type="text" style="width:100px;" value="' + actual_price + '" name="product[' + totalLine + '][price]" id="' + data.idPrice + '" data-id="product_price" onclick="formEditOnModal()" onkeyup="reCalculateAllLine();">' +
+                    '<td class="align-middle">' + dataJson["name"] + description + '<input type="hidden" name="product[' + totalLine + '][product_id]" value="' + dataJson["id"] + '" id="' + data.idProduct + '"/></td>' +
+                    '<td  width="100px" class="align-middle">' +
+                    '<input type="tel" class="form-control" style="width:100px;" value="' + actual_price + '" name="product[' + totalLine + '][price]" id="' + data.idPrice + '" data-id="product_price" onclick="formEditOnModal()" onkeyup="reCalculateAllLine();" data-action="numpad">' +
                     '<input type="hidden" value="' + warehouse_id + '" name="product[' + totalLine + '][warehouse_id]">' +
                     '<input type="hidden" value="' + dataJson["max_discount"] + '" name="product[' + totalLine + '][max_discount]" id="' + data.idMaxDiscount + '">' +
                     '<input type="hidden" value="' + dataJson["actual_price"] + '" name="product[' + totalLine + '][actual_price]" id="' + data.idActualPrice + '">' +
                     order_ele +
                     '</td>' +
-                    '<td  width="100px">' +
+                    '<td  width="100px" class="align-middle text-right">' +
                     '<span id="' + data.idQtyLabel + '">' + 1 + '</span>' +
                     '<input type="hidden" name="product[' + totalLine + '][qty]" value="' + 1 + '" id="' + data.idQty + '"/></td>' +
-                    '<td width="120px"><span id="' + data.idAmtLabel + '">' + 0 + '</span></td>' +
+                    '<td class="text-right align-middle">'+dataJson['weight']['value']+'</td>'+
+                    '<td width="120px" class="align-middle text-right"><span id="' + data.idAmtLabel + '">' + 0 + '</span></td>' +
                     '</tr>'
                     );
             $("#" + data.idPriceLabel).html(Number(dataJson["actual_price"]).toLocaleString('en'));
@@ -112,9 +127,14 @@ function reCalculateAllLine() {
         if ($(this).attr('id') !== 'start_row') {
             var inputProductCode = $(this).find('input[name="product_code"]');
             var productCode = (inputProductCode.val());
-            var data = setDefaultDataId('list_product' + productCode);
+            var productCodeEle = productCode.replace(' ', '_');
+            console.log(productCodeEle);
+            var data = setDefaultDataId('list_product' + productCodeEle);
 
             var price = parseInt($('#' + data.idPrice).val());
+            console.log('#' + data.idPrice);
+            price = isNaN(price)?0:price;
+            console.log(price);
             var qty = parseInt($('#' + data.idQty).val());
             //var max_discount = parseInt($('#' + data.idMaxDiscount).val());
             //var actual_price = parseInt($('#' + data.idActualPrice).val());
@@ -140,9 +160,13 @@ function reCalculateAllLine() {
         var data = setDefaultDataId('list_exchange' + exchange_count);
 
         var price = parseInt($('#' + data.idPrice).val());
+        price = isNaN(price)?0:price;
 
         var qty = 1;
         var amount = totalAmt - price;
+        if(exchange_count>0 && price === 0){
+            amount = 0;
+        }
         console.log(price);
         console.log(qty);
 
@@ -159,6 +183,7 @@ function reCalculateAllLine() {
         var data = setDefaultDataId('list_glitem' + code);
 
         var price = parseInt($('#' + data.idPrice).val());
+        price = isNaN(price)?0:price;
 
         var qty = 1;
         var amount = price * qty;
@@ -173,9 +198,11 @@ function reCalculateAllLine() {
         if ($(this).attr('id') !== 'start_row') {
             var inputProductCode = $(this).find('input[name="product_code"]');
             var productCode = (inputProductCode.val());
-            var data = setDefaultDataId('list_order_product' + productCode);
+             var productCodeEle = productCode.replace(' ', '_');
+            var data = setDefaultDataId('list_order_product' + productCodeEle);
 
             var price = parseInt($('#' + data.idPrice).val());
+            price = isNaN(price)?0:price;
             var qty = parseInt($('#' + data.idQty).val());
             var amount = price * qty;
             totalAmt = totalAmt + amount;
@@ -202,15 +229,36 @@ function reCalculateAllLine() {
 ;
 
 function removeLine(_code) {
-    console.log('remove line:' + _code);
-    var data = setDefaultDataId(_code);
 
-    $('#' + data.idLineIndex).remove();
-    reCalculateAllLine();
+    var productCodeEle = _code.replace(' ', '_');
+    Swal.fire({
+        title: "ต้องการลบรายการสินค้านี้?",
+        text: "",
+        type: "warning",
+        showCancelButton: !0,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ลบ"
+    }).then(function (t) {
+        //console.log(t);
+        if (t.value) {
+            console.log('remove line:' + productCodeEle);
+            var data = setDefaultDataId(productCodeEle);
+
+            $('#' + data.idLineIndex).remove();
+            reCalculateAllLine();
+        } else {
+            return false;
+        }
+    });
+
+
+
 }
 ;
 
 function setDefaultDataId(code) {
+    console.log(code);
     var data = {
         idLineIndex: code + '_line',
         idLineNo: code + '_no',
@@ -245,6 +293,10 @@ function formEditOnModal() {
 
 
 $(document).ready(function () {
+
+
+
+
 
     $('input:radio[name="customer_type"]').change(function () {
         var selected = $(this).val();//alert($(this).val());

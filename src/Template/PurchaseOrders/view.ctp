@@ -1,3 +1,136 @@
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            <div class="panel-body">
+                <div class="row d-print-none">
+
+                    <div class="col-md-9">
+                        <h3 class="prompt-500 text-primary">ข้อมูลการสั่งทำ</h3>
+                        <?php if ($order->isordered == 'Y') { ?>
+                            <?php
+                            $bpartnerName = '';
+                            $status = '';
+                            $date = null;
+                            $lastModified = null;
+                            $lastModifiedBy = null;
+                            if (sizeof($order->order_lines) > 0) {
+                                $bpartnerName = $order['order_lines'][0]['bpartner']['name'];
+                                $status = $order['order_lines'][0]['order_status'];
+                                $date = $order['order_lines'][0]['orderdate'];
+                                $lastModified = $order['order_lines'][0]['modified'];
+                                $lastModifiedBy = $order['order_lines'][0]['UserModified']['firstname'];
+                            }
+                            ?>
+                            <p><strong><?= h($bpartnerName) ?></strong></p>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>วันที่สั่งทำ: </strong><?= h($date->i18nFormat(DATE_FORMATE, null, TH_DATE)) ?>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <strong>อัพเดทล่าสุด: </strong><?= h($lastModified->i18nFormat(DATE_TIME_FORMATE, null, TH_DATE)) ?>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>อัพเดทล่าสุดโดย: </strong><?= h($lastModifiedBy) ?>
+                                </div>
+                            </div>
+                            <table  class="table m-t-30">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>รายการ</th>
+                                        <th class="text-right">จำนวน</th>
+                                        <th class="text-right" width="200px">ราคาสั่งทำ/ต้นทุน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($order->order_lines as $key => $line): ?>
+                                        <?php if (!is_null($line->bpartner_id)) { ?>
+                                            <tr>
+                                                <td><?= h($key + 1) ?></td>
+                                                <td>
+                                                    <?= h($line->product->name) ?>
+                                                    
+                                                </td>
+                                                <td class="text-right"><?= $this->Number->format($line->qty) ?></td>
+                                                <td class="text-right"><?= $this->Number->format($line->order_price) ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php } ?>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <button type="button" class="btn btn-secondary waves-effect waves-light" data-toggle="modal" data-target="#order">บันทึก/แก้ไขการสั่งทำ</button>
+                    </div>
+
+                </div>
+
+                <div class="row d-print-none">
+                    <div class="col-md-12">
+                        <div id="order" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title text-primary prompt-500">บันทึกการสั่งทำ</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <?= $this->Form->create('order', ['id' => 'frm']) ?>
+                                        <?= $this->Form->hidden('order_id', ['value' => $order->id]) ?>
+
+                                        <div class="row">
+                                            <div class='col-md-12 form-group '>
+                                                <?php
+                                                $bpartner_id = null;
+                                                if (sizeof($order->order_lines) > 0) {
+                                                    $bpartner_id = $order['order_lines'][0]['bpartner_id'];
+                                                }
+                                                ?>
+                                                <label for="code">ผู้ขาย/ผู้ผลิต/ช่าง</label>
+                                                <?= $this->Form->select('bpartner_id', $bpartners, ['value' => $bpartner_id, 'class' => 'form-control form-control-lg', 'id' => 'bpartner_id', 'label' => false]) ?>
+                                            </div>
+                                        </div>
+                                        <table  class="table m-t-30">
+                                            <thead>
+                                                <tr>
+                                                    <th>รายการ</th>
+                                                    <th class="text-center">จำนวน</th>
+                                                    <th class="text-right" width="200px">ราคาสั่งทำ/ต้นทุน</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($order->order_lines as $key => $line): ?>
+                                                    <tr>
+                                                        <td><?= h($line->product->name) ?></td>
+                                                        <td class="text-center"><?= $this->Number->format($line->qty) ?></td>
+                                                        <td class="text-right">
+                                                            <?= $this->Form->hidden('lines.' . $key . '.order_line_id', ['value' => $line->id]) ?>
+                                                            <?= $this->Form->control('lines.' . $key . '.order_price', ['value' => $line->order_price, 'class' => 'form-control', 'label' => false, 'data-type' => 'float']) ?>
+                                                        </td>
+                                                    </tr>
+
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                        <?= $this->Form->end() ?>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">ปิด</button>
+                                        <button type="button" class="btn btn-primary waves-effect waves-light" id="bt_save_order">บันทึก</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-12">
         <div class="card-box">
@@ -16,7 +149,7 @@
                         <p><?= h($orgAddress->address_line . ' ตำบล' . $orgAddress->subdistrict . ' อำเภอ' . $orgAddress->district . ' จังหวัด' . $orgAddress->province . ' ' . $orgAddress->postalcode) ?></p>
                     </div>
                     <div class="pull-right prompt-300">
-                        <h3>#ใบสั่งซื้อ</h3>
+                        <h3>#ใบสั่งซื้อ No.<?=$order->docno?></h3>
                     </div>
                 </div>
                 <hr>
@@ -129,135 +262,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card-box">
-            <div class="panel-body">
-                <div class="row d-print-none">
-
-                    <div class="col-md-9">
-                        <h3 class="prompt-500 text-primary">ข้อมูลการสั่งทำ</h3>
-                        <?php if($order->isordered =='Y'){?>
-                        <?php
-                        $bpartnerName = '';
-                        $status = '';
-                        $date = null;
-                        $lastModified = null;
-                        $lastModifiedBy = null;
-                        if (sizeof($order->order_lines) > 0) {
-                            $bpartnerName = $order['order_lines'][0]['bpartner']['name'];
-                            $status = $order['order_lines'][0]['order_status'];
-                            $date =  $order['order_lines'][0]['orderdate'];
-                            $lastModified  =  $order['order_lines'][0]['modified'];
-                            $lastModifiedBy  =  $order['order_lines'][0]['UserModified']['firstname'];
-                            
-                        }
-                        ?>
-                        <p><strong><?= h($bpartnerName) ?></strong></p>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <strong>วันที่สั่งทำ: </strong><?= h($date->i18nFormat(DATE_FORMATE, null, TH_DATE)) ?>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <strong>อัพเดทล่าสุด: </strong><?= h($lastModified->i18nFormat(DATE_TIME_FORMATE, null, TH_DATE)) ?>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>อัพเดทล่าสุดโดย: </strong><?= h($lastModifiedBy) ?>
-                            </div>
-                        </div>
-                        <table  class="table m-t-30">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>รายการ</th>
-                                    <th class="text-right">จำนวน</th>
-                                    <th class="text-right" width="200px">ราคาสั่งทำ/ต้นทุน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($order->order_lines as $key => $line): ?>
-                                    <?php if (!is_null($line->bpartner_id)) { ?>
-                                        <tr>
-                                            <td><?= h($key + 1) ?></td>
-                                            <td><?= h($line->product->name) ?></td>
-                                            <td class="text-right"><?= $this->Number->format($line->qty) ?></td>
-                                            <td class="text-right"><?= $this->Number->format($line->order_price) ?></td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                        <?php }?>
-                    </div>
-                    <div class="col-md-3 text-right">
-                        <button type="button" class="btn btn-secondary waves-effect waves-light" data-toggle="modal" data-target="#order">บันทึก/แก้ไขการสั่งทำ</button>
-                    </div>
-
-                </div>
-
-                <div class="row d-print-none">
-                    <div class="col-md-12">
-                        <div id="order" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title text-primary prompt-500">บันทึกการสั่งทำ</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <?= $this->Form->create('order', ['id' => 'frm']) ?>
-                                        <?= $this->Form->hidden('order_id', ['value' => $order->id]) ?>
-
-                                        <div class="row">
-                                            <div class='col-md-12 form-group '>
-                                                <?php
-                                                $bpartner_id = null;
-                                                if (sizeof($order->order_lines) > 0) {
-                                                    $bpartner_id = $order['order_lines'][0]['bpartner_id'];
-                                                }
-                                                ?>
-                                                <label for="code">ผู้ขาย/ผู้ผลิต/ช่าง</label>
-                                                <?= $this->Form->select('bpartner_id', $bpartners, ['value' => $bpartner_id, 'class' => 'form-control form-control-lg', 'id' => 'bpartner_id', 'label' => false]) ?>
-                                            </div>
-                                        </div>
-                                        <table  class="table m-t-30">
-                                            <thead>
-                                                <tr>
-                                                    <th>รายการ</th>
-                                                    <th class="text-center">จำนวน</th>
-                                                    <th class="text-right" width="200px">ราคาสั่งทำ/ต้นทุน</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($order->order_lines as $key => $line): ?>
-                                                    <tr>
-                                                        <td><?= h($line->product->name) ?></td>
-                                                        <td class="text-center"><?= $this->Number->format($line->qty) ?></td>
-                                                        <td class="text-right">
-                                                            <?= $this->Form->hidden('lines.' . $key . '.order_line_id', ['value' => $line->id]) ?>
-                                                            <?= $this->Form->control('lines.' . $key . '.order_price', ['value' => $line->order_price, 'class' => 'form-control', 'label' => false,'data-type'=>'float']) ?>
-                                                        </td>
-                                                    </tr>
-
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                        <?= $this->Form->end() ?>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary waves-effect waves-light" id="bt_save_order">บันทึก</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
     $(document).ready(function () {
         $('#bt_save_order').on('click', function () {

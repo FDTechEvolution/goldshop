@@ -4,7 +4,16 @@ if (!isset($params['escape']) || $params['escape'] !== false) {
     ?>
     <script>
         $(document).ready(function () {
-           $.Notification.autoHideNotify('success', 'top right', 'เรียบร้อย','<?=$message?>');
+            Swal.fire({
+                
+                type: "success",
+                title: "เรียบร้อย",
+                text:"<?= $message?>",
+                showConfirmButton: !1,
+                timer: 3000
+            });
+
+           
 
         });
     </script>

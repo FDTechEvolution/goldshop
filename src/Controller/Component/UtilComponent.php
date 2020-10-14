@@ -3,6 +3,8 @@
 namespace App\Controller\Component;
 
 use Cake\Controller\Component;
+use Cake\I18n\Date;
+use Cake\I18n\Time;
 
 class UtilComponent extends Component {
 
@@ -17,7 +19,17 @@ class UtilComponent extends Component {
             return $date;
         }
         // $this->log('$date '.$ext,'debug');
-        $converted = ($ext[2] - 543) . '-' . $ext[1] . '-' . $ext[0];
+        $dd = $ext[0];
+        if(strlen($dd)!=2){
+            $dd = '0'.$dd;
+        }
+        
+        $mm = $ext[1];
+        if(strlen($mm)!=2){
+            $mm = '0'.$mm;
+        }
+        $yyyy = (int)$ext[2];
+        $converted = ($yyyy - 543) . '-' . $mm. '-' . $ext[0];
         //   $this->log('$converted '.$converted,'debug');
         return $converted;
     }
@@ -42,6 +54,13 @@ class UtilComponent extends Component {
         }
         //echo $result;
         return round($result,0);
+    }
+    
+    public function getRunningNumberFromDateTime(){
+        //$now = Time::now();
+        //$now->i18nFormat('yyyyMMdd_HHmmss');
+        $now = date("Ymd_His");
+        return $now;
     }
 
 }

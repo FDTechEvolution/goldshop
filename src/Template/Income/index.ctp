@@ -95,11 +95,11 @@
                 </thead>
                 <tbody>
                     <?php foreach ($incomes as $income): ?>
-                        <?php 
+                        <?php
                         $rowClass = 'text-void';
-                        if($income->isreceipt == 'Y' && $income->docstatus !='VO'){
+                        if ($income->isreceipt == 'Y' && $income->docstatus != 'VO') {
                             $rowClass = 'text-success';
-                        }elseif($income->isreceipt == 'N' && $income->docstatus !='VO'){
+                        } elseif ($income->isreceipt == 'N' && $income->docstatus != 'VO') {
                             $rowClass = 'text-danger';
                         }
                         ?>
@@ -144,21 +144,23 @@
 
         $('a[data-action="void"]').on('click', function () {
             var id = $(this).attr("data-id");
-            console.log(id);
-            swal({
-                title: "คุณต้องการยกเลิกรายการนี้ ?",
+            Swal.fire({
+                title: "คุณต้องการยกเลิกรายการนี้",
                 text: "",
                 type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "ยกเลิก",
-                closeOnConfirm: false
-            }, function () {
-                //swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                //$.get(SITE_URL+'income/void',{id:id}).done(function(res){
-                    window.location.href = SITE_URL+'income/void?id='+id;
-               // });
-            });
+                showCancelButton: !0,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+            }
+            ).then(
+                    function (t) {
+                        if (t.value) {
+                            window.location.href = SITE_URL + 'income/void?id=' + id;
+                        }
+
+                    });
+
+
         });
 
         $('button[data-name="incomeType"]').on('click', function () {

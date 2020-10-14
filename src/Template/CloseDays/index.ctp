@@ -20,8 +20,8 @@
                         </thead>
                         <tbody>
                             <?php foreach ($closeDays as $item): ?>
-                            <?php $allowToClose = $allowToCloseDay->id == $item->id?'YES':'NO';?>
-                                <tr class="hand-cursor" data-status="<?= $item->status ?>" data-allow="<?=$allowToClose?>" data-id="<?= $item->id ?>" gold-branch="<?= $item->branch_id ?>" gold-start-date="<?= $item->close_date->i18nFormat('yyyy-MM-dd', null, null) ?>" gold-end-date="<?= $item->close_date->i18nFormat('yyyy-MM-dd', null, null) ?>">
+
+                                <tr class="hand-cursor" onclick="view(this);" data-status="<?= $item->status ?>" data-allow="" data-id="<?= $item->id ?>" gold-branch="<?= $item->branch_id ?>" gold-start-date="<?= $item->close_date->i18nFormat('yyyy-MM-dd', null, null) ?>" gold-end-date="<?= $item->close_date->i18nFormat('yyyy-MM-dd', null, null) ?>">
                                     <td><?= $item->close_date->i18nFormat(DATE_FORMATE, null, TH_DATE) ?></td>
 
                                     <?php if ($item->status == 'CO') { ?>
@@ -40,9 +40,7 @@
                                         <td></td>
                                         <td></td>
                                         <td class="text-right">
-                                            <?php if($allowToClose =='YES'){?>
                                             <button type="button" class="btn btn-danger btn-sm waves-effect waves-light">ปิดบัญชี</button>
-                                            <?php } ?>
                                         </td>
 
                                     <?php } ?>
@@ -120,18 +118,18 @@
         $.each(rowsL, function (index, row) {
             str = '<tr>';
             str = str + '<td class="text-left" width="70%">' + row.title + '</td>';
-            str = str + '<td class="text-right"><strong>'+ Number(row.amount).toLocaleString('en') + '<strong></td>';
+            str = str + '<td class="text-right"><strong>' + Number(row.amount).toLocaleString('en') + '<strong></td>';
             str = str + '</tr>';
             debitTable.append(str);
         });
-        
+
         str = '<tr>';
         str = str + '<td class="text-left" width="70%"><strong>รวมรายรับทั้งหมด</strong></td>';
         str = str + '<td class="text-right"><strong class="text-success">' + Number(jsonData.total_receipt_amt).toLocaleString('en') + '<strong></td>';
         str = str + '</tr>';
-        str = str+'<tr><td>-</td><td></td></tr>';
+        str = str + '<tr><td>-</td><td></td></tr>';
         debitTable.append(str);
-        
+
         $.each(rowsLT, function (index, row) {
             str = '<tr>';
             str = str + '<td class="text-left" width="70%">' + row.title + '</td>';
@@ -156,9 +154,9 @@
         str = str + '<td class="text-left" width="70%"><strong>รวมรายจ่ายทั้งหมด</strong></td>';
         str = str + '<td class="text-right"><strong class="text-danger">' + Number(jsonData.total_paid_amt).toLocaleString('en') + '<strong></td>';
         str = str + '</tr>';
-        str = str+'<tr><td>-</td><td></td></tr>';
+        str = str + '<tr><td>-</td><td></td></tr>';
         creditTable.append(str);
-        
+
         $.each(rowsRT, function (index, row) {
             str = '<tr>';
             str = str + '<td class="text-left" width="70%">' + row.title + '</td>';
@@ -200,63 +198,54 @@
                 '</td>' +
                 '<input type="hidden" name="total_cash_paid_amt" value="' + jsonData.total_cash_paid + '" />' +
                 '</tr>');
-        
+
         sumaryTable.append('<tr class="table-warning"><td class="text-right"><h3>Grand Total</h3></td><td class="text-right"><h3>' + Number(jsonData.grand_total).toLocaleString('en') + '</h3></td></tr>');
         sumaryTable.append('<tr class="table-warning"><td class="text-right"><h3>ยอดเงินนับจริง</h3></td><td class="text-right"><input type="text" class="form-control" name="actual_manual_amt" value="' + jsonData.grand_total + '" style="text-align: right" data-type="float"></td></tr>');
         sumaryTable.append('<input type="hidden" name="close_date" value="' + jsonData.date + '" />');
         sumaryTable.append('<input type="hidden" name="close_day_id" value="' + closeDayId + '" />');
         validateTextbox();
     }
-    $(document).ready(function () {
-        $('#datatable-buttons > tbody > tr').each(function() {
-            
-        });
+
+    function view(e) {
+        $('#box-loading').show();
+        var startDate = $(e).attr('gold-start-date');
+        var endDate = $(e).attr('gold-end-date');
+        var branchId = $(e).attr('gold-branch');
+        var closeDayId = $(e).attr('data-id');
+        var status = $(e).attr('data-status');
+
         
+        $('#close_day_modal').modal('show');
+        $.post(
+                SITE_URL + "service-payments/income",
+                {
+                    branch_id: branchId,
+                    start_date: startDate,
+                    end_date: endDate
+                }
+        )
+                .done(function (data) {
+                    var jsonData = JSON.parse(data);
+                    //console.log(jsonData);
+                    makeData(jsonData[0], closeDayId);
+                    $('#box-loading').hide();
+                });
+
+        var selected = $(e).hasClass("table-success");
+        $("#datatable-buttons > tbody tr").removeClass("table-success");
+        if (!selected) {
+            //console.log($(this).attr('id'));
+            $(e).addClass("table-success");
+
+        }
+    }
+    $(document).ready(function () {
+
+
         $('#close_day_modal').modal({
             backdrop: 'static',
             keyboard: false,
             show: false
-        });
-
-        $("#datatable-buttons > tbody tr").click(function () {
-
-            var startDate = $(this).attr('gold-start-date');
-            var endDate = $(this).attr('gold-end-date');
-            var branchId = $(this).attr('gold-branch');
-            var closeDayId = $(this).attr('data-id');
-            var status = $(this).attr('data-status');
-            var allow_to_close = $(this).attr('data-allow');
-            if (allow_to_close === 'YES') {
-                $('#page-load').show();
-                $('#close_day_modal').modal('show');
-                $.post(
-                        SITE_URL + "service-payments/income",
-                        {
-                            branch_id: branchId,
-                            start_date: startDate,
-                            end_date: endDate
-                        }
-                )
-                        .done(function (data) {
-                            var jsonData = JSON.parse(data);
-                            //console.log(jsonData);
-                            makeData(jsonData[0], closeDayId);
-                            $('#page-load').hide();
-                        });
-            }
-
-
-        });
-
-        $("#datatable-buttons > tbody tr").click(function () {
-            var selected = $(this).hasClass("table-success");
-            $("#datatable-buttons > tbody tr").removeClass("table-success");
-            if (!selected) {
-                //console.log($(this).attr('id'));
-                $(this).addClass("table-success");
-
-            }
-
         });
 
         $('#bt_save').on('click', function () {

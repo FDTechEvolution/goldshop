@@ -12,21 +12,21 @@
     </thead>
     <tbody>
         <?php foreach ($whProducts as $item): ?>
-            <?php $product = $item->product; ?>
+           
             <tr>
-                <td><?= h($product->name) ?></td>
-                <td><?= h($product->code == '_temp' ? '' : $product->code) ?></td>
-                <td><?= h($product->product_category->name) ?></td>
+                <td><?= h($item['name']) ?></td>
+                <td><?= h($item['code'] == '_temp' ? '' : $item['code']) ?></td>
+                <td><?= h($item['cat_name']) ?></td>
                 <?php 
                    $weightAmt = 0;
-                   if($product->has('weight')){
-                       $weightAmt = $item->balance_amt*$product->weight->value;
+                   if($item['weight_value']=='' || is_null($item['weight_value'])){
+                       $weightAmt = $item['manual_weight'];
                    }else{
-                       $weightAmt = $item->balance_amt*$product->manual_weight;
+                       $weightAmt = $item['weight_value'];
                    }
                 ?>
                 <td class="text-right"><?=$this->Number->format($weightAmt) ?></td>
-                <td class="text-right"><?= $this->Number->format($item->balance_amt) . ' ' . $product->unittype ?></td>
+                <td class="text-right"><?= $this->Number->format($item['balance_amt']) . ' ' . $item['unittype'] ?></td>
                 
             </tr>
         <?php endforeach; ?>

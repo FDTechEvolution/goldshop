@@ -1,3 +1,24 @@
+.summary-detail h1,h2,h3,h4{
+    margin: 3px 0px !important;
+}
+.card-box {
+    padding: 1rem !important;
+}
+.table td, .table th {
+    padding: .5rem !important;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.error{
+    color: red;
+}
+label{
+    margin-bottom: .2rem !important;
+}
+.card-body{
+    padding: 0.5rem !important;
+}
 .text-void{
     text-decoration: line-through !important;
 }
@@ -112,4 +133,19 @@
 
 ::placeholder { /* Most modern browsers support this now. */
     color:    #E0E0E0 !important;
+}
+
+
+
+
+.top-menu-mobile {
+    overflow: hidden;
+    left: 1px;
+    position: fixed; /* Set the navbar to fixed position */
+    bottom: 1px; /* Position the navbar at the top of the page */
+    z-index: 200;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding-top: 3px;
+    padding-bottom: 3px;
 }

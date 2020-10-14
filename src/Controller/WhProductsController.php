@@ -39,6 +39,7 @@ class WhProductsController extends AppController {
         $this->PaymentLines = TableRegistry::get('PaymentLines');
         $this->GoodsLines = TableRegistry::get('GoodsLines');
         $this->GoodsTransactions = TableRegistry::get('GoodsTransactions');
+        $this->Connection = ConnectionManager::get('default');
     }
 
     /**
@@ -50,19 +51,35 @@ class WhProductsController extends AppController {
 
         //$connection = ConnectionManager::get('default');
 
-        $q = $this->WhProducts->find()
+        /*
+        $whProducts = $this->WhProducts->find()
                 ->select(['balance_amt'])
-                ->contain(['Products' => [
+                ->contain([
+                    'Products' => [
                         'fields' => ['code', 'name', 'unittype', 'manual_weight'],
                         'ProductCategories' => [
                             'fields' => ['name']
                         ],
                         'Weights' => ['fields' => ['value']]
-            ]])
-                ->where(['WhProducts.warehouse_id' => $warehouse_id]);
-        $whProducts = $q->toArray();
-        //$this->log($whProducts,'debug');
-        //$q = $this->Warehouses
+                    ]
+                ])
+                ->where(['WhProducts.warehouse_id' => $warehouse_id])
+                ->order(['WhProducts.product.name'=>'ASC'])
+                ->toArray();
+         * 
+         */
+        
+        $sql = 'select sum(wh.balance_amt) as balance_amt,p.code,p.name,p.unittype,sum(p.manual_weight) as manual_weight,pcat.name as cat_name,sum(w.value) as weight_value '
+                . 'from wh_products wh '
+                . 'join products p on wh.product_id = p.id '
+                . 'join product_categories pcat on p.product_category_id = pcat.id '
+                . 'left join weights w on p.weight_id = w.id '
+                . 'where wh.warehouse_id = :warehouse_id '
+                . 'group by p.code,p.name '
+                . 'order by p.name ASC ';
+
+         $whProducts = $this->Connection->execute($sql, ['warehouse_id' => $warehouse_id])->fetchAll('assoc');
+         
         $this->set(compact('whProducts'));
     }
 

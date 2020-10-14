@@ -10,6 +10,7 @@ use Cake\Validation\Validator;
  * GoodsTransactions Model
  *
  * @property \App\Model\Table\BranchesTable|\Cake\ORM\Association\BelongsTo $Branches
+ * @property \App\Model\Table\BpartnersTable|\Cake\ORM\Association\BelongsTo $Bpartners
  * @property \App\Model\Table\GoodsLinesTable|\Cake\ORM\Association\HasMany $GoodsLines
  *
  * @method \App\Model\Entity\GoodsTransaction get($primaryKey, $options = [])
@@ -45,6 +46,9 @@ class GoodsTransactionsTable extends Table
             'foreignKey' => 'branch_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('Bpartners', [
+            'foreignKey' => 'bpartner_id'
+        ]);
         $this->hasMany('GoodsLines', [
             'foreignKey' => 'goods_transaction_id'
         ]);
@@ -52,15 +56,16 @@ class GoodsTransactionsTable extends Table
         $this->belongsTo('UserCreated', [
             'className' => 'Users',
             'foreignKey' => 'createdby',
-            'propertyName'=>'UserCreated'
+            'propertyName' => 'UserCreated'
         ]);
-        
+
         $this->belongsTo('UserModified', [
             'className' => 'Users',
             'foreignKey' => 'modifiedby',
-            'propertyName'=>'UserModified'
+            'propertyName' => 'UserModified'
         ]);
-        $this->belongsTo('ToWarehouse', [
+        
+         $this->belongsTo('ToWarehouse', [
             'className' => 'Warehouses',
             'foreignKey' => 'to_warehouse',
             'propertyName'=>'ToWarehouse'
@@ -157,6 +162,7 @@ class GoodsTransactionsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['branch_id'], 'Branches'));
+        $rules->add($rules->existsIn(['bpartner_id'], 'Bpartners'));
 
         return $rules;
     }

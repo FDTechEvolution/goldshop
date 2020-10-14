@@ -30,7 +30,7 @@
             echo $this->Form->control('description');
             echo $this->Form->control('amount');
             echo $this->Form->control('pawn_id', ['options' => $pawns]);
-            echo $this->Form->control('creatbyed');
+            echo $this->Form->control('createdby');
             echo $this->Form->control('modifiedby');
         ?>
     </fieldset>

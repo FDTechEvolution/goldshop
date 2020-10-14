@@ -10,7 +10,8 @@ use Cake\Validation\Validator;
  * GoodsLines Model
  *
  * @property \App\Model\Table\ProductsTable|\Cake\ORM\Association\BelongsTo $Products
- * @property |\Cake\ORM\Association\BelongsTo $GoodsTransactions
+ * @property \App\Model\Table\GoodsTransactionsTable|\Cake\ORM\Association\BelongsTo $GoodsTransactions
+ * @property |\Cake\ORM\Association\BelongsTo $Orders
  *
  * @method \App\Model\Entity\GoodsLine get($primaryKey, $options = [])
  * @method \App\Model\Entity\GoodsLine newEntity($data = null, array $options = [])
@@ -42,12 +43,14 @@ class GoodsLinesTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Products', [
-            'foreignKey' => 'product_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'product_id'
         ]);
         $this->belongsTo('GoodsTransactions', [
             'foreignKey' => 'goods_transaction_id',
             'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('Orders', [
+            'foreignKey' => 'order_id'
         ]);
         
         $this->belongsTo('UserCreated', [
@@ -113,6 +116,7 @@ class GoodsLinesTable extends Table
     {
         $rules->add($rules->existsIn(['product_id'], 'Products'));
         $rules->add($rules->existsIn(['goods_transaction_id'], 'GoodsTransactions'));
+        $rules->add($rules->existsIn(['order_id'], 'Orders'));
 
         return $rules;
     }

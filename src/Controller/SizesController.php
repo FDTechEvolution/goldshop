@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
+use Cake\I18n\Time;
 /**
  * Sizes Controller
  *
@@ -53,6 +54,8 @@ class SizesController extends AppController {
             if ($this->Sizes->save($size)) {
                 $this->Flash->success(__('The size has been saved.'));
 
+                $this->createJsonData();
+                
                 return $this->redirect(['action' => 'add',$productCatId]);
             }else{
                 $this->log($size->errors(),'debug');
@@ -81,6 +84,7 @@ class SizesController extends AppController {
             if ($this->Sizes->save($size)) {
                 $this->Flash->success(__('The size has been saved.'));
 
+                $this->createJsonData();
                 return $this->redirect(['action' => 'index',$size->product_category_id]);
             }
             $this->Flash->error(__('The size could not be saved. Please, try again.'));
@@ -112,7 +116,20 @@ class SizesController extends AppController {
             $this->Flash->error(MSG_DELETE_ERROR);
         }
 
+        $this->createJsonData();
         return $this->redirect(['action' => 'index',$productCatId]);
+    }
+    
+    private function createJsonData(){
+         $this->loadComponent('Json');
+         $modelName = 'sizes';
+         $this->Json->deleteFilesByModel($modelName);
+         
+         $time = Time::now();
+         $timeStr = $time->i18nFormat('yyyyMMdd_HHmm');
+         $designs = $this->Sizes->find()->order(['name'=>'ASC'])->toArray();
+         $this->Json->write('size_'.$timeStr.'.json',$modelName,$designs);
+         
     }
 
 }

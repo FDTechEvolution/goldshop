@@ -26,6 +26,7 @@ use Cake\ORM\Entity;
  * @property string $isexchange
  * @property string $isdispose
  * @property string $isoverprice
+ * @property float $exchangamt
  *
  * @property \App\Model\Entity\Payment $payment
  * @property \App\Model\Entity\Invoice $invoice
@@ -67,6 +68,7 @@ class PaymentLine extends Entity
         'isexchange' => true,
         'isdispose' => true,
         'isoverprice' => true,
+        'exchangamt' => true,
         'payment' => true,
         'invoice' => true,
         'income_type' => true,

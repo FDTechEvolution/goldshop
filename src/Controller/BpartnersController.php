@@ -273,12 +273,9 @@ class BpartnersController extends AppController {
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
             $bpartner = $this->Bpartners->patchEntity($bpartner, $data);
-            $queryBranch = $this->Branches->get($data['branch_id'], [
-                'contain' => []
-            ]);
-            $branch = $queryBranch->toArray();
+
             $bpartner->name = $data['title'] . $data['firstname'] . ' ' . $data['lastname'];
-            $bpartner->org_id = $branch['org_id'];
+            
             $bpartner->modifiedby = $this->Authen->getAuthenUserId();
             $bpartner->birthday = $this->Util->convertDate($data['birthday']);
 

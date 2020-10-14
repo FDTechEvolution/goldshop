@@ -16,12 +16,9 @@
             </div>
             <div class="form-group row">
                 <div class="col-md-5">
-                    <h2 class="gold-title "><i class="mdi mdi-account-box"></i> เพิ่ม<?= $title ?></h2>
+                    <h2 class="gold-title "><i class="mdi mdi-account-box"></i> แก้ไข<?= $title ?></h2>
                 </div>
-                <div class="col-md-6 text-left">
-                    <button type="button" class="btn btn-dark waves-effect waves-light" id="smartcard-alert">ดึงข้อมูลจากบัตรประชาชน</button>
-
-                </div>
+      
 
             </div>
             <div class="row">
@@ -33,39 +30,27 @@
                         </label>
                     </div>
                     <div class="row" id="box_normal">
-                        <div class="col-md-1 form-group">
+                        <div class="col-md-2 form-group">
                             <label class=" col-form-label text-right">คำนำหน้า <?= REQUIRE_FIELD ?></label>
                             <?= $this->Form->control('title', ['id' => 'title', 'class' => 'form-control', 'label' => false, 'options' => ['นาย' => 'นาย', 'นาง' => 'นาง', 'นางสาว' => 'นางสาว']]) ?>
 
 
                         </div>
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-4 form-group">
                             <label class=" col-form-label text-right">ชื่อ <?= REQUIRE_FIELD ?></label>
                             <?= $this->Form->control('firstname', ['class' => 'form-control', 'label' => false, 'id' => 'firstname', 'autocomplete' => 'off']) ?>
                         </div>
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-4 form-group">
                             <label class=" col-form-label text-right">นามสกุล <?= REQUIRE_FIELD ?></label>
                             <?= $this->Form->control('lastname', ['class' => 'form-control', 'label' => false, 'id' => 'lastname', 'autocomplete' => 'off']); ?>
                         </div>
                         <div class="col-md-2 form-group">
                             <label class=" col-form-label text-right">วันเกิด</label>
-                            <?= $this->Form->control('birthday', ['class' => 'form-control', 'id' => 'birthday', 'type' => 'text', 'label' => false, 'data-provide' => 'datepicker', 'data-date-language' => 'th-th', 'autocomplete' => 'off']) ?>
+                            <?= $this->Form->control('birthday', ['class' => 'form-control', 'id' => 'birthday', 'type' => 'text', 'label' => false, 'data-provide' => 'datepicker', 'data-date-language' => 'th-th', 'autocomplete' => 'off','readonly'=>'readonly']) ?>
                         </div>
                         <div class="col-md-3 form-group">
-                            <label class=" col-form-label text-right">เลขบัตรประชาชน</label>
+                            <label class="text-right">เลขบัตรประชาชน</label>
                             <?= $this->Form->control('taxid', ['class' => 'form-control', 'label' => false, 'id' => 'taxid', 'requireddata-parsley-max' => '13', 'requireddata-parsley-min' => '13', 'autocomplete' => 'off']); ?>
-                        </div>
-                    </div>
-                    <div class="row" id="box_company" style="display: none;">
-                        <div class="col-md-5 form-group">
-                            <label class=" col-form-label text-right">ชื่อ <?= REQUIRE_FIELD ?></label>
-                            <?= $this->Form->control('name', ['class' => 'form-control', 'label' => false, 'id' => 'name', 'autocomplete' => 'off']) ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 form-group">
-                            <label class="">อีเมล์</label>
-                            <?= $this->Form->control('email', ['class' => 'form-control', 'label' => false, 'id' => '', 'autocomplete' => 'off']); ?>
                         </div>
                         <div class="col-md-2 form-group">
                             <label class="">โทรศัพท์บ้าน </label>
@@ -75,40 +60,38 @@
                             <label class="">โทรศัพท์มือถือ</label>
                             <?= $this->Form->control('mobile', ['class' => 'form-control', 'label' => false, 'id' => 'mobile', 'autocomplete' => 'off']); ?>
                         </div>
+                        <div class="col-md-3 form-group">
+                            <label class="">อีเมล์</label>
+                            <?= $this->Form->control('email', ['class' => 'form-control', 'label' => false, 'id' => '', 'autocomplete' => 'off']); ?>
+                        </div>
+                    </div>
+                    <div class="row" id="box_company" style="display: none;">
                         <div class="col-md-5 form-group">
+                            <label class=" col-form-label text-right">ชื่อ <?= REQUIRE_FIELD ?></label>
+                            <?= $this->Form->control('name', ['class' => 'form-control', 'label' => false, 'id' => 'name', 'autocomplete' => 'off']) ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        
+                        
+                        <div class="col-md-12 form-group">
                             <label for="">ที่อยู่</label>
                             <?= $this->Form->control('address.address_line', ['class' => 'form-control', 'label' => false, 'id' => 'address_line', 'autocomplete' => 'off']) ?>
                         </div>
-                        <div class="col-md-2 form-group">
-                            <label for="">ตำบล</label>
-                            <?= $this->Form->control('address.subdistrict', ['class' => 'form-control', 'label' => false, 'id' => 'subdistrict', 'autocomplete' => 'off']) ?>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label for="">อำเภอ</label>
-                            <?= $this->Form->control('address.district', ['class' => 'form-control', 'label' => false, 'id' => 'district', 'autocomplete' => 'off']) ?>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label for="">จังหวัด</label>
-                            <?= $this->Form->control('address.province', ['readonly', 'type' => 'text', 'class' => 'form-control', 'label' => false, 'id' => 'province']) ?>
-                        </div>
-                        <div class="col-md-2 form-group">
-                            <label for="">รหัสไปรษณีย์</label>
-                            <?= $this->Form->control('address.postalcode', ['class' => 'form-control', 'label' => false, 'id' => 'zipcode', 'autocomplete' => 'off']) ?>
-                        </div>
+                        
                     </div>
 
                     <div class=" row">
-                        <div class="col-md-6 ">
-                            <label class=" col-form-label text-right">รายละเอียด</label>
+                        <div class="col-md-6 mb-2">
+                            <label class="text-right">รายละเอียด</label>
                             <textarea class="form-control" rows="4" name="description"></textarea>
                         </div>
-                    </div>
-                    <div class=" row p-20">
-                        <div class="col-md-12 " style="text-align: center">
+                        <div class="col-md-12" style="text-align: center">
                             <?= BT_SAVE ?>
                             <?= BT_RESET ?>
                         </div>
                     </div>
+                   
                 </div>
             </div>
         </div>

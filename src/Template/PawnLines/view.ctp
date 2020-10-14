@@ -37,8 +37,8 @@
             <td><?= $pawnLine->has('pawn') ? $this->Html->link($pawnLine->pawn->id, ['controller' => 'Pawns', 'action' => 'view', $pawnLine->pawn->id]) : '' ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Creatbyed') ?></th>
-            <td><?= h($pawnLine->creatbyed) ?></td>
+            <th scope="row"><?= __('createdby') ?></th>
+            <td><?= h($pawnLine->createdby) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Modifiedby') ?></th>

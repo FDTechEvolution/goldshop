@@ -49,6 +49,9 @@ function getIP(json) {
 
 $.fn.purchaseVerify = function () {
 
+    if (!isHasSeller()) {
+        return;
+    }
     if (!isHasProductLine()) {
         return;
     }
@@ -58,7 +61,7 @@ $.fn.purchaseVerify = function () {
     if (!isCorrectReceipt()) {
         return;
     }
-    if(!isCorrectPrice()){
+    if (!isCorrectPrice()) {
         return;
     }
 
@@ -72,15 +75,9 @@ $.fn.purchaseVerify = function () {
         var totalamt = amount - discount - savingamt;
 
         if (receiptamt < totalamt) {
-            swal({
-                title: "รับเงินไม่ครบ",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+
+
+            Swal.fire({title: "รับเงินไม่ครบ", confirmButtonClass: "btn btn-primary mt-2"});
             return false;
         }
         return true;
@@ -89,15 +86,8 @@ $.fn.purchaseVerify = function () {
     function isValidCustomerInfo() {
         console.log('Checking customer info.');
         if ($('#customer_type').val() === 'save' && $('#bpartner_id').val() === '') {
-            swal({
-                title: "กรุณาระบุข้อมูลลูกค้า",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+
+            Swal.fire({title: "กรุณาระบุข้อมูลลูกค้า", confirmButtonClass: "btn btn-primary mt-2"});
             return false;
         }
         return true;
@@ -110,15 +100,8 @@ $.fn.purchaseVerify = function () {
         count_row = count_row + $('#list_order_product > tbody tr').length;
 
         if (count_row < 1) {
-            swal({
-                title: "ยังไม่ได้ระบุรายการสินค้า",
-                text: "",
-                type: "warning",
-                showCancelButton: false,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: "OK",
-                closeOnConfirm: true
-            });
+
+            Swal.fire({title: "ยังไม่ได้ระบุรายการสินค้า", confirmButtonClass: "btn btn-primary mt-2"});
             return false;
         }
         return true;
@@ -147,35 +130,53 @@ $.fn.purchaseVerify = function () {
                 price_total = price_total + price;
                 max_discount_total = max_discount_total + max_discount;
                 actual_price_total = actual_price_total + actual_price;
-                
+
             }
         });
 
-        if ((price_total) < (actual_price_total - max_discount_total) || (actual_price_total+(actual_price_total*0.015) <price_total)) {
-            swal({
+        if ((price_total) < (actual_price_total - max_discount_total) || (actual_price_total + (actual_price_total * 0.015) < price_total)) {
+
+
+            Swal.fire({
                 title: "ราคามีส่วนต่างมากเกินไป",
                 text: "กรุณาตรวจสอบความถูกต้องของข้อมูล",
                 type: "warning",
-                showCancelButton: true,
-                cancelButtonClass: 'btn-warning',
-                confirmButtonClass: 'btn-success',
+                showCancelButton: !0,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
                 cancelButtonText: "แก้ไข",
                 confirmButtonText: "ยืนยันราคา",
-                closeOnConfirm: true
-            }, function (isConfirm) {
-                if (isConfirm) {
-                    isValidSavingAccount();
-                } else {
-                    return false;
-                }
-            });
-        }else{
+            }
+            ).then(
+                    function (t) {
+                        if (t.value) {
+
+                            $('#frm').submit();
+                        }
+
+                    });
+        } else {
             isValidSavingAccount();
         }
-        
+
     }
-    
-    
+
+    function isHasSeller() {
+        var seller = $('#seller').val();
+        console.log(seller.length);
+
+        if (seller.length === 0) {
+            Swal.fire({title: "ยังไม่ได้ระบุพนักงานขาย", confirmButtonClass: "btn btn-primary mt-2"});
+            $('#seller').focus();
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+
     function isValidSavingAccount() {
         //Check saving account
         console.log('Checking saving account,use ' + savingamt);
@@ -250,6 +251,6 @@ $.fn.purchaseVerify = function () {
 $(document).ready(function () {
 
     $("#bt_submit").on("click", function () {
-         $(document).purchaseVerify();
+        $(document).purchaseVerify();
     });
 });

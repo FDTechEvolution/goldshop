@@ -138,6 +138,16 @@ class ProductCategoriesTable extends Table
             ->maxLength('unittype', 100)
             ->allowEmpty('unittype');
 
+        $validator
+            ->scalar('label')
+            ->maxLength('label', 45)
+            ->allowEmpty('label');
+
+        $validator
+            ->scalar('runningno')
+            ->maxLength('runningno', 45)
+            ->allowEmpty('runningno');
+
         return $validator;
     }
 

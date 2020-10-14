@@ -6,6 +6,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\Date;
+use Cake\I18n\Time;
 
 /**
  * Sales Controller
@@ -65,13 +66,13 @@ class SalesController extends AppController {
 
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-            $this->log($data, 'debug');
+            //$this->log($data, 'debug');
             //die();
             $bpartner_id = null;
             $DOCDATE = $data['docdate'];
             $CUSTOMERTYPE = $data['customer_type'];
             $RECEIPTAMT = $data['receiptamt'];
-            $SAVINGAMT = (float)$data['savingamt'];
+            $SAVINGAMT = (float) $data['savingamt'];
             $SELLER = $data['seller'];
             $WAREHOUSEID = $data['warehouse_id'];
             $DISCOUNT = $data['discountamt'];
@@ -85,7 +86,7 @@ class SalesController extends AppController {
             }
 
             $order_id = null;
-            if (isset($data['order_id']) && $data['order_id'] != null && $data['order_id'] != '') {
+            if (isset($data['order_id']) && $data['order_id'] != null && $data['order_id'] != '' && $data['order_id'] != 'undefined') {
                 $order_id = $data['order_id'];
             }
 
@@ -109,7 +110,7 @@ class SalesController extends AppController {
                 $countPaymentMethod++;
                 array_push($paymentMethods, ['payment_method' => 'CRED', 'amount' => $_CreditAmt, 'bank_account_id' => $data['credit_account_id']]);
             }
-            
+
 
             $bankAccountId = null;
             $paymentMethod = null;
@@ -132,7 +133,7 @@ class SalesController extends AppController {
 
 
 
-            $payment = $this->MakePayment->getSaveDraft($DOCDATE, $paymentMethod, $bankAccountId, $bpartner_id, 'Y', $WAREHOUSEID, 'SALES', $SELLER);
+            $payment = $this->MakePayment->getSaveDraft($DOCDATE, $paymentMethod, $bankAccountId, $bpartner_id, 'Y', $WAREHOUSEID, 'SALES', $SELLER, $data['time']);
 
             $amount = 0;
             $seq = 1;
@@ -150,7 +151,7 @@ class SalesController extends AppController {
                 $warehouse_id = $item['warehouse_id'];
 
                 $order_id = null;
-                if (isset($item['order_id']) && $item['order_id'] != '' && $item['order_id'] != null) {
+                if (isset($item['order_id']) && $item['order_id'] != '' && $item['order_id'] != null && $item['order_id'] != 'undefined') {
                     $order_id = $item['order_id'];
                     $hasOrder = true;
                 }
@@ -165,7 +166,7 @@ class SalesController extends AppController {
             //Exchange
             $isExchange = 'N';
             if (isset($data['exchange_product']) && sizeof($data['exchange_product']) > 0) {
-                $warehouseList = $this->Core->getWarehouseList(['ispurchase' => 'Y'], false, 'all');
+                $warehouseList = $this->Core->getWarehouseList(['type' => 'PURCHASE'], false, 'all');
                 $purchasePayment = $this->MakePayment->getSaveDraft($payment->paymentdate, 'CASH', null, $payment->bpartner_id, 'N', $warehouseList[0]['id'], 'PURCHASE', $payment->seller);
 
                 $totalExchangeAmt = 0;
@@ -183,11 +184,19 @@ class SalesController extends AppController {
 
 
                     $exchangeAmt = $amount - $price;
+                    $description = 'ค่าแลกเปลี่ยน ' . $RECEIPTAMT;
+                    $exchangamt = $RECEIPTAMT;
+                    if($price == 0){
+                        $exchangeAmt = 0;
+                        $description = '';
+                        $exchangamt = 0;
+                    }
+                    
                     //$amount = $amount - $exchangeAmt;
                     $totalExchangeAmt += $exchangeAmt;
-                    $description = 'ค่าแลกเปลี่ยน ' . $RECEIPTAMT;
+                    
                     //getSavePaymentLine($payment_id = null,$seq = 1, $description = null, $order_id = null,$pawn_id = null,$saving_account_id=null,$productId = null,$amount =0,$qty=1,$isExchange = 'N')
-                    $this->MakePayment->getSavePaymentLine($purchasePayment->id, $seq, $description, null, null, null, $product_id, $exchangeAmt, $qty, 'Y');
+                    $this->MakePayment->getSavePaymentLine($purchasePayment->id, $seq, $description, null, null, null, $product_id, $exchangeAmt, $qty, 'Y',null,'N',$exchangamt);
 
                     $seq++;
                     $isExchange = 'Y';
@@ -231,29 +240,99 @@ class SalesController extends AppController {
             }
 
             $this->Flash->success(__('The invoice has been saved.'));
-            if( $payment->bpartner_id =='0'){
-                return $this->redirect(['controller' => 'pos']);
-            }else{
-                return $this->redirect(['controller' => 'promotions','action'=>'verify-bp-promotion', $payment->bpartner_id]);
+            if ($payment->bpartner_id == '0') {
+                return $this->redirect(['action' => 'index']);
+            } else {
+                return $this->redirect(['controller' => 'promotions', 'action' => 'verify-bp-promotion', $payment->bpartner_id]);
             }
-            
-            
         }
 
         $docNo = $this->DocSequent->getLatest('AR');
 
         //$sellerList = $this->Core->getSellerList();
 
-        $warehouseList = $this->Core->getWarehouseList(['issales' => 'Y']);
+        $warehouseList = $this->Core->getWarehouseList(['type' => 'SALES']);
         $issales = 'Y';
 
 
         $percents = $this->Gold->getGoldPercent();
-        
+
+        $toDayTransactions = $this->toDayTransaction();
+
+        $time = Time::now();
+        $time = $time->i18nFormat('HHmm');
+
         //$weights = $this->Weights->find('list', ['group' => 'name', 'order' => 'name ASC']);
-        $this->set(compact( 'percents'));
- 
-        $this->set(compact('docNo', 'warehouseList', 'issales'));
+        $this->set(compact('percents'));
+
+        $this->set(compact('docNo', 'warehouseList', 'issales', 'time', 'toDayTransactions'));
+    }
+
+    private function toDayTransaction() {
+        $todayDate = new Date();
+        //$wording = 'รายการขายประจำวันที่';
+        $q = $this->Payments->find()
+                ->select(['Payments.id', 'Payments.created', 'Payments.amount', 'Payments.discount', 'Payments.totalamt', 'Payments.paymentdate', 'Payments.docno', 'Payments.usesavingamt', 'Payments.isexchange', 'Payments.docstatus'])
+                ->contain([
+                    'PaymentLines' => [
+                        'fields' => ['payment_id', 'invoice_id', 'totalamount', 'isexchange', 'isoverprice','exchangamt'],
+                        'Products' => [
+                            'fields' => ['name', 'manual_weight'],
+                            'Weights' => [
+                                'fields' => ['value']
+                            ]
+                        ],
+                    ],
+                    'PaymentMethodLines' => [
+                        'fields' => ['payment_method', 'amount', 'payment_id'],
+                        'BankAccounts' => ['fields' => ['account_name']]
+                    ],
+                    'Seller' => [
+                        'fields' => ['firstname', 'lastname']
+                    ],
+                    'Bpartners' => [
+                        'fields' => ['name']
+                    ]
+                ])
+                ->where(['Payments.isreceipt' => 'Y', 'Payments.branch_id' => $this->Core->getLocalBranchId(), 'Payments.type' => 'SALES', 'Payments.paymentdate' => $todayDate])
+                ->order(['Payments.created' => 'DESC']);
+        $payments = $q->toArray();
+        //$this->log($payments,'debug');
+        //Count total
+        $totalAmt = 0;
+        $weightAmt = 0;
+        $_payments = $payments;
+        foreach ($_payments as $index=> $payment) {
+            if ($payment->docstatus != 'VO') {
+                $totalAmt = $totalAmt + $payment->totalamt;
+                foreach ($payment->payment_lines as $line) {
+                    if ($line->has('product') && ($line->isexchange == 'N')) {
+                        if ($line->product->has('weight')) {
+                            $weightAmt = $weightAmt + $line->product->weight->value;
+                        } else {
+                            $weightAmt = $weightAmt + $line->product->manual_weight;
+                        }
+                    }
+                }
+            }
+            
+            if ($payment->isexchange == 'Y') {
+                $q = $this->Payments->find()
+                        ->contain(['PaymentLines' => ['Products']])
+                        ->where(['Payments.payment_ref' => $payment->id]);
+                $refPayments = $q->toArray();
+                $payments[$index]['refs'] = $refPayments;
+            }
+        }
+
+        $data = [
+            'items' => $payments,
+            'totalAmt' => $totalAmt,
+            'weightAmt' => $weightAmt,
+        ];
+        $this->log($data,'debug');
+
+        return $data;
     }
 
     public function showall() {
@@ -341,7 +420,7 @@ class SalesController extends AppController {
 
     public function view($id = null) {
         $q = $this->Payments->find()
-                ->contain(['PaymentMethodLines'=>['BankAccounts'=>['Banks']],'PaymentLines' => ['Payments', 'Orders', 'Products'], 'Seller',
+                ->contain(['PaymentMethodLines' => ['BankAccounts' => ['Banks']], 'PaymentLines' => ['Payments', 'Orders', 'Products', 'sort' => ['PaymentLines.created' => 'ASC']], 'Seller',
                     'Bpartners' => ['Orgs', 'Addresses'],
                     'Branches' => ['Orgs', 'Addresses']])
                 ->where(['Payments.id' => $id]);
@@ -359,7 +438,7 @@ class SalesController extends AppController {
         $branch = $payment->branch;
         $bpartner = $payment->bpartner;
         //$this->log($payment,'debug');
-        $this->set(compact('payment', 'refPayments', 'docStatusList', 'branch', 'bpartner','paymentMethod'));
+        $this->set(compact('payment', 'refPayments', 'docStatusList', 'branch', 'bpartner', 'paymentMethod'));
     }
 
     public function void($id = null) {
@@ -368,13 +447,13 @@ class SalesController extends AppController {
         //$payment->docstatus = 'VO';
         //$payment->modifiedby = $this->Authen->getAuthenUserId();
         //if ($this->Payments->save($payment)) {
-            $this->MakePayment->void($id);
-            $this->WarehouseProcess->updateStockByPayment($payment->id, 'N');
-            $this->Flash->success(__('ยกเลิกรายการแล้ว'));
-            return $this->redirect(['action' => 'showall']);
+        $this->MakePayment->void($id);
+        $this->WarehouseProcess->updateStockByPayment($payment->id, 'N');
+        $this->Flash->success(__('ยกเลิกรายการแล้ว'));
+        return $this->redirect(['action' => 'showall']);
         //} else {
-           // $this->Flash->error(__('The pawn could not be cancle. Please, try again.'));
-       // }
+        // $this->Flash->error(__('The pawn could not be cancle. Please, try again.'));
+        // }
 
         return $this->redirect(['action' => 'view', $id]);
     }
